@@ -31,9 +31,14 @@ func main() {
 			} else if product == products[1] {
 				var ipadParser parser.IIpadParser
 				ipadParser = &parser.IPadParser{Title: title, AmountStr: amount, DetailURL: rootURL + href}
-				ipadParser.ParseIPadPage()
 				ipad, _ := ipadParser.ParseIPadPage()
 				fmt.Println(ipad)
+			} else if product == products[2] {
+				var watchParser parser.IWatchParser
+				watchParser = &parser.WatchParser{Title: title, AmountStr: amount, DetailURL: rootURL + href}
+				watchParser.ParseWatchPage()
+				watch, _ := watchParser.ParseWatchPage()
+				fmt.Println(watch)
 			}
 		})
 	}
