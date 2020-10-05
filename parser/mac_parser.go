@@ -31,7 +31,7 @@ func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
 	detail.Find("div .para-list > p").Each(func(_ int, s *goquery.Selection) {
 		text := detailRegExp.ReplaceAllLiteralString(s.Text(), "")
 		if strings.Index(text, "月発売") > -1 {
-			// 発売月
+			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
 			month, _ := strconv.Atoi(text[strings.Index(text, "年"):strings.Index(text, "月")])
 			mac.ReleaseDate = time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
@@ -57,8 +57,15 @@ func (parser *MacParser) ParseMacPage() (*model.Mac, error) {
 		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
 		return nil, err
 	}
+	// ノートパソコン以外は飛ばす
+	// TODO: デスクトップにも対応
+	if strings.Index(parser.Title, "MacBook") == -1 {
+		mac.Name = parser.Title
+		return &mac, nil
+	}
 	// 不要な部分を削除
-	name := strings.Replace(strings.Replace(parser.Title, " [整備済製品]", "", 1), "Retinaディスプレイモデル -", "", 1)
+	nameRegExp, _ := regexp.Compile(`Retinaディスプレイ.*\s\-`)
+	name := nameRegExp.ReplaceAllLiteralString(strings.Replace(parser.Title, " [整備済製品]", "", 1), "")
 	// インチ数
 	strs := strings.Split(name, "インチ")
 	mac.Inch, _ = strconv.ParseFloat(strs[0], 64)
