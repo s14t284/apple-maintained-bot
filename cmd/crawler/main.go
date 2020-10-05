@@ -23,10 +23,18 @@ func main() {
 			title := s.Find("h3 > a").Text()
 			amount := s.Find("div,.as-currentprice,.producttile-currentprice").Text()
 			href, _ := s.Find("a").Attr("href")
-			var macParser parser.IMacParser
-			macParser = &parser.MacParser{Title: title, AmountStr: amount, DetailURL: rootURL + href}
-			mac, _ := macParser.ParseMacPage()
-			fmt.Println(mac)
+			if product == products[0] {
+				var macParser parser.IMacParser
+				macParser = &parser.MacParser{Title: title, AmountStr: amount, DetailURL: rootURL + href}
+				mac, _ := macParser.ParseMacPage()
+				fmt.Println(mac)
+			} else if product == products[1] {
+				var ipadParser parser.IIpadParser
+				ipadParser = &parser.IPadParser{Title: title, AmountStr: amount, DetailURL: rootURL + href}
+				ipadParser.ParseIPadPage()
+				ipad, _ := ipadParser.ParseIPadPage()
+				fmt.Println(ipad)
+			}
 		})
 	}
 }
