@@ -17,6 +17,7 @@ type IPad struct {
 	Color       string    `gorm:"size:15; not null" json:"color"`
 	Amount      int       `gorm:"not null" json:"amount"`
 	ReleaseDate time.Time `gorm:"not null" json:"release_date"`
+	IsSold      bool      `gorm:"not null" json:"is_sold"`
 }
 
 // IPads 複数のipadのドメインオブジェクト

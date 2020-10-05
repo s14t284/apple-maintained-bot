@@ -15,6 +15,7 @@ type Watch struct {
 	IsCellular  bool      `gorm:"not null" json:"is_cellular"`
 	Amount      int       `gorm:"not null" json:"amount"`
 	ReleaseDate time.Time `gorm:"not null" json:"release_date"`
+	IsSold      bool      `gorm:"not null" json:"is_sold"`
 }
 
 // Watches 複数のapple watchのドメインオブジェクト
