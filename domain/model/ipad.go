@@ -2,13 +2,12 @@ package model
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 // IPad ipadのドメインオブジェクト
 type IPad struct {
-	gorm.Model
+	ID          uint      `gorm:"primarykey"`
+	CreatedAt   time.Time `json:"created_at"`
 	Name        string    `gorm:"size:255; not null" json:"name"`
 	Inch        float32   `gorm:"not null" json:"inch"`
 	CPU         string    `gorm:"size:50; not null" json:"cpu"`
@@ -18,6 +17,7 @@ type IPad struct {
 	Amount      int       `gorm:"not null" json:"amount"`
 	ReleaseDate time.Time `gorm:"not null" json:"release_date"`
 	IsSold      bool      `gorm:"not null" json:"is_sold"`
+	URL         string    `gorm:"not null" json:"url"`
 }
 
 // IPads 複数のipadのドメインオブジェクト

@@ -2,13 +2,12 @@ package model
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 // Watch apple watchのドメインオブジェクト
 type Watch struct {
-	gorm.Model
+	ID          uint      `gorm:"primarykey"`
+	CreatedAt   time.Time `json:"created_at"`
 	Name        string    `gorm:"size:255; not null" json:"name"`
 	Strage      string    `gorm:"size:20; not null" json:"strage"`
 	Color       string    `gorm:"size:255; not null" json:"color"`
@@ -16,6 +15,7 @@ type Watch struct {
 	Amount      int       `gorm:"not null" json:"amount"`
 	ReleaseDate time.Time `gorm:"not null" json:"release_date"`
 	IsSold      bool      `gorm:"not null" json:"is_sold"`
+	URL         string    `gorm:"not null" json:"url"`
 }
 
 // Watches 複数のapple watchのドメインオブジェクト
