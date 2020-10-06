@@ -12,18 +12,6 @@ import (
 	"github.com/s14t284/apple-maitained-bot/utils"
 )
 
-// IMacParser macに関するページのパーサーのインターフェース
-type IMacParser interface {
-	ParseMacPage() (*model.Mac, error)
-}
-
-// MacParser macに関するページのパーサー
-type MacParser struct {
-	Title     string
-	AmountStr string
-	DetailURL string
-}
-
 func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
 	detail := doc.Find(".as-productinfosection-mainpanel").First()
 	detailRegExp, _ := regexp.Compile(`(\n|\s)`)
@@ -34,7 +22,8 @@ func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
 			month, _ := strconv.Atoi(text[strings.Index(text, "年"):strings.Index(text, "月")])
-			mac.ReleaseDate = time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+			timeZone, _ := time.LoadLocation("Japan")
+			mac.ReleaseDate = time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
 		} else if strings.Index(text, "TouchBar") > -1 {
 			// タッチバーがあるかないか
 			mac.TouchBar = true
@@ -49,7 +38,7 @@ func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
 }
 
 // ParseMacPage macに関するページをパースして、macに関する情報のオブジェクトを返却
-func (parser *MacParser) ParseMacPage() (*model.Mac, error) {
+func (parser *Parser) ParseMacPage() (*model.Mac, error) {
 	var mac model.Mac
 	// 最初に詳細情報が取ってこれるかを確認
 	doc, err := utils.GetGoQueryObject(parser.DetailURL)
@@ -83,6 +72,8 @@ func (parser *MacParser) ParseMacPage() (*model.Mac, error) {
 	mac.Amount, _ = strconv.Atoi(amountRegExp.ReplaceAllLiteralString(parser.AmountStr, ""))
 	// 名前
 	mac.Name = name
+	// URL
+	mac.URL = parser.DetailURL
 
 	// その他の情報
 	loadMacInformationFromDetailURL(&mac, doc)

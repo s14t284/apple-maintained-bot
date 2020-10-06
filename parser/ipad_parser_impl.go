@@ -12,18 +12,6 @@ import (
 	"github.com/s14t284/apple-maitained-bot/utils"
 )
 
-// IIpadParser ipadに関するページのインタフェース
-type IIpadParser interface {
-	ParseIPadPage() (*model.IPad, error)
-}
-
-// IPadParser ipadに関するページのパーサー
-type IPadParser struct {
-	Title     string
-	AmountStr string
-	DetailURL string
-}
-
 func loadIPadInformationFromDetailURL(ipad *model.IPad, doc *goquery.Document) {
 	detail := doc.Find(".as-productinfosection-mainpanel").First()
 	detailRegExp, _ := regexp.Compile(`(\n|\s)`)
@@ -33,7 +21,8 @@ func loadIPadInformationFromDetailURL(ipad *model.IPad, doc *goquery.Document) {
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
 			month, _ := strconv.Atoi(text[strings.Index(text, "年"):strings.Index(text, "月")])
-			ipad.ReleaseDate = time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+			timeZone, _ := time.LoadLocation("Japan")
+			ipad.ReleaseDate = time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
 		} else if strings.Index(text, "メガピクセル") > -1 {
 			ipad.Camera = text
 		} else if strings.Index(text, "インチ") > -1 {
@@ -45,7 +34,7 @@ func loadIPadInformationFromDetailURL(ipad *model.IPad, doc *goquery.Document) {
 }
 
 // ParseIPadPage ipadに関するページをパースして、ipadに関する情報のオブジェクトを返却
-func (parser *IPadParser) ParseIPadPage() (*model.IPad, error) {
+func (parser *Parser) ParseIPadPage() (*model.IPad, error) {
 	var ipad model.IPad
 	// 最初に詳細情報が取ってこれるかを確認
 	doc, err := utils.GetGoQueryObject(parser.DetailURL)
@@ -75,6 +64,8 @@ func (parser *IPadParser) ParseIPadPage() (*model.IPad, error) {
 	// 金額
 	amountRegExp, _ := regexp.Compile(`(,|円（税別）|\s)`)
 	ipad.Amount, _ = strconv.Atoi(amountRegExp.ReplaceAllLiteralString(parser.AmountStr, ""))
+	// URL
+	ipad.URL = parser.DetailURL
 
 	// その他の情報
 	loadIPadInformationFromDetailURL(&ipad, doc)

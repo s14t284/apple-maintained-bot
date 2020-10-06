@@ -12,18 +12,6 @@ import (
 	"github.com/s14t284/apple-maitained-bot/utils"
 )
 
-// IWatchParser apple watchに関するページのインタフェース
-type IWatchParser interface {
-	ParseWatchPage() (*model.Watch, error)
-}
-
-// WatchParser apple watchに関するページのパーサー
-type WatchParser struct {
-	Title     string
-	AmountStr string
-	DetailURL string
-}
-
 func loadWatchInformationFromDetailURL(watch *model.Watch, doc *goquery.Document) {
 	detail := doc.Find(".as-productinfosection-mainpanel").First()
 	detailRegExp, _ := regexp.Compile(`(\n|\s)`)
@@ -33,7 +21,8 @@ func loadWatchInformationFromDetailURL(watch *model.Watch, doc *goquery.Document
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
 			month, _ := strconv.Atoi(text[strings.Index(text, "年"):strings.Index(text, "月")])
-			watch.ReleaseDate = time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
+			timeZone, _ := time.LoadLocation("Japan")
+			watch.ReleaseDate = time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
 		} else if strings.Index(text, "GB") > -1 {
 			strage := strings.Replace(text, "容量", "", 1)
 			watch.Strage = strage[:len(strage)-1]
@@ -42,7 +31,7 @@ func loadWatchInformationFromDetailURL(watch *model.Watch, doc *goquery.Document
 }
 
 // ParseWatchPage watchに関するページをパースして、watchに関する情報のオブジェクトを返却
-func (parser *WatchParser) ParseWatchPage() (*model.Watch, error) {
+func (parser *Parser) ParseWatchPage() (*model.Watch, error) {
 	var watch model.Watch
 	// 最初に詳細情報が取ってこれるかを確認
 	doc, err := utils.GetGoQueryObject(parser.DetailURL)
@@ -65,6 +54,8 @@ func (parser *WatchParser) ParseWatchPage() (*model.Watch, error) {
 	// 金額
 	amountRegExp, _ := regexp.Compile(`(,|円（税別）|\s)`)
 	watch.Amount, _ = strconv.Atoi(amountRegExp.ReplaceAllLiteralString(parser.AmountStr, ""))
+	// URL
+	watch.URL = parser.DetailURL
 
 	// その他の情報
 	loadWatchInformationFromDetailURL(&watch, doc)
