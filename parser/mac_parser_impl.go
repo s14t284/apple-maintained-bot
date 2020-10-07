@@ -4,12 +4,12 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/labstack/gommon/log"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/utils"
+	"github.com/s14t284/apple-maitained-bot/utils/scraper"
 )
 
 func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
@@ -22,11 +22,7 @@ func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
 			month, _ := strconv.Atoi(text[strings.Index(text, "年")+4 : strings.Index(text, "月")])
-			timeZone, err := time.LoadLocation("Asia/Tokyo")
-			if err != nil {
-				log.Errorf(err.Error())
-			}
-			mac.ReleaseDate = time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
+			mac.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
 		} else if strings.Index(text, "TouchBar") > -1 {
 			// タッチバーがあるかないか
 			mac.TouchBar = true
@@ -41,10 +37,11 @@ func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
 }
 
 // ParseMacPage macに関するページをパースして、macに関する情報のオブジェクトを返却
+// TODO: macbook以外にも対応
 func (parser *Parser) ParseMacPage() (*model.Mac, error) {
 	var mac model.Mac
 	// 最初に詳細情報が取ってこれるかを確認
-	doc, err := utils.GetGoQueryObject(parser.DetailURL)
+	doc, err := scraper.GetGoQueryObject(parser.DetailURL)
 	if err != nil {
 		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
 		return nil, err
@@ -53,6 +50,7 @@ func (parser *Parser) ParseMacPage() (*model.Mac, error) {
 	// TODO: デスクトップにも対応
 	if strings.Index(parser.Title, "MacBook") == -1 {
 		mac.Name = parser.Title
+		mac.URL = parser.DetailURL
 		return &mac, nil
 	}
 	// 不要な部分を削除

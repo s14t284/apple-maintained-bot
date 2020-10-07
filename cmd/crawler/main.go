@@ -8,7 +8,7 @@ import (
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/usecase"
 	"github.com/s14t284/apple-maitained-bot/usecase/repository"
-	"github.com/s14t284/apple-maitained-bot/utils"
+	"github.com/s14t284/apple-maitained-bot/utils/crawler"
 )
 
 const rootURL = "https://www.apple.com"
@@ -35,11 +35,11 @@ func main() {
 	for _, product := range products {
 		switch product {
 		case products[0]:
-			utils.CrawlMacPage(rootURL, shopListEndPoint, macInteractor)
+			crawler.CrawlMacPage(rootURL, shopListEndPoint, macInteractor)
 		case products[1]:
-			utils.CrawlIPadPage(rootURL, shopListEndPoint, ipadInteractor)
+			crawler.CrawlIPadPage(rootURL, shopListEndPoint, ipadInteractor)
 		case products[2]:
-			utils.CrawlWatchPage(rootURL, shopListEndPoint, watchInteractor)
+			crawler.CrawlWatchPage(rootURL, shopListEndPoint, watchInteractor)
 		default:
 			panic(fmt.Errorf("invalid path parameter: %s", product))
 		}

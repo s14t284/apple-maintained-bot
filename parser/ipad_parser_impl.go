@@ -4,12 +4,12 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/labstack/gommon/log"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/utils"
+	"github.com/s14t284/apple-maitained-bot/utils/scraper"
 )
 
 func loadIPadInformationFromDetailURL(ipad *model.IPad, doc *goquery.Document) {
@@ -21,8 +21,7 @@ func loadIPadInformationFromDetailURL(ipad *model.IPad, doc *goquery.Document) {
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
 			month, _ := strconv.Atoi(text[strings.Index(text, "年"):strings.Index(text, "月")])
-			timeZone, _ := time.LoadLocation("Asia/Tokyo")
-			ipad.ReleaseDate = time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
+			ipad.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
 		} else if strings.Index(text, "メガピクセル") > -1 {
 			ipad.Camera = text
 		} else if strings.Index(text, "インチ") > -1 {
@@ -37,7 +36,7 @@ func loadIPadInformationFromDetailURL(ipad *model.IPad, doc *goquery.Document) {
 func (parser *Parser) ParseIPadPage() (*model.IPad, error) {
 	var ipad model.IPad
 	// 最初に詳細情報が取ってこれるかを確認
-	doc, err := utils.GetGoQueryObject(parser.DetailURL)
+	doc, err := scraper.GetGoQueryObject(parser.DetailURL)
 	if err != nil {
 		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
 		return nil, err

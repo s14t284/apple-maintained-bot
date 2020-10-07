@@ -38,7 +38,7 @@ func (interactor *IPadInteractor) AddIPad(ipad *model.IPad) (err error) {
 // UpdateIPad ipadの情報の更新
 func (interactor *IPadInteractor) UpdateIPad(ipad *model.IPad) (err error) {
 	if ipad.ID <= 0 {
-		return fmt.Errorf("cannot update ipad because invalid ipad id: %d", ipad.ID)
+		return fmt.Errorf("cannot logical update ipad because invalid ipad id: %d", ipad.ID)
 	}
 	err = interactor.IPadRepository.UpdateIPad(ipad)
 	return

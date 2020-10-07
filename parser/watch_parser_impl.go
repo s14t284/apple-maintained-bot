@@ -4,12 +4,12 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/labstack/gommon/log"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/utils"
+	"github.com/s14t284/apple-maitained-bot/utils/scraper"
 )
 
 func loadWatchInformationFromDetailURL(watch *model.Watch, doc *goquery.Document) {
@@ -21,8 +21,7 @@ func loadWatchInformationFromDetailURL(watch *model.Watch, doc *goquery.Document
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
 			month, _ := strconv.Atoi(text[strings.Index(text, "年"):strings.Index(text, "月")])
-			timeZone, _ := time.LoadLocation("Asia/Tokyo")
-			watch.ReleaseDate = time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
+			watch.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
 		} else if strings.Index(text, "GB") > -1 {
 			strage := strings.Replace(text, "容量", "", 1)
 			watch.Strage = strage[:len(strage)-1]
@@ -34,7 +33,7 @@ func loadWatchInformationFromDetailURL(watch *model.Watch, doc *goquery.Document
 func (parser *Parser) ParseWatchPage() (*model.Watch, error) {
 	var watch model.Watch
 	// 最初に詳細情報が取ってこれるかを確認
-	doc, err := utils.GetGoQueryObject(parser.DetailURL)
+	doc, err := scraper.GetGoQueryObject(parser.DetailURL)
 	if err != nil {
 		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
 		return nil, err
