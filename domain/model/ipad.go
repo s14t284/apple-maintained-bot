@@ -17,7 +17,7 @@ type IPad struct {
 	Amount      int       `gorm:"not null" json:"amount"`
 	ReleaseDate time.Time `gorm:"not null" json:"release_date"`
 	IsSold      bool      `gorm:"not null" json:"is_sold"`
-	URL         string    `gorm:"not null" json:"url"`
+	URL         string    `gorm:"unique;not null" json:"url"`
 }
 
 // IPads 複数のipadのドメインオブジェクト
