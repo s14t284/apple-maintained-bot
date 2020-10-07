@@ -21,7 +21,7 @@ func loadWatchInformationFromDetailURL(watch *model.Watch, doc *goquery.Document
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
 			month, _ := strconv.Atoi(text[strings.Index(text, "年"):strings.Index(text, "月")])
-			timeZone, _ := time.LoadLocation("Japan")
+			timeZone, _ := time.LoadLocation("Asia/Tokyo")
 			watch.ReleaseDate = time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
 		} else if strings.Index(text, "GB") > -1 {
 			strage := strings.Replace(text, "容量", "", 1)

@@ -21,7 +21,7 @@ func loadIPadInformationFromDetailURL(ipad *model.IPad, doc *goquery.Document) {
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
 			month, _ := strconv.Atoi(text[strings.Index(text, "年"):strings.Index(text, "月")])
-			timeZone, _ := time.LoadLocation("Japan")
+			timeZone, _ := time.LoadLocation("Asia/Tokyo")
 			ipad.ReleaseDate = time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
 		} else if strings.Index(text, "メガピクセル") > -1 {
 			ipad.Camera = text

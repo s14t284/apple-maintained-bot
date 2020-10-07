@@ -21,8 +21,11 @@ func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
 		if strings.Index(text, "月発売") > -1 {
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
-			month, _ := strconv.Atoi(text[strings.Index(text, "年"):strings.Index(text, "月")])
-			timeZone, _ := time.LoadLocation("Japan")
+			month, _ := strconv.Atoi(text[strings.Index(text, "年")+4 : strings.Index(text, "月")])
+			timeZone, err := time.LoadLocation("Asia/Tokyo")
+			if err != nil {
+				log.Errorf(err.Error())
+			}
 			mac.ReleaseDate = time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
 		} else if strings.Index(text, "TouchBar") > -1 {
 			// タッチバーがあるかないか
