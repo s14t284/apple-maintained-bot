@@ -4,12 +4,18 @@ import (
 	"fmt"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
+	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 )
 
 // MacInteractor macbookの情報をやりとりするためのgateway
 type MacInteractor struct {
 	MacRepository database.MacRepositoryImpl
+}
+
+// NewMacInteractor MacInteractorを生成
+func NewMacInteractor(dbClient *infrastructure.SQLClient) *MacInteractor {
+	return &MacInteractor{MacRepository: database.MacRepositoryImpl{SQLClient: dbClient}}
 }
 
 // FindMacAll macbookの情報を全て取得

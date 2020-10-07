@@ -4,12 +4,18 @@ import (
 	"fmt"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
+	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 )
 
 // IPadInteractor ipadの情報をやりとりするためのgateway
 type IPadInteractor struct {
 	IPadRepository database.IPadRepositoryImpl
+}
+
+// NewIPadInteractor IPadInteractorを生成
+func NewIPadInteractor(dbClient *infrastructure.SQLClient) *IPadInteractor {
+	return &IPadInteractor{IPadRepository: database.IPadRepositoryImpl{SQLClient: dbClient}}
 }
 
 // FindIPadAll ipadの情報を取得

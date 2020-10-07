@@ -4,12 +4,18 @@ import (
 	"fmt"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
+	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 )
 
 // WatchInteractor apple watchの情報をやりとりするためのgateway
 type WatchInteractor struct {
 	WatchRepository database.WatchRepositoryImpl
+}
+
+// NewWatchInteractor WatchInteractorを生成
+func NewWatchInteractor(dbClient *infrastructure.SQLClient) *WatchInteractor {
+	return &WatchInteractor{WatchRepository: database.WatchRepositoryImpl{SQLClient: dbClient}}
 }
 
 // FindByURL 指定したURLを持つapple watchを取得
