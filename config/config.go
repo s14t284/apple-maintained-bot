@@ -1,8 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
@@ -43,6 +45,10 @@ func LoadConfig() (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// timezone
+	time.Local = time.FixedZone("Asia/Tokyo", 9*60*60)
+	fmt.Println(time.Now())
 
 	return &Config{
 		PsqlConfig: psqlConfig,
