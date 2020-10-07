@@ -18,6 +18,11 @@ func (interactor *MacInteractor) FindMacAll() (model.Macs, error) {
 	return macs, err
 }
 
+// FindByURL 指定したURLを持つmacを取得
+func (interactor *MacInteractor) FindByURL(url string) (*model.Mac, error) {
+	return interactor.MacRepository.FindByURL(url)
+}
+
 // AddMac macbookの情報を追加
 func (interactor *MacInteractor) AddMac(mac *model.Mac) (err error) {
 	err = interactor.MacRepository.AddMac(mac)
@@ -30,6 +35,12 @@ func (interactor *MacInteractor) UpdateMac(mac *model.Mac) (err error) {
 		return fmt.Errorf("cannot logical update mac because invalid mac id: %d", mac.ID)
 	}
 	err = interactor.MacRepository.UpdateMac(mac)
+	return
+}
+
+// UpdateAllSoldTemporary 一旦全てを売り切れ判定にする
+func (interactor *MacInteractor) UpdateAllSoldTemporary() (err error) {
+	err = interactor.MacRepository.UpdateAllSoldTemporary()
 	return
 }
 
