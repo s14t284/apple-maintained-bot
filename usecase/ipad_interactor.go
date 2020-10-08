@@ -29,6 +29,11 @@ func (interactor *IPadInteractor) FindByURL(url string) (*model.IPad, error) {
 	return interactor.IPadRepository.FindByURL(url)
 }
 
+// IsExist 指定したオブジェクトが存在するかを取得
+func (interactor *IPadInteractor) IsExist(ipad *model.IPad) (bool, uint, error) {
+	return interactor.IPadRepository.IsExist(ipad)
+}
+
 // AddIPad ipadの情報を追加
 func (interactor *IPadInteractor) AddIPad(ipad *model.IPad) (err error) {
 	err = interactor.IPadRepository.AddIPad(ipad)

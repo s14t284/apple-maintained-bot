@@ -6,6 +6,7 @@ import "github.com/s14t284/apple-maitained-bot/domain/model"
 type IPadRepository interface {
 	FindIPadAll() (model.IPads, error)
 	FindByURL(url string) (*model.IPad, error)
+	IsExist(mac *model.IPad) (bool, uint, error)
 	AddIPad(ipad *model.IPad) error
 	UpdateIPad(ipad *model.IPad) error
 	UpdateAllSoldTemporary() error

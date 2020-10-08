@@ -1,8 +1,11 @@
 package database
 
 import (
+	"errors"
+
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
+	"gorm.io/gorm"
 )
 
 // WatchRepositoryImpl apple watchに関する情報を操作するための実装
@@ -28,6 +31,24 @@ func (watchRepository *WatchRepositoryImpl) FindByURL(url string) (*model.Watch,
 		return nil, result.Error
 	}
 	return &watch, result.Error
+}
+
+// IsExist オブジェクトがDB内に存在しているかどうか
+func (watchRepository *WatchRepositoryImpl) IsExist(watch *model.Watch) (bool, uint, error) {
+	tmp := &model.Watch{}
+	err := watchRepository.SQLClient.Client.Where(&model.Watch{
+		Name:        watch.Name,
+		Strage:      watch.Strage,
+		Color:       watch.Color,
+		IsCellular:  watch.IsCellular,
+		Amount:      watch.Amount,
+		ReleaseDate: watch.ReleaseDate}).First(tmp).Error
+	if err == nil {
+		return true, tmp.ID, nil
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, 0, nil
+	}
+	return false, 0, err
 }
 
 // AddWatch 整備済み品apple watchの情報を保存する

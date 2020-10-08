@@ -18,15 +18,20 @@ func NewWatchInteractor(dbClient *infrastructure.SQLClient) *WatchInteractor {
 	return &WatchInteractor{WatchRepository: database.WatchRepositoryImpl{SQLClient: dbClient}}
 }
 
+// FindWatchAll apple watchの情報を取得
+func (interactor *WatchInteractor) FindWatchAll() (model.Watches, error) {
+	watches, err := interactor.WatchRepository.FindWatchAll()
+	return watches, err
+}
+
 // FindByURL 指定したURLを持つapple watchを取得
 func (interactor *WatchInteractor) FindByURL(url string) (*model.Watch, error) {
 	return interactor.WatchRepository.FindByURL(url)
 }
 
-// FindWatchAll apple watchの情報を取得
-func (interactor *WatchInteractor) FindWatchAll() (model.Watches, error) {
-	watches, err := interactor.WatchRepository.FindWatchAll()
-	return watches, err
+// IsExist 指定したオブジェクトが存在するかを取得
+func (interactor *WatchInteractor) IsExist(watch *model.Watch) (bool, uint, error) {
+	return interactor.WatchRepository.IsExist(watch)
 }
 
 // AddWatch apple watchの情報を追加

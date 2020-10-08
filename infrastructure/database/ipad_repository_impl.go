@@ -1,8 +1,11 @@
 package database
 
 import (
+	"errors"
+
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
+	"gorm.io/gorm"
 )
 
 // IPadRepositoryImpl ipadに関する情報を操作するための実装
@@ -28,6 +31,26 @@ func (ipadRepository *IPadRepositoryImpl) FindByURL(url string) (*model.IPad, er
 		return nil, result.Error
 	}
 	return &ipad, result.Error
+}
+
+// IsExist オブジェクトがDB内に存在しているかどうか
+func (ipadRepository *IPadRepositoryImpl) IsExist(ipad *model.IPad) (bool, uint, error) {
+	tmp := &model.IPad{}
+	err := ipadRepository.SQLClient.Client.Where(&model.IPad{
+		Name:        ipad.Name,
+		Inch:        ipad.Inch,
+		CPU:         ipad.CPU,
+		Strage:      ipad.Strage,
+		Camera:      ipad.Camera,
+		Color:       ipad.Color,
+		Amount:      ipad.Amount,
+		ReleaseDate: ipad.ReleaseDate}).First(tmp).Error
+	if err == nil {
+		return true, tmp.ID, nil
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, 0, nil
+	}
+	return false, 0, err
 }
 
 // AddIPad 整備済み品ipadの情報を保存する

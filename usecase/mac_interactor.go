@@ -29,6 +29,11 @@ func (interactor *MacInteractor) FindByURL(url string) (*model.Mac, error) {
 	return interactor.MacRepository.FindByURL(url)
 }
 
+// IsExist 指定したオブジェクトが存在するかを取得
+func (interactor *MacInteractor) IsExist(mac *model.Mac) (bool, uint, error) {
+	return interactor.MacRepository.IsExist(mac)
+}
+
 // AddMac macbookの情報を追加
 func (interactor *MacInteractor) AddMac(mac *model.Mac) (err error) {
 	err = interactor.MacRepository.AddMac(mac)

@@ -1,8 +1,11 @@
 package database
 
 import (
+	"errors"
+
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
+	"gorm.io/gorm"
 )
 
 // MacRepositoryImpl macbookに関する情報を操作するための実装
@@ -28,6 +31,28 @@ func (macRepository *MacRepositoryImpl) FindByURL(url string) (*model.Mac, error
 		return nil, result.Error
 	}
 	return &mac, result.Error
+}
+
+// IsExist オブジェクトがDB内に存在しているかどうか
+func (macRepository *MacRepositoryImpl) IsExist(mac *model.Mac) (bool, uint, error) {
+	tmp := &model.Mac{}
+	err := macRepository.SQLClient.Client.Where(
+		&model.Mac{
+			Name:        mac.Name,
+			Inch:        mac.Inch,
+			CPU:         mac.CPU,
+			Memory:      mac.Memory,
+			Strage:      mac.Strage,
+			TouchBar:    mac.TouchBar,
+			Color:       mac.Color,
+			Amount:      mac.Amount,
+			ReleaseDate: mac.ReleaseDate}).First(tmp).Error
+	if err == nil {
+		return true, tmp.ID, nil
+	} else if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, 0, nil
+	}
+	return false, 0, err
 }
 
 // UpdateAllSoldTemporary 一旦全てを売り切れ判定にする

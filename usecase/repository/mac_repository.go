@@ -6,6 +6,7 @@ import "github.com/s14t284/apple-maitained-bot/domain/model"
 type MacRepository interface {
 	FindMacAll() (model.Macs, error)
 	FindByURL(url string) (*model.Mac, error)
+	IsExist(mac *model.Mac) (bool, uint, error)
 	AddMac(mac *model.Mac) error
 	UpdateMac(mac *model.Mac) error
 	UpdateAllSoldTemporary() error

@@ -6,6 +6,7 @@ import "github.com/s14t284/apple-maitained-bot/domain/model"
 type WatchRepository interface {
 	FindWatchAll() (model.Watches, error)
 	FindByURL(url string) (*model.Watch, error)
+	IsExist(mac *model.Watch) (bool, uint, error)
 	AddWatch(watch *model.Watch) error
 	UpdateWatch(watch *model.Watch) error
 	UpdateAllSoldTemporary() error
