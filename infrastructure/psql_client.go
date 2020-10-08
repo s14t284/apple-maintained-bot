@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/labstack/gommon/log"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
@@ -43,7 +44,12 @@ func initializeTables(dbClient *gorm.DB) {
 
 // PsqlNewClientImpl psqlに接続したgormクライアントを返却
 func PsqlNewClientImpl(config PsqlConfig) (*SQLClient, error) {
-	dataSourceName := createDataSourceName(config)
+	// deploy先では環境変数から接続先情報を取得できる
+	dataSourceName := os.Getenv("DATABASE_URL")
+	// localでは予め .env に入力しておいた情報から接続先を特定
+	if dataSourceName == "" {
+		dataSourceName = createDataSourceName(config)
+	}
 	dbClient, err := gorm.Open(postgres.Open(dataSourceName), &gorm.Config{})
 	if err != nil {
 		log.Error(err.Error())

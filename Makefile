@@ -1,6 +1,5 @@
-build:
-	go build -o bin/apple-maintained-bot cmd/server/main.go
+push:
+	heroku container:push web
 
-deploy:
-	make build
-	git push heroku main
+release:
+	heroku container:release web

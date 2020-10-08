@@ -17,17 +17,17 @@ type Config struct {
 }
 
 func createPsqlConfig() (infrastructure.PsqlConfig, error) {
-	port, err := strconv.Atoi(os.Getenv("PORT"))
+	port, err := strconv.Atoi(os.Getenv("PSQL_PORT"))
 	if err != nil {
 		log.Errorf("can't load port of psql host")
 		port = 5432 // set psql default port
 	}
 	psqlConfig := infrastructure.PsqlConfig{
-		Host:     os.Getenv("HOST"),
-		UserName: os.Getenv("USER_NAME"),
-		Password: os.Getenv("PASSWORD"),
+		Host:     os.Getenv("PSQL_HOST"),
+		UserName: os.Getenv("PSQL_USER_NAME"),
+		Password: os.Getenv("PSQL_PASSWORD"),
 		Port:     port,
-		Database: os.Getenv("DATABASE"),
+		Database: os.Getenv("PSQL_DATABASE"),
 	}
 	return psqlConfig, nil
 }

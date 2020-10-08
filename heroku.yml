@@ -1,6 +1,11 @@
 build:
-  languages:
-    - go
+  docker:
+    web: Dockerfile
+    worker:
+      dockerfile: Dockerfile
+      target: builder
+release:
+  image: worker
 
 run:
-  web: apple-maintained-bot
+  web: /apple-maintained-bot

@@ -28,11 +28,11 @@
     .env
 
     ```vi
-    HOST              : Host name of psql cluster
-    DATABASE          : Database name of psql
-    USER_NAME         : User name of psql
-    PORT              : Port number of psql
-    PASSWORD          : Login password for psql
+    PSQL_HOST              : Host name of psql cluster
+    PSQL_DATABASE          : Database name of psql
+    PSQL_USER_NAME         : User name of psql
+    PSQL_PORT              : Port number of psql
+    PSQL_PASSWORD          : Login password for psql
     SLACK_WEBHOOK_URL : Slack Notification URL
     ```
 
@@ -43,5 +43,8 @@
     ```bash
     $ heroku plugins:install heroku-config
     $ heroku config:push -a apple-maintained-bot  # reflect environment variables in .env
-    $ make deploy  # deploy in local
+    $ heroku stack:set container
+    $ heroku container:login
+    $ heroku container:push web
+    $ heroku container:release web
     ```
