@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 
 	"github.com/labstack/gommon/log"
 	"github.com/robfig/cron"
@@ -114,8 +115,12 @@ func main() {
 		w.Write(json)
 	})
 
+	port := os.Getenv("PORT")
+	if err != nil {
+		port = "8080" // set default port
+	}
 	log.Info("Run Server...")
-	err = http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("Error ListenAndServe: ", err)
 	}
