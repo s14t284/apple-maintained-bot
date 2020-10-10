@@ -26,12 +26,12 @@ func getCronConfig(mr repository.MacRepository, ir repository.IPadRepository, wr
 		crawler.CrawlMacPage(rootURL, shopListEndPoint, mr)
 	})
 	// IPadの整備済み品収集
-	c.AddFunc("CRON_TZ=Asia/Tokyo 20 8-22 * * *", func() {
+	c.AddFunc("CRON_TZ=Asia/Tokyo 0 8-22 * * *", func() {
 		log.Info("start crawling maintained products of ipad")
 		crawler.CrawlIPadPage(rootURL, shopListEndPoint, ir)
 	})
 	// apple watchの整備済み品収集
-	c.AddFunc("CRON_TZ=Asia/Tokyo 40 8-22 * * *", func() {
+	c.AddFunc("CRON_TZ=Asia/Tokyo 0 8-22 * * *", func() {
 		log.Info("start crawling maintained products of apple watch")
 		crawler.CrawlWatchPage(rootURL, shopListEndPoint, wr)
 	})
@@ -61,6 +61,10 @@ func main() {
 
 	// 仮のエンドポイント
 	// TODO: 修正する
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		w.Write([]byte("{\"message\": \"ok\"}"))
+	})
+
 	http.HandleFunc("/mac", func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != "GET" {
 			w.WriteHeader(http.StatusBadRequest)

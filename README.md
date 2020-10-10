@@ -48,3 +48,11 @@
     $ heroku container:push web
     $ heroku container:release web
     ```
+
+2. (optional) setup aws lambda function
+
+    ```
+    # (This is optional setting. but this application deployed heroku sleep 30 minites without access.)
+    1. add `aws_lambda_handler.py` to aws lambda function
+    2. set `EventBridge(CloudWatch Events)` triger to lambda function (cron(50 0-13,22-23 ? * * *))
+    ```
