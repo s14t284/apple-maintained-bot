@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/labstack/gommon/log"
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 	"github.com/s14t284/apple-maitained-bot/config"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/usecase"
@@ -116,7 +116,7 @@ func main() {
 	})
 
 	port := os.Getenv("PORT")
-	if err != nil {
+	if port == "" {
 		port = "8080" // set default port
 	}
 	log.Info("Run Server...")

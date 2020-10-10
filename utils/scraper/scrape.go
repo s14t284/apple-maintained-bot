@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/labstack/gommon/log"
@@ -49,6 +50,7 @@ func ScrapeMaintainedPage(doc *goquery.Document) (titles []string, amounts []str
 		titles = append(titles, title)
 		amounts = append(amounts, amount)
 		hrefs = append(hrefs, href)
+		time.Sleep(time.Second)
 	})
 	return
 }
