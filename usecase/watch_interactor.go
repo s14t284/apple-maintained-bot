@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
@@ -30,7 +31,7 @@ func (interactor *WatchInteractor) FindByURL(url string) (*model.Watch, error) {
 }
 
 // IsExist 指定したオブジェクトが存在するかを取得
-func (interactor *WatchInteractor) IsExist(watch *model.Watch) (bool, uint, error) {
+func (interactor *WatchInteractor) IsExist(watch *model.Watch) (bool, uint, time.Time, error) {
 	return interactor.WatchRepository.IsExist(watch)
 }
 

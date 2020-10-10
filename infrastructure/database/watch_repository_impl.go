@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
@@ -34,7 +35,7 @@ func (watchRepository *WatchRepositoryImpl) FindByURL(url string) (*model.Watch,
 }
 
 // IsExist オブジェクトがDB内に存在しているかどうか
-func (watchRepository *WatchRepositoryImpl) IsExist(watch *model.Watch) (bool, uint, error) {
+func (watchRepository *WatchRepositoryImpl) IsExist(watch *model.Watch) (bool, uint, time.Time, error) {
 	tmp := &model.Watch{}
 	err := watchRepository.SQLClient.Client.Where(&model.Watch{
 		Name:        watch.Name,
@@ -44,11 +45,11 @@ func (watchRepository *WatchRepositoryImpl) IsExist(watch *model.Watch) (bool, u
 		Amount:      watch.Amount,
 		ReleaseDate: watch.ReleaseDate}).First(tmp).Error
 	if err == nil {
-		return true, tmp.ID, nil
+		return true, tmp.ID, tmp.CreatedAt, nil
 	} else if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, 0, nil
+		return false, 0, time.Time{}, nil
 	}
-	return false, 0, err
+	return false, 0, time.Time{}, err
 }
 
 // AddWatch 整備済み品apple watchの情報を保存する

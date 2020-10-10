@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
@@ -34,7 +35,7 @@ func (ipadRepository *IPadRepositoryImpl) FindByURL(url string) (*model.IPad, er
 }
 
 // IsExist オブジェクトがDB内に存在しているかどうか
-func (ipadRepository *IPadRepositoryImpl) IsExist(ipad *model.IPad) (bool, uint, error) {
+func (ipadRepository *IPadRepositoryImpl) IsExist(ipad *model.IPad) (bool, uint, time.Time, error) {
 	tmp := &model.IPad{}
 	err := ipadRepository.SQLClient.Client.Where(&model.IPad{
 		Name:        ipad.Name,
@@ -46,11 +47,11 @@ func (ipadRepository *IPadRepositoryImpl) IsExist(ipad *model.IPad) (bool, uint,
 		Amount:      ipad.Amount,
 		ReleaseDate: ipad.ReleaseDate}).First(tmp).Error
 	if err == nil {
-		return true, tmp.ID, nil
+		return true, tmp.ID, tmp.CreatedAt, nil
 	} else if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, 0, nil
+		return false, 0, time.Time{}, nil
 	}
-	return false, 0, err
+	return false, 0, time.Time{}, err
 }
 
 // AddIPad 整備済み品ipadの情報を保存する

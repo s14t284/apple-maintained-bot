@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
@@ -30,7 +31,7 @@ func (interactor *IPadInteractor) FindByURL(url string) (*model.IPad, error) {
 }
 
 // IsExist 指定したオブジェクトが存在するかを取得
-func (interactor *IPadInteractor) IsExist(ipad *model.IPad) (bool, uint, error) {
+func (interactor *IPadInteractor) IsExist(ipad *model.IPad) (bool, uint, time.Time, error) {
 	return interactor.IPadRepository.IsExist(ipad)
 }
 

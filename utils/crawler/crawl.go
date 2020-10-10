@@ -74,7 +74,7 @@ func CrawlMacPage(rootURL string, endPoint string, mr repository.MacRepository) 
 		var pageParser parser.IParser = &parser.Parser{Title: titles[i], AmountStr: amounts[i], DetailURL: rootURL + hrefs[i]}
 		mac, _ := pageParser.ParseMacPage()
 		// すでにDBに格納されているか確認
-		isExist, id, err := mr.IsExist(mac)
+		isExist, id, createdAt, err := mr.IsExist(mac)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
@@ -83,6 +83,7 @@ func CrawlMacPage(rootURL string, endPoint string, mr repository.MacRepository) 
 		if isExist {
 			mac.ID = id
 			mac.IsSold = false
+			mac.CreatedAt = createdAt
 			log.Infof("Unsold: %s", mac.URL)
 			err = mr.UpdateMac(mac)
 		} else {
@@ -118,7 +119,7 @@ func CrawlIPadPage(rootURL string, endPoint string, ir repository.IPadRepository
 		var pageParser parser.IParser = &parser.Parser{Title: titles[i], AmountStr: amounts[i], DetailURL: rootURL + hrefs[i]}
 		ipad, _ := pageParser.ParseIPadPage()
 		// すでにDBに格納されているか確認
-		isExist, id, err := ir.IsExist(ipad)
+		isExist, id, createdAt, err := ir.IsExist(ipad)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
@@ -127,6 +128,7 @@ func CrawlIPadPage(rootURL string, endPoint string, ir repository.IPadRepository
 		if isExist {
 			ipad.ID = id
 			ipad.IsSold = false
+			ipad.CreatedAt = createdAt
 			log.Infof("Unsold: %s", ipad.URL)
 			err = ir.UpdateIPad(ipad)
 		} else {
@@ -162,7 +164,7 @@ func CrawlWatchPage(rootURL string, endPoint string, wr repository.WatchReposito
 		var pageParser parser.IParser = &parser.Parser{Title: titles[i], AmountStr: amounts[i], DetailURL: rootURL + hrefs[i]}
 		watch, _ := pageParser.ParseWatchPage()
 		// すでにDBに格納されているか確認
-		isExist, id, err := wr.IsExist(watch)
+		isExist, id, createdAt, err := wr.IsExist(watch)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
@@ -171,6 +173,7 @@ func CrawlWatchPage(rootURL string, endPoint string, wr repository.WatchReposito
 		if isExist {
 			watch.ID = id
 			watch.IsSold = false
+			watch.CreatedAt = createdAt
 			log.Infof("Unsold: %s", watch.URL)
 			err = wr.UpdateWatch(watch)
 		} else {

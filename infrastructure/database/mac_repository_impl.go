@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
@@ -34,7 +35,7 @@ func (macRepository *MacRepositoryImpl) FindByURL(url string) (*model.Mac, error
 }
 
 // IsExist オブジェクトがDB内に存在しているかどうか
-func (macRepository *MacRepositoryImpl) IsExist(mac *model.Mac) (bool, uint, error) {
+func (macRepository *MacRepositoryImpl) IsExist(mac *model.Mac) (bool, uint, time.Time, error) {
 	tmp := &model.Mac{}
 	err := macRepository.SQLClient.Client.Where(
 		&model.Mac{
@@ -48,11 +49,11 @@ func (macRepository *MacRepositoryImpl) IsExist(mac *model.Mac) (bool, uint, err
 			Amount:      mac.Amount,
 			ReleaseDate: mac.ReleaseDate}).First(tmp).Error
 	if err == nil {
-		return true, tmp.ID, nil
+		return true, tmp.ID, tmp.CreatedAt, nil
 	} else if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, 0, nil
+		return false, 0, time.Time{}, nil
 	}
-	return false, 0, err
+	return false, 0, time.Time{}, err
 }
 
 // UpdateAllSoldTemporary 一旦全てを売り切れ判定にする

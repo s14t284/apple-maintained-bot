@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
@@ -30,7 +31,7 @@ func (interactor *MacInteractor) FindByURL(url string) (*model.Mac, error) {
 }
 
 // IsExist 指定したオブジェクトが存在するかを取得
-func (interactor *MacInteractor) IsExist(mac *model.Mac) (bool, uint, error) {
+func (interactor *MacInteractor) IsExist(mac *model.Mac) (bool, uint, time.Time, error) {
 	return interactor.MacRepository.IsExist(mac)
 }
 
