@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/PuerkitoBio/goquery v1.5.1
+	github.com/golang/mock v1.4.4
 	github.com/joho/godotenv v1.3.0
 	github.com/labstack/gommon v0.3.0
 	github.com/robfig/cron/v3 v3.0.1
