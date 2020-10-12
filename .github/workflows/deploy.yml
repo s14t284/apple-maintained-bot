@@ -1,0 +1,20 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-heroku:
+    runs-on: ubuntu-latest
+    name: Release to heroku
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: akhileshns/heroku-deploy@v3.5.7
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_app_name: apple-maintained-bot
+        heroku_email: riked71@gmail.com
+        usedocker: true
