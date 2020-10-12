@@ -25,7 +25,7 @@ func hookToSlack(titles []string, urls []string, productKind string) (err error)
 		IconEmoji: ":apple:",
 	}
 	if len(titles) == 0 {
-		payload.Text = productKind + "の整備済み品の追加はありませんでした"
+		return nil
 	} else {
 		for i := 0; i < len(titles); i++ {
 			attachment := domain.Attachment{Title: titles[i], TitleLink: urls[i], Color: "good", AuthorName: "apple"}
