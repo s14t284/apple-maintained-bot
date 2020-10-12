@@ -16,5 +16,5 @@ jobs:
       with:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
         heroku_app_name: apple-maintained-bot
-        heroku_email: riked71@gmail.com
+        heroku_email: rikeda71@gmail.com
         usedocker: true
