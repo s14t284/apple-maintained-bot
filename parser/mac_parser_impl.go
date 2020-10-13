@@ -12,7 +12,8 @@ import (
 	"github.com/s14t284/apple-maitained-bot/utils/scraper"
 )
 
-func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
+// LoadMacInformationFromDetailHTML 詳細ページのHTMLから情報を取得する
+func (parser *Parser) LoadMacInformationFromDetailHTML(mac *model.Mac, doc *goquery.Document) {
 	detail := doc.Find(".as-productinfosection-mainpanel").First()
 	detailRegExp, _ := regexp.Compile(`(\n|\s)`)
 	storageRegExp, _ := regexp.Compile(`(T|G)B`)
@@ -36,29 +37,22 @@ func loadMacInformationFromDetailURL(mac *model.Mac, doc *goquery.Document) {
 	})
 }
 
-// ParseMacPage macに関するページをパースして、macに関する情報のオブジェクトを返却
-// TODO: macbook以外にも対応
-func (parser *Parser) ParseMacPage() (*model.Mac, error) {
-	var mac model.Mac
-	// 最初に詳細情報が取ってこれるかを確認
-	doc, err := scraper.GetGoQueryObject(parser.DetailURL)
-	if err != nil {
-		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
-		return nil, err
-	}
+// LoadMacInformationFromTitle タイトルから情報を取得する
+func (parser *Parser) LoadMacInformationFromTitle(mac *model.Mac) {
 	// ノートパソコン以外は飛ばす
 	// TODO: デスクトップにも対応
 	if strings.Index(parser.Title, "MacBook") == -1 {
 		mac.Name = parser.Title
 		mac.URL = parser.DetailURL
-		return &mac, nil
+		return
 	}
 	// 不要な部分を削除
 	nameRegExp, _ := regexp.Compile(`Retinaディスプレイ.*\s\-`)
 	name := nameRegExp.ReplaceAllLiteralString(strings.Replace(parser.Title, " [整備済製品]", "", 1), "")
 	// インチ数
 	strs := strings.Split(name, "インチ")
-	mac.Inch, _ = strconv.ParseFloat(strs[0], 64)
+	inch, _ := strconv.ParseFloat(strs[0], 32)
+	mac.Inch = float32(inch)
 	name = strs[1]
 	// CPU
 	cpuRegExp, _ := regexp.Compile(`\d+\.\dGHz.+i\d`)
@@ -76,7 +70,19 @@ func (parser *Parser) ParseMacPage() (*model.Mac, error) {
 	// URL
 	mac.URL = parser.DetailURL
 
-	// その他の情報
-	loadMacInformationFromDetailURL(&mac, doc)
+}
+
+// ParseMacPage macに関するページをパースして、macに関する情報のオブジェクトを返却
+// TODO: macbook以外にも対応
+func (parser *Parser) ParseMacPage() (*model.Mac, error) {
+	var mac model.Mac
+	// 最初に詳細情報が取ってこれるかを確認
+	doc, err := scraper.GetGoQueryObject(parser.DetailURL)
+	if err != nil {
+		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
+		return nil, err
+	}
+	parser.LoadMacInformationFromTitle(&mac)
+	parser.LoadMacInformationFromDetailHTML(&mac, doc)
 	return &mac, nil
 }
