@@ -12,7 +12,8 @@ import (
 	"github.com/s14t284/apple-maitained-bot/utils/scraper"
 )
 
-func loadWatchInformationFromDetailURL(watch *model.Watch, doc *goquery.Document) {
+// LoadWatchInformationFromDetailHTML 詳細ページのHTMLから情報を取得する
+func (parser *Parser) LoadWatchInformationFromDetailHTML(watch *model.Watch, doc *goquery.Document) {
 	detail := doc.Find(".as-productinfosection-mainpanel").First()
 	detailRegExp, _ := regexp.Compile(`(\n|\s)`)
 	detail.Find("div .para-list > p").Each(func(_ int, s *goquery.Selection) {
@@ -29,15 +30,8 @@ func loadWatchInformationFromDetailURL(watch *model.Watch, doc *goquery.Document
 	})
 }
 
-// ParseWatchPage watchに関するページをパースして、watchに関する情報のオブジェクトを返却
-func (parser *Parser) ParseWatchPage() (*model.Watch, error) {
-	var watch model.Watch
-	// 最初に詳細情報が取ってこれるかを確認
-	doc, err := scraper.GetGoQueryObject(parser.DetailURL)
-	if err != nil {
-		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
-		return nil, err
-	}
+// LoadWatchInformationFromTitle タイトルから情報を取得する
+func (parser *Parser) LoadWatchInformationFromTitle(watch *model.Watch) {
 	// 不要な部分を削除
 	nameRegExp, _ := regexp.Compile(`\s*(（.+）|\[.+\])`)
 	name := nameRegExp.ReplaceAllLiteralString(parser.Title, "")
@@ -55,8 +49,19 @@ func (parser *Parser) ParseWatchPage() (*model.Watch, error) {
 	watch.Amount, _ = strconv.Atoi(amountRegExp.ReplaceAllLiteralString(parser.AmountStr, ""))
 	// URL
 	watch.URL = parser.DetailURL
+}
 
-	// その他の情報
-	loadWatchInformationFromDetailURL(&watch, doc)
+// ParseWatchPage watchに関するページをパースして、watchに関する情報のオブジェクトを返却
+func (parser *Parser) ParseWatchPage() (*model.Watch, error) {
+	var watch model.Watch
+	// 最初に詳細情報が取ってこれるかを確認
+	doc, err := scraper.GetGoQueryObject(parser.DetailURL)
+	if err != nil {
+		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
+		return nil, err
+	}
+
+	parser.LoadWatchInformationFromTitle(&watch)
+	parser.LoadWatchInformationFromDetailHTML(&watch, doc)
 	return &watch, nil
 }
