@@ -11,7 +11,7 @@ import (
 type WatchRepository interface {
 	FindWatchAll() (model.Watches, error)
 	FindByURL(url string) (*model.Watch, error)
-	IsExist(mac *model.Watch) (bool, uint, time.Time, error)
+	IsExist(watch *model.Watch) (bool, uint, time.Time, error)
 	AddWatch(watch *model.Watch) error
 	UpdateWatch(watch *model.Watch) error
 	UpdateAllSoldTemporary() error
