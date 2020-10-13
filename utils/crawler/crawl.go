@@ -60,7 +60,8 @@ func hookToSlack(titles []string, urls []string, productKind string) (err error)
 func CrawlMacPage(rootURL string, endPoint string, mr repository.MacRepository) {
 	doc, err := scraper.GetGoQueryObject(rootURL + endPoint + "mac")
 	if err != nil {
-		panic(err)
+		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
+		return
 	}
 
 	// 一旦、全て売れていることにする
@@ -105,7 +106,8 @@ func CrawlMacPage(rootURL string, endPoint string, mr repository.MacRepository) 
 func CrawlIPadPage(rootURL string, endPoint string, ir repository.IPadRepository) {
 	doc, err := scraper.GetGoQueryObject(rootURL + endPoint + "ipad")
 	if err != nil {
-		panic(err)
+		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
+		return
 	}
 
 	// 一旦、全て売れていることにする
@@ -150,7 +152,8 @@ func CrawlIPadPage(rootURL string, endPoint string, ir repository.IPadRepository
 func CrawlWatchPage(rootURL string, endPoint string, wr repository.WatchRepository) {
 	doc, err := scraper.GetGoQueryObject(rootURL + endPoint + "watch")
 	if err != nil {
-		panic(err)
+		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
+		return
 	}
 
 	// 一旦、全て売れていることにする

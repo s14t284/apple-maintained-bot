@@ -1,6 +1,7 @@
 package scraper
 
 import (
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -23,10 +24,10 @@ func GetGoQueryObject(requestURL string) (*goquery.Document, error) {
 	req.Header.Add("User-Agent", userAgent)
 
 	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, _ := client.Do(req)
 	if resp.StatusCode != 200 {
-		log.Errorf("status code error: %d %s", resp.StatusCode, resp.StatusCode)
-		return nil, err
+		log.Errorf("status code error: %d %s", resp.StatusCode, resp.Status)
+		return nil, fmt.Errorf("cannot access error")
 	}
 	defer resp.Body.Close()
 
