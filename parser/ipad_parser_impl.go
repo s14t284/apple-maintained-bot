@@ -12,7 +12,7 @@ import (
 	"github.com/s14t284/apple-maitained-bot/utils/scraper"
 )
 
-// LoadIPadInformationFromDetailHTML 詳細ページのHTMLから情報を取得するメソッド
+// LoadIPadInformationFromDetailHTML 詳細ページのHTMLから情報を取得する
 func (parser *Parser) LoadIPadInformationFromDetailHTML(ipad *model.IPad, doc *goquery.Document) {
 	detail := doc.Find(".as-productinfosection-mainpanel").First()
 	detailRegExp, _ := regexp.Compile(`(\n|\s)`)
@@ -33,15 +33,8 @@ func (parser *Parser) LoadIPadInformationFromDetailHTML(ipad *model.IPad, doc *g
 	})
 }
 
-// ParseIPadPage ipadに関するページをパースして、ipadに関する情報のオブジェクトを返却
-func (parser *Parser) ParseIPadPage() (*model.IPad, error) {
-	var ipad model.IPad
-	// 最初に詳細情報が取ってこれるかを確認
-	doc, err := scraper.GetGoQueryObject(parser.DetailURL)
-	if err != nil {
-		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
-		return nil, err
-	}
+// LoadIPadInformationFromTitle タイトルから情報を取得する
+func (parser *Parser) LoadIPadInformationFromTitle(ipad *model.IPad) {
 	// 不要な部分を削除
 	nameRegExp, _ := regexp.Compile(`\s*(\(|\[|（).+(\])`)
 	name := nameRegExp.ReplaceAllLiteralString(parser.Title, "")
@@ -66,8 +59,18 @@ func (parser *Parser) ParseIPadPage() (*model.IPad, error) {
 	ipad.Amount, _ = strconv.Atoi(amountRegExp.ReplaceAllLiteralString(parser.AmountStr, ""))
 	// URL
 	ipad.URL = parser.DetailURL
+}
 
-	// その他の情報
+// ParseIPadPage ipadに関するページをパースして、ipadに関する情報のオブジェクトを返却
+func (parser *Parser) ParseIPadPage() (*model.IPad, error) {
+	var ipad model.IPad
+	// 最初に詳細情報が取ってこれるかを確認
+	doc, err := scraper.GetGoQueryObject(parser.DetailURL)
+	if err != nil {
+		log.Errorf("cannot open detail product page. url: %s", parser.DetailURL)
+		return nil, err
+	}
+	parser.LoadIPadInformationFromTitle(&ipad)
 	parser.LoadIPadInformationFromDetailHTML(&ipad, doc)
 	return &ipad, nil
 }

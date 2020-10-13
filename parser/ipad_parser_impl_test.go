@@ -82,6 +82,69 @@ const detailHTML = `
 </div>
 `
 
+func TestLoadIPadInformationFromTitle(t *testing.T) {
+	assert := assert.New(t)
+	ipad := &model.IPad{}
+	{
+		// IPad Proの場合
+		// インチ数がタイトルに含まれているが、インチは詳細ページから取得する
+		pageParser := Parser{
+			Title:     "12.9インチiPad Pro Wi-Fi + Cellular 512GB - スペースグレイ（第2世代） [整備済製品]",
+			AmountStr: "30,000円（税別）",
+			DetailURL: "https://apple.com",
+		}
+		pageParser.LoadIPadInformationFromTitle(ipad)
+		assert.Equal(ipad.Color, "スペースグレイ")
+		assert.Equal(ipad.Name, "iPad Pro")
+		assert.Equal(ipad.Strage, "512GB")
+		assert.Equal(ipad.Amount, 30000)
+		assert.Equal(ipad.URL, "https://apple.com")
+
+	}
+	{
+		// IPad Airの場合
+		pageParser := Parser{
+			Title:     "iPad Air Wi-Fiモデル 64GB - ゴールド [整備済製品]",
+			AmountStr: "30,000円（税別）",
+			DetailURL: "https://apple.com",
+		}
+		pageParser.LoadIPadInformationFromTitle(ipad)
+		assert.Equal(ipad.Color, "ゴールド")
+		assert.Equal(ipad.Name, "iPad Air")
+		assert.Equal(ipad.Strage, "64GB")
+		assert.Equal(ipad.Amount, 30000)
+		assert.Equal(ipad.URL, "https://apple.com")
+	}
+	{
+		// IPad miniの場合
+		pageParser := Parser{
+			Title:     "iPad mini 4 Wi-Fi 128GB - スペースグレイ [整備済製品]",
+			AmountStr: "30,000円（税別）",
+			DetailURL: "https://apple.com",
+		}
+		pageParser.LoadIPadInformationFromTitle(ipad)
+		assert.Equal(ipad.Color, "スペースグレイ")
+		assert.Equal(ipad.Name, "iPad mini 4")
+		assert.Equal(ipad.Strage, "128GB")
+		assert.Equal(ipad.Amount, 30000)
+		assert.Equal(ipad.URL, "https://apple.com")
+	}
+	{
+		// 通常IPadの場合
+		pageParser := Parser{
+			Title:     "iPad Wi-Fi 128GB - シルバー（第7世代） [整備済製品]",
+			AmountStr: "30,000円（税別）",
+			DetailURL: "https://apple.com",
+		}
+		pageParser.LoadIPadInformationFromTitle(ipad)
+		assert.Equal(ipad.Color, "シルバー")
+		assert.Equal(ipad.Name, "iPad")
+		assert.Equal(ipad.Strage, "128GB")
+		assert.Equal(ipad.Amount, 30000)
+		assert.Equal(ipad.URL, "https://apple.com")
+	}
+}
+
 func TestLoadIPadInformationFromDetailHTML(t *testing.T) {
 	assert := assert.New(t)
 	pageParser := Parser{Title: "title", AmountStr: "30000円", DetailURL: "https://apple.com"}
