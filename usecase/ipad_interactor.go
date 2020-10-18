@@ -5,8 +5,6 @@ import (
 	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 )
 
@@ -16,8 +14,11 @@ type IPadInteractor struct {
 }
 
 // NewIPadInteractor IPadInteractorを生成
-func NewIPadInteractor(dbClient *infrastructure.SQLClient) *IPadInteractor {
-	return &IPadInteractor{ipr: database.IPadRepositoryImpl{SQLClient: dbClient}}
+func NewIPadInteractor(ipr repository.IPadRepository) *IPadInteractor {
+	if ipr == nil {
+		return nil
+	}
+	return &IPadInteractor{ipr: ipr}
 }
 
 // FindIPadAll ipadの情報を取得
