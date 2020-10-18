@@ -7,37 +7,38 @@ import (
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
+	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 )
 
 // IPadInteractor ipadの情報をやりとりするためのgateway
 type IPadInteractor struct {
-	IPadRepository database.IPadRepositoryImpl
+	ipr repository.IPadRepository
 }
 
 // NewIPadInteractor IPadInteractorを生成
 func NewIPadInteractor(dbClient *infrastructure.SQLClient) *IPadInteractor {
-	return &IPadInteractor{IPadRepository: database.IPadRepositoryImpl{SQLClient: dbClient}}
+	return &IPadInteractor{ipr: database.IPadRepositoryImpl{SQLClient: dbClient}}
 }
 
 // FindIPadAll ipadの情報を取得
 func (interactor *IPadInteractor) FindIPadAll() (model.IPads, error) {
-	ipads, err := interactor.IPadRepository.FindIPadAll()
+	ipads, err := interactor.ipr.FindIPadAll()
 	return ipads, err
 }
 
 // FindByURL 指定したURLを持つipadを取得
 func (interactor *IPadInteractor) FindByURL(url string) (*model.IPad, error) {
-	return interactor.IPadRepository.FindByURL(url)
+	return interactor.ipr.FindByURL(url)
 }
 
 // IsExist 指定したオブジェクトが存在するかを取得
 func (interactor *IPadInteractor) IsExist(ipad *model.IPad) (bool, uint, time.Time, error) {
-	return interactor.IPadRepository.IsExist(ipad)
+	return interactor.ipr.IsExist(ipad)
 }
 
 // AddIPad ipadの情報を追加
 func (interactor *IPadInteractor) AddIPad(ipad *model.IPad) (err error) {
-	err = interactor.IPadRepository.AddIPad(ipad)
+	err = interactor.ipr.AddIPad(ipad)
 	return
 }
 
@@ -46,18 +47,18 @@ func (interactor *IPadInteractor) UpdateIPad(ipad *model.IPad) (err error) {
 	if ipad.ID <= 0 {
 		return fmt.Errorf("cannot logical update ipad because invalid ipad id: %d", ipad.ID)
 	}
-	err = interactor.IPadRepository.UpdateIPad(ipad)
+	err = interactor.ipr.UpdateIPad(ipad)
 	return
 }
 
 // UpdateAllSoldTemporary 一旦全てを売り切れ判定にする
 func (interactor *IPadInteractor) UpdateAllSoldTemporary() (err error) {
-	err = interactor.IPadRepository.UpdateAllSoldTemporary()
+	err = interactor.ipr.UpdateAllSoldTemporary()
 	return
 }
 
 // RemoveIPad ipadの情報を削除
 func (interactor *IPadInteractor) RemoveIPad(id int64) (err error) {
-	err = interactor.IPadRepository.RemoveIPad(id)
+	err = interactor.ipr.RemoveIPad(id)
 	return
 }
