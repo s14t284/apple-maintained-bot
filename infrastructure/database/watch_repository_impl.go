@@ -15,9 +15,9 @@ type WatchRepositoryImpl struct {
 }
 
 // FindWatchAll 整備済みapple watchの全ての情報を返す
-func (watchRepository *WatchRepositoryImpl) FindWatchAll() (model.Watches, error) {
+func (wr *WatchRepositoryImpl) FindWatchAll() (model.Watches, error) {
 	var watches model.Watches
-	result := watchRepository.SQLClient.Client.Where("is_sold is false").Order("id DESC").Find(&watches)
+	result := wr.SQLClient.Client.Where("is_sold is false").Order("id DESC").Find(&watches)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -25,9 +25,9 @@ func (watchRepository *WatchRepositoryImpl) FindWatchAll() (model.Watches, error
 }
 
 // FindByURL 指定したURLに一致するapple watchを取得
-func (watchRepository *WatchRepositoryImpl) FindByURL(url string) (*model.Watch, error) {
+func (wr *WatchRepositoryImpl) FindByURL(url string) (*model.Watch, error) {
 	var watch model.Watch
-	result := watchRepository.SQLClient.Client.Where("url = ?", url).Find(&watch)
+	result := wr.SQLClient.Client.Where("url = ?", url).Find(&watch)
 	if watch.URL != url {
 		return nil, result.Error
 	}
@@ -35,9 +35,9 @@ func (watchRepository *WatchRepositoryImpl) FindByURL(url string) (*model.Watch,
 }
 
 // IsExist オブジェクトがDB内に存在しているかどうか
-func (watchRepository *WatchRepositoryImpl) IsExist(watch *model.Watch) (bool, uint, time.Time, error) {
+func (wr *WatchRepositoryImpl) IsExist(watch *model.Watch) (bool, uint, time.Time, error) {
 	tmp := &model.Watch{}
-	err := watchRepository.SQLClient.Client.Where(&model.Watch{
+	err := wr.SQLClient.Client.Where(&model.Watch{
 		Name:        watch.Name,
 		Strage:      watch.Strage,
 		Color:       watch.Color,
@@ -53,25 +53,25 @@ func (watchRepository *WatchRepositoryImpl) IsExist(watch *model.Watch) (bool, u
 }
 
 // AddWatch 整備済み品apple watchの情報を保存する
-func (watchRepository *WatchRepositoryImpl) AddWatch(watch *model.Watch) error {
-	result := watchRepository.SQLClient.Client.Create(watch)
+func (wr *WatchRepositoryImpl) AddWatch(watch *model.Watch) error {
+	result := wr.SQLClient.Client.Create(watch)
 	return result.Error
 }
 
 // UpdateWatch  整備済み品apple watchの情報を更新する
-func (watchRepository *WatchRepositoryImpl) UpdateWatch(watch *model.Watch) (err error) {
-	result := watchRepository.SQLClient.Client.Save(watch)
+func (wr *WatchRepositoryImpl) UpdateWatch(watch *model.Watch) (err error) {
+	result := wr.SQLClient.Client.Save(watch)
 	return result.Error
 }
 
 // UpdateAllSoldTemporary 一旦全てを売り切れ判定にする
-func (watchRepository *WatchRepositoryImpl) UpdateAllSoldTemporary() error {
-	result := watchRepository.SQLClient.Client.Exec("UPDATE watches SET is_sold = true")
+func (wr *WatchRepositoryImpl) UpdateAllSoldTemporary() error {
+	result := wr.SQLClient.Client.Exec("UPDATE watches SET is_sold = true")
 	return result.Error
 }
 
 // RemoveWatch 整備済み品apple watch情報を削除する
-func (watchRepository *WatchRepositoryImpl) RemoveWatch(id int64) error {
-	result := watchRepository.SQLClient.Client.Delete(&model.Watch{}, id)
+func (wr *WatchRepositoryImpl) RemoveWatch(id int64) error {
+	result := wr.SQLClient.Client.Delete(&model.Watch{}, id)
 	return result.Error
 }
