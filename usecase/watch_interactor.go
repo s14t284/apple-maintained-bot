@@ -46,7 +46,7 @@ func (interactor *WatchInteractor) AddWatch(watch *model.Watch) (err error) {
 // UpdateWatch apple watchの情報の更新
 func (interactor *WatchInteractor) UpdateWatch(watch *model.Watch) (err error) {
 	if watch.ID <= 0 {
-		return fmt.Errorf("cannot logical remove watch because invalid watch id: %d", watch.ID)
+		return fmt.Errorf("cannot update watch because invalid watch id: %d", watch.ID)
 	}
 	err = interactor.wr.UpdateWatch(watch)
 	return
