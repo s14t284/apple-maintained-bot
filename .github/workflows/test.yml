@@ -25,7 +25,7 @@ jobs:
     - name: send coverage
       uses: shogo82148/actions-goveralls@v1
       with:
-        path-to-profile: profile.cov
+        path-to-profile: profile.csv
         flag-name: Go-1.15
         parallel: true
 
