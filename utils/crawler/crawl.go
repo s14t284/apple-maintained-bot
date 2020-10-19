@@ -26,14 +26,13 @@ func hookToSlack(titles []string, urls []string, productKind string) (err error)
 	}
 	if len(titles) == 0 {
 		return nil
-	} else {
-		for i := 0; i < len(titles); i++ {
-			attachment := domain.Attachment{Title: titles[i], TitleLink: urls[i], Color: "good", AuthorName: "apple"}
-			attachments = append(attachments, attachment)
-		}
-		payload.Text = productKind + "の整備済み品が追加されました"
-		payload.Attachments = attachments
 	}
+	for i := 0; i < len(titles); i++ {
+		attachment := domain.Attachment{Title: titles[i], TitleLink: urls[i], Color: "good", AuthorName: "apple"}
+		attachments = append(attachments, attachment)
+	}
+	payload.Text = productKind + "の整備済み品が追加されました"
+	payload.Attachments = attachments
 	rp, err := json.Marshal(payload)
 	if err != nil {
 		return err
