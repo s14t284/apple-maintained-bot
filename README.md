@@ -1,7 +1,7 @@
 # apple-maintained
 
 ![Test](https://github.com/s14t284/apple-maintained-bot/workflows/Test/badge.svg)
-![Deploy](https://github.com/s14t284/apple-maintained-bot/workflows/Deploy/badge.svg?branch=main&event=deployment)
+![Deploy](https://github.com/s14t284/apple-maintained-bot/workflows/Deploy/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/s14t284/apple-maintained-bot/badge.svg?branch=add/test)](https://coveralls.io/github/s14t284/apple-maintained-bot?branch=add/test)
 
 ## Usage
@@ -37,7 +37,7 @@
     PSQL_USER_NAME         : User name of psql
     PSQL_PORT              : Port number of psql
     PSQL_PASSWORD          : Login password for psql
-    SLACK_WEBHOOK_URL : Slack Notification URL
+    SLACK_WEBHOOK_URL      : Slack Notification URL
     ```
 
 ### Deploy Setup
