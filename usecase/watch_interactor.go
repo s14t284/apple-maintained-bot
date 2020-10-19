@@ -5,18 +5,20 @@ import (
 	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
+	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 )
 
 // WatchInteractor apple watchの情報をやりとりするためのgateway
 type WatchInteractor struct {
-	wr database.WatchRepositoryImpl
+	wr repository.WatchRepository
 }
 
 // NewWatchInteractor WatchInteractorを生成
-func NewWatchInteractor(dbClient *infrastructure.SQLClient) *WatchInteractor {
-	return &WatchInteractor{wr: database.WatchRepositoryImpl{SQLClient: dbClient}}
+func NewWatchInteractor(wr repository.WatchRepository) *WatchInteractor {
+	if wr == nil {
+		return nil
+	}
+	return &WatchInteractor{wr: wr}
 }
 
 // FindWatchAll apple watchの情報を取得

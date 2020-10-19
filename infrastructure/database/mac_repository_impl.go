@@ -15,7 +15,7 @@ type MacRepositoryImpl struct {
 }
 
 // FindMacAll 整備済みmacの全ての情報を返す
-func (mr *MacRepositoryImpl) FindMacAll() (model.Macs, error) {
+func (mr MacRepositoryImpl) FindMacAll() (model.Macs, error) {
 	var macs model.Macs
 	result := mr.SQLClient.Client.Where("is_sold is false").Order("id DESC").Find(&macs)
 	if result.Error != nil {
@@ -25,7 +25,7 @@ func (mr *MacRepositoryImpl) FindMacAll() (model.Macs, error) {
 }
 
 // FindByURL 指定したURLに一致するmacを取得
-func (mr *MacRepositoryImpl) FindByURL(url string) (*model.Mac, error) {
+func (mr MacRepositoryImpl) FindByURL(url string) (*model.Mac, error) {
 	var mac model.Mac
 	result := mr.SQLClient.Client.Where("url = ?", url).Find(&mac)
 	if mac.URL != url {
@@ -35,7 +35,7 @@ func (mr *MacRepositoryImpl) FindByURL(url string) (*model.Mac, error) {
 }
 
 // IsExist オブジェクトがDB内に存在しているかどうか
-func (mr *MacRepositoryImpl) IsExist(mac *model.Mac) (bool, uint, time.Time, error) {
+func (mr MacRepositoryImpl) IsExist(mac *model.Mac) (bool, uint, time.Time, error) {
 	tmp := &model.Mac{}
 	err := mr.SQLClient.Client.Where(
 		&model.Mac{
@@ -57,25 +57,25 @@ func (mr *MacRepositoryImpl) IsExist(mac *model.Mac) (bool, uint, time.Time, err
 }
 
 // UpdateAllSoldTemporary 一旦全てを売り切れ判定にする
-func (mr *MacRepositoryImpl) UpdateAllSoldTemporary() error {
+func (mr MacRepositoryImpl) UpdateAllSoldTemporary() error {
 	result := mr.SQLClient.Client.Exec("UPDATE macs SET is_sold = true")
 	return result.Error
 }
 
 // AddMac 整備済み品macの情報を保存する
-func (mr *MacRepositoryImpl) AddMac(mac *model.Mac) error {
+func (mr MacRepositoryImpl) AddMac(mac *model.Mac) error {
 	result := mr.SQLClient.Client.Create(mac)
 	return result.Error
 }
 
 // UpdateMac  整備済み品mac情報を更新する
-func (mr *MacRepositoryImpl) UpdateMac(mac *model.Mac) (err error) {
+func (mr MacRepositoryImpl) UpdateMac(mac *model.Mac) (err error) {
 	result := mr.SQLClient.Client.Save(mac)
 	return result.Error
 }
 
 // RemoveMac 整備済み品mac情報を削除する
-func (mr *MacRepositoryImpl) RemoveMac(id int64) error {
+func (mr MacRepositoryImpl) RemoveMac(id int64) error {
 	result := mr.SQLClient.Client.Delete(&model.Mac{}, id)
 	return result.Error
 }
