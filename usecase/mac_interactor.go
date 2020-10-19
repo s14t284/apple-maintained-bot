@@ -46,7 +46,7 @@ func (interactor *MacInteractor) AddMac(mac *model.Mac) (err error) {
 // UpdateMac macの情報の更新
 func (interactor *MacInteractor) UpdateMac(mac *model.Mac) (err error) {
 	if mac.ID <= 0 {
-		return fmt.Errorf("cannot logical update mac because invalid mac id: %d", mac.ID)
+		return fmt.Errorf("cannot update mac because invalid mac id: %d", mac.ID)
 	}
 	err = interactor.mr.UpdateMac(mac)
 	return

@@ -184,7 +184,7 @@ func TestIPadInteractor_UpdateIPad(t *testing.T) {
 		}
 		mockIpr.EXPECT().UpdateIPad(failedInput).Times(0)
 		err := ipi.UpdateIPad(failedInput)
-		assert.Error(err, fmt.Errorf("cannot logical update ipad because invalid ipad id: %d", 0))
+		assert.Error(err, fmt.Errorf("cannot update ipad because invalid ipad id: %d", 0))
 	}
 }
 

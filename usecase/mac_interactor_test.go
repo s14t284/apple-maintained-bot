@@ -182,7 +182,7 @@ func TestMacInteractor_UpdateMac(t *testing.T) {
 		}
 		mockMr.EXPECT().UpdateMac(failedInput).Times(0)
 		err := ipi.UpdateMac(failedInput)
-		assert.Error(err, fmt.Errorf("cannot logical update mac because invalid mac id: %d", 0))
+		assert.Error(err, fmt.Errorf("cannot update mac because invalid mac id: %d", 0))
 	}
 }
 
