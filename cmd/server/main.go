@@ -53,6 +53,7 @@ func main() {
 		log.Errorf(err.Error())
 		panic(err)
 	}
+
 	mpr := database.MacRepositoryImpl{SQLClient: psqlClient}
 	ipr := database.IPadRepositoryImpl{SQLClient: psqlClient}
 	wpr := database.WatchRepositoryImpl{SQLClient: psqlClient}

@@ -6,6 +6,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/s14t284/apple-maitained-bot/config"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"github.com/s14t284/apple-maitained-bot/usecase"
 	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 	"github.com/s14t284/apple-maitained-bot/utils/crawler"
@@ -28,9 +29,12 @@ func main() {
 		panic(err)
 	}
 
-	var macInteractor repository.MacRepository = usecase.NewMacInteractor(psqlClient)
-	var ipadInteractor repository.IPadRepository = usecase.NewIPadInteractor(psqlClient)
-	var watchInteractor repository.WatchRepository = usecase.NewWatchInteractor(psqlClient)
+	mpr := database.MacRepositoryImpl{SQLClient: psqlClient}
+	ipr := database.IPadRepositoryImpl{SQLClient: psqlClient}
+	wpr := database.WatchRepositoryImpl{SQLClient: psqlClient}
+	var macInteractor repository.MacRepository = usecase.NewMacInteractor(mpr)
+	var ipadInteractor repository.IPadRepository = usecase.NewIPadInteractor(ipr)
+	var watchInteractor repository.WatchRepository = usecase.NewWatchInteractor(wpr)
 
 	for _, product := range products {
 		switch product {
