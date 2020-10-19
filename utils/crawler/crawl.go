@@ -26,14 +26,13 @@ func hookToSlack(titles []string, urls []string, productKind string) (err error)
 	}
 	if len(titles) == 0 {
 		return nil
-	} else {
-		for i := 0; i < len(titles); i++ {
-			attachment := domain.Attachment{Title: titles[i], TitleLink: urls[i], Color: "good", AuthorName: "apple"}
-			attachments = append(attachments, attachment)
-		}
-		payload.Text = productKind + "の整備済み品が追加されました"
-		payload.Attachments = attachments
 	}
+	for i := 0; i < len(titles); i++ {
+		attachment := domain.Attachment{Title: titles[i], TitleLink: urls[i], Color: "good", AuthorName: "apple"}
+		attachments = append(attachments, attachment)
+	}
+	payload.Text = productKind + "の整備済み品が追加されました"
+	payload.Attachments = attachments
 	rp, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -60,7 +59,8 @@ func hookToSlack(titles []string, urls []string, productKind string) (err error)
 func CrawlMacPage(rootURL string, endPoint string, mr repository.MacRepository) {
 	doc, err := scraper.GetGoQueryObject(rootURL + endPoint + "mac")
 	if err != nil {
-		panic(err)
+		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
+		return
 	}
 
 	// 一旦、全て売れていることにする
@@ -105,7 +105,8 @@ func CrawlMacPage(rootURL string, endPoint string, mr repository.MacRepository) 
 func CrawlIPadPage(rootURL string, endPoint string, ir repository.IPadRepository) {
 	doc, err := scraper.GetGoQueryObject(rootURL + endPoint + "ipad")
 	if err != nil {
-		panic(err)
+		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
+		return
 	}
 
 	// 一旦、全て売れていることにする
@@ -150,7 +151,8 @@ func CrawlIPadPage(rootURL string, endPoint string, ir repository.IPadRepository
 func CrawlWatchPage(rootURL string, endPoint string, wr repository.WatchRepository) {
 	doc, err := scraper.GetGoQueryObject(rootURL + endPoint + "watch")
 	if err != nil {
-		panic(err)
+		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
+		return
 	}
 
 	// 一旦、全て売れていることにする

@@ -1,3 +1,5 @@
+//go:generate mockgen -source=$GOFILE -package=$GOPACKAGE -destination=../../mock/$GOPACKAGE/$GOFILE
+
 package repository
 
 import (
@@ -10,7 +12,7 @@ import (
 type IPadRepository interface {
 	FindIPadAll() (model.IPads, error)
 	FindByURL(url string) (*model.IPad, error)
-	IsExist(mac *model.IPad) (bool, uint, time.Time, error)
+	IsExist(ipad *model.IPad) (bool, uint, time.Time, error)
 	AddIPad(ipad *model.IPad) error
 	UpdateIPad(ipad *model.IPad) error
 	UpdateAllSoldTemporary() error

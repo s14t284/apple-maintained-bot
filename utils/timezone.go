@@ -1,6 +1,8 @@
 package utils
 
-import "time"
+import (
+	"time"
+)
 
 // GetReleaseYearAndMonth 商品が売られ始めた年月を表現するための時間を返却
 func GetReleaseYearAndMonth(year int, month int) time.Time {

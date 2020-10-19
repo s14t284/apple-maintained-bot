@@ -1,0 +1,38 @@
+name: Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: setup go
+      uses: actions/setup-go@v1
+      with:
+        go-version: 1.15
+
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: lint
+      run: |
+        GO111MODULE=off GOBIN=$(pwd)/bin go get golang.org/x/lint/golint
+        bin/golint -set_exit_status ./...
+
+    - name: test
+      run: go test -coverprofile=profile.csv ./...
+
+    - name: send coverage
+      uses: shogo82148/actions-goveralls@v1
+      with:
+        path-to-profile: profile.csv
+        flag-name: Go-1.15
+        parallel: true
+
+  finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          parallel-finished: true
