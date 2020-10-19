@@ -39,7 +39,7 @@ func TestIPadInteractor_FindIPadAll(t *testing.T) {
 		// success
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().FindIPadAll().Return(expected, nil)
 		actual, err := ipi.FindIPadAll()
@@ -51,7 +51,7 @@ func TestIPadInteractor_FindIPadAll(t *testing.T) {
 		// failed
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().FindIPadAll().Return(nil, fmt.Errorf("error"))
 		actual, err := ipi.FindIPadAll()
@@ -71,7 +71,7 @@ func TestIPadInteractor_FindByURL(t *testing.T) {
 		// success
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().FindByURL(url).Return(expected, nil)
 		actual, err := ipi.FindByURL(url)
@@ -83,7 +83,7 @@ func TestIPadInteractor_FindByURL(t *testing.T) {
 		// failed
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().FindByURL(url).Return(nil, fmt.Errorf("error"))
 		actual, err := ipi.FindByURL(url)
@@ -107,7 +107,7 @@ func TestIPadInteractor_IsExist(t *testing.T) {
 		// success
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().IsExist(input).Return(eIsExist, eID, eT, nil)
 		aIsExist, aID, aT, err := ipi.IsExist(input)
@@ -120,7 +120,7 @@ func TestIPadInteractor_IsExist(t *testing.T) {
 		// failed
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().IsExist(input).Return(false, uint(0), time.Time{}, fmt.Errorf("error"))
 		aIsExist, aID, aT, err := ipi.IsExist(input)
@@ -141,7 +141,7 @@ func TestIPadInteractor_AddIPad(t *testing.T) {
 		// success
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().AddIPad(input).Return(nil)
 		err := ipi.AddIPad(input)
@@ -151,7 +151,7 @@ func TestIPadInteractor_AddIPad(t *testing.T) {
 		// failed
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().AddIPad(input).Return(fmt.Errorf("error"))
 		err := ipi.AddIPad(input)
@@ -170,7 +170,7 @@ func TestIPadInteractor_UpdateIPad(t *testing.T) {
 		// success
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().UpdateIPad(input).Return(nil)
 		err := ipi.UpdateIPad(input)
@@ -180,7 +180,7 @@ func TestIPadInteractor_UpdateIPad(t *testing.T) {
 		// failed
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().UpdateIPad(failedInput).Times(0)
 		err := ipi.UpdateIPad(failedInput)
@@ -197,7 +197,7 @@ func TestIPadInteractor_UpdateAllSoldTemporary(t *testing.T) {
 		// success
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().UpdateAllSoldTemporary().Return(nil)
 		err := ipi.UpdateAllSoldTemporary()
@@ -207,7 +207,7 @@ func TestIPadInteractor_UpdateAllSoldTemporary(t *testing.T) {
 		// failed
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().UpdateAllSoldTemporary().Return(fmt.Errorf("error"))
 		err := ipi.UpdateAllSoldTemporary()
@@ -225,7 +225,7 @@ func TestIPadInteractor_RemoveIPad(t *testing.T) {
 		// success
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().RemoveIPad(id).Return(nil)
 		err := ipi.RemoveIPad(id)
@@ -235,7 +235,7 @@ func TestIPadInteractor_RemoveIPad(t *testing.T) {
 		// failed
 		ipi := NewIPadInteractor(mockIpr)
 		if ipi == nil {
-			assert.FailNow("initialize ipi is failed")
+			t.FailNow()
 		}
 		mockIpr.EXPECT().RemoveIPad(id).Return(fmt.Errorf("error"))
 		err := ipi.RemoveIPad(id)
