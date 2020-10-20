@@ -1,11 +1,60 @@
 package parser
 
 import (
+	"strings"
 	"testing"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
+	"github.com/s14t284/apple-maitained-bot/utils"
 	"github.com/stretchr/testify/assert"
 )
+
+const detailMacHTML = `
+<div class="as-productinfosection-panel Overview-panel row">
+    <div class="as-productinfosection-sidepanel column large-3 small-12">
+        <h3 data-autom="sectionTitle">概要</h3>
+    </div>
+    <div class="as-productinfosection-mainpanel column large-9 small-12">
+
+            <div class="para-list">
+            <p>
+                2019年11月発売
+            </p>
+        </div>
+        <div class="para-list">
+            <p>
+                Touch IDセンサーが組み込まれたTouch Bar
+            </p>
+        </div>
+        <div class="para-list">
+            <p>
+                IPSテクノロジー搭載16インチ（対角）LEDバックライトディスプレイ、3,072 x 1,920ピクセル標準解像度、226ppi、数百万色以上対応
+            </p>
+        </div>
+        <div class="para-list">
+            <p>
+                16GB 2,666MHz DDR4オンボードメモリ
+            </p>
+        </div>
+        <div class="para-list">
+            <p>
+                512GB SSD<sup>1</sup>
+            </p>
+        </div>
+        <div class="para-list">
+            <p>
+                720p FaceTime HDカメラ
+            </p>
+        </div>
+        <div class="para-list as-pdp-lastparalist">
+            <p>
+                AMD Radeon Pro 5300M（4GB GDDR6メ‍モ‍リ搭載）
+            </p>
+        </div>
+    </div>
+</div>
+`
 
 func TestLoadMacInformationFromTitle(t *testing.T) {
 	assert := assert.New(t)
@@ -74,4 +123,17 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 	// 	assert.Equal(mac.URL, "https://apple.com")
 	// }
 
+}
+
+func TestLoadMacInformationFromDetailHTML(t *testing.T) {
+	assert := assert.New(t)
+	pageParser := Parser{Title: "title", AmountStr: "30000円", DetailURL: "https://apple.com"}
+	mac := &model.Mac{}
+	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(detailMacHTML))
+	{
+		pageParser.LoadMacInformationFromDetailHTML(mac, doc)
+		assert.Equal(utils.GetReleaseYearAndMonth(2019, 11), mac.ReleaseDate)
+		assert.Equal(true, mac.TouchBar)
+		assert.Equal("512GB", mac.Strage)
+	}
 }

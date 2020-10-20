@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const detailHTML = `
+const detailIPadHTML = `
 <div class="as-productinfosection-panel Overview-panel row">
 
     <div class="as-productinfosection-sidepanel column large-3 small-12">
@@ -149,14 +148,12 @@ func TestLoadIPadInformationFromDetailHTML(t *testing.T) {
 	assert := assert.New(t)
 	pageParser := Parser{Title: "title", AmountStr: "30000円", DetailURL: "https://apple.com"}
 	ipad := &model.IPad{}
-	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(detailHTML))
+	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(detailIPadHTML))
 	{
 		pageParser.LoadIPadInformationFromDetailHTML(ipad, doc)
-		fmt.Println(ipad.ReleaseDate)
-		fmt.Println(utils.GetReleaseYearAndMonth(2015, 9))
-		assert.Equal(ipad.ReleaseDate, utils.GetReleaseYearAndMonth(2015, 9))
-		assert.Equal(ipad.Camera, "8メガピクセルiSightカメラ")
-		assert.Equal(ipad.Inch, float32(7.9))
+		assert.Equal(utils.GetReleaseYearAndMonth(2015, 9), ipad.ReleaseDate)
+		assert.Equal("8メガピクセルiSightカメラ", ipad.Camera)
+		assert.Equal(float32(7.9), ipad.Inch)
 	}
 
 }

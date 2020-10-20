@@ -22,7 +22,7 @@ func (parser *Parser) LoadMacInformationFromDetailHTML(mac *model.Mac, doc *goqu
 		if strings.Index(text, "月発売") > -1 {
 			// 発売年月
 			year, _ := strconv.Atoi(text[:4])
-			month, _ := strconv.Atoi(text[strings.Index(text, "年")+4 : strings.Index(text, "月")])
+			month, _ := strconv.Atoi(text[strings.Index(text, "年")+3 : strings.Index(text, "月")])
 			mac.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
 		} else if strings.Index(text, "TouchBar") > -1 {
 			// タッチバーがあるかないか
