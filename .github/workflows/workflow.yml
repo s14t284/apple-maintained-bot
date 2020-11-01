@@ -1,4 +1,4 @@
-name: Test
+name: "Apple Maintained Bot Workflow"
 
 on: [push, pull_request]
 
@@ -39,7 +39,7 @@ jobs:
 
   release-heroku:
     needs: test
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     name: Release to heroku
     steps:
