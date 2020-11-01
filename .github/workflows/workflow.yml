@@ -1,4 +1,4 @@
-name: Test
+name: "Apple Maintained Bot Workflow"
 
 on: [push]
 
@@ -36,3 +36,20 @@ jobs:
       - uses: shogo82148/actions-goveralls@v1
         with:
           parallel-finished: true
+
+  release-heroku:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    name: Release to heroku
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: deploy to heroku
+      uses: akhileshns/heroku-deploy@v3.5.7
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_app_name: apple-maintained-bot
+        heroku_email: rikeda71@gmail.com
+        usedocker: true
