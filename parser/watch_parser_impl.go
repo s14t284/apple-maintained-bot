@@ -24,8 +24,9 @@ func (parser *Parser) LoadWatchInformationFromDetailHTML(watch *model.Watch, doc
 			month, _ := strconv.Atoi(text[strings.Index(text, "年")+3 : strings.Index(text, "月")])
 			watch.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
 		} else if strings.Index(text, "GB") > -1 {
-			strage := strings.Replace(text, "容量", "", 1)
-			watch.Strage = strage[:len(strage)-1]
+			// ストレージ
+			r, _ := regexp.Compile(`[0-9]+GB`)
+			watch.Strage = r.FindString(text)
 		}
 	})
 }
