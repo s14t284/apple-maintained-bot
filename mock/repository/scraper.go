@@ -7,6 +7,7 @@ package repository
 import (
 	goquery "github.com/PuerkitoBio/goquery"
 	gomock "github.com/golang/mock/gomock"
+	domain "github.com/s14t284/apple-maitained-bot/domain"
 	reflect "reflect"
 )
 
@@ -49,13 +50,12 @@ func (mr *MockScraperMockRecorder) Scrape(url interface{}) *gomock.Call {
 }
 
 // ScrapeMaintainedPage mocks base method
-func (m *MockScraper) ScrapeMaintainedPage(doc *goquery.Document) ([]string, []string, []string) {
+func (m *MockScraper) ScrapeMaintainedPage(doc *goquery.Document) ([]domain.Page, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ScrapeMaintainedPage", doc)
-	ret0, _ := ret[0].([]string)
-	ret1, _ := ret[1].([]string)
-	ret2, _ := ret[2].([]string)
-	return ret0, ret1, ret2
+	ret0, _ := ret[0].([]domain.Page)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // ScrapeMaintainedPage indicates an expected call of ScrapeMaintainedPage

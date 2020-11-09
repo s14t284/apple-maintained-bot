@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/labstack/gommon/log"
+	"github.com/s14t284/apple-maitained-bot/domain"
 	"net/http"
 	"net/url"
 	"strings"
@@ -56,18 +57,29 @@ func (si *ScraperImpl) Scrape(targetURL string) (doc *goquery.Document, err erro
 }
 
 // ScrapeMaintainedPage 整備済み品ページから共通の情報を取得
-func (si *ScraperImpl)ScrapeMaintainedPage(doc *goquery.Document) (titles, amounts, hrefs []string) {
+func (si *ScraperImpl) ScrapeMaintainedPage(doc *goquery.Document) ([]domain.Page, error) {
 	// 一件ずつスクレイピング
+	pages := make([]domain.Page, 0)
+	var err error
 	doc.Find("div .refurbished-category-grid-no-js > ul > li").Each(func(_ int, s *goquery.Selection) {
 		// タイトル、金額、詳細ページへのURL
 		title := s.Find("h3 > a").Text()
 		amount := s.Find("div,.as-currentprice,.producttile-currentprice").Text()
 		href, _ := s.Find("a").Attr("href")
+		detailDoc, localErr := si.Scrape(href)
+		if localErr != nil {
+			err = fmt.Errorf("failed to scrape detail page [url][%s][error][%w]", href, localErr)
+			log.Errorf(err.Error())
+		}
 		// 格納
-		titles = append(titles, title)
-		amounts = append(amounts, amount)
-		hrefs = append(hrefs, href)
+		page := domain.Page{
+			Title:     title,
+			AmountStr: amount,
+			DetailURL: href,
+			Document:  detailDoc,
+		}
+		pages = append(pages, page)
 		time.Sleep(time.Second)
 	})
-	return
+	return pages, err
 }
