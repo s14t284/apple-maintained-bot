@@ -2,17 +2,19 @@ package infrastructure
 
 import (
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
-	"github.com/labstack/gommon/log"
-	"github.com/s14t284/apple-maitained-bot/domain"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/PuerkitoBio/goquery"
+	"github.com/labstack/gommon/log"
+	"github.com/s14t284/apple-maitained-bot/domain"
 )
 
 const userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1"
 
+// ScraperImpl スクレイピング の実装
 type ScraperImpl struct {
 	client *http.Client
 }

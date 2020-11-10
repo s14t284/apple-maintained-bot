@@ -1,4 +1,5 @@
 //go:generate mockgen -source=$GOFILE -package=$GOPACKAGE -destination=../../mock/$GOPACKAGE/$GOFILE
+
 package repository
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/s14t284/apple-maitained-bot/domain"
 )
 
+// Scraper スクレイピングを行うオブジェクトのinteface
 type Scraper interface {
 	Scrape(url string) (*goquery.Document, error)
 	ScrapeMaintainedPage(doc *goquery.Document) ([]domain.Page, error)

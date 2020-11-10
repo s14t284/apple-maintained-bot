@@ -2,24 +2,26 @@ package infrastructure
 
 import (
 	"fmt"
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/utils"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
+// PageParserImpl 商品ページのパーサーの実装
 type PageParserImpl struct {
 }
 
 // NewPageParserImpl PageParserImplを初期化
 func NewPageParserImpl() (*PageParserImpl, error) {
-	return &PageParserImpl{
-	}, nil
+	return &PageParserImpl{}, nil
 }
 
+// ParsePage 商品ページのパース
 func (ppi *PageParserImpl) ParsePage(target string, page domain.Page) (interface{}, error) {
 	switch target {
 	case "mac":
