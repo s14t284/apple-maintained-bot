@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -19,18 +20,27 @@ type PsqlConfig struct {
 	Database string
 }
 
-// Config 設定値をまとめた構造体
-type Config struct {
-	PsqlConfig PsqlConfig
+// SlackNotifyConfig slackに通知を送るための設定値
+type SlackNotifyConfig struct {
+	Channel    string
+	UserName   string
+	IconEmoji  string
+	webHookURL string
 }
 
-func createPsqlConfig() (PsqlConfig, error) {
+// Config 設定値をまとめた構造体
+type Config struct {
+	PsqlConfig        PsqlConfig
+	SlackNotifyConfig SlackNotifyConfig
+}
+
+func createPsqlConfig() (*PsqlConfig, error) {
 	port, err := strconv.Atoi(os.Getenv("PSQL_PORT"))
 	if err != nil {
 		log.Errorf("can't load port of psql host")
 		port = 5432 // set psql default port
 	}
-	psqlConfig := PsqlConfig{
+	psqlConfig := &PsqlConfig{
 		Host:     os.Getenv("PSQL_HOST"),
 		UserName: os.Getenv("PSQL_USER_NAME"),
 		Password: os.Getenv("PSQL_PASSWORD"),
@@ -38,6 +48,43 @@ func createPsqlConfig() (PsqlConfig, error) {
 		Database: os.Getenv("PSQL_DATABASE"),
 	}
 	return psqlConfig, nil
+}
+
+func createSlackNotifyConfig() (*SlackNotifyConfig, error) {
+	channel := os.Getenv("SLACK_CHANNEL")
+	if channel == "" {
+		channel = "#random"
+	} else if !strings.HasPrefix(channel, "#") {
+		channel = "#" + channel
+	}
+
+	userName := os.Getenv("SLACK_USER_NAME")
+	if userName == "" {
+		userName = "AppleMaintainedBot"
+	}
+
+	iconEmoji := os.Getenv("SLACK_ICON")
+	if iconEmoji == "" {
+		iconEmoji = ":apple:"
+	}
+	if !strings.HasPrefix(iconEmoji, ":") {
+		iconEmoji = ":" + iconEmoji
+	}
+	if !strings.HasSuffix(iconEmoji, ":") {
+		iconEmoji = iconEmoji + ":"
+	}
+
+	webHookUrl := os.Getenv("SLACK_WEBHOOK_URL")
+	if webHookUrl == "" {
+		return nil, fmt.Errorf("failed to load SLACK_WEBHOOK_URL")
+	}
+
+	return &SlackNotifyConfig{
+		Channel:    channel,
+		UserName:   userName,
+		IconEmoji:  iconEmoji,
+		webHookURL: webHookUrl,
+	}, nil
 }
 
 // LoadConfig 設定値を読み込む
@@ -54,11 +101,17 @@ func LoadConfig() (*Config, error) {
 		return nil, err
 	}
 
+	// slack
+	slackConfig, err := createSlackNotifyConfig()
+	if err != nil {
+		return nil, err
+	}
+
 	// timezone
 	time.Local = time.FixedZone("Asia/Tokyo", 9*60*60)
-	fmt.Println(time.Now())
 
 	return &Config{
-		PsqlConfig: psqlConfig,
+		PsqlConfig:        *psqlConfig,
+		SlackNotifyConfig: *slackConfig,
 	}, nil
 }
