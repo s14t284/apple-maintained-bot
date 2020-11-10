@@ -8,21 +8,29 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/gommon/log"
-	"github.com/s14t284/apple-maitained-bot/infrastructure"
 )
+
+// PsqlConfig psqlに接続するための設定値
+type PsqlConfig struct {
+	Host     string
+	UserName string
+	Password string
+	Port     int
+	Database string
+}
 
 // Config 設定値をまとめた構造体
 type Config struct {
-	PsqlConfig infrastructure.PsqlConfig
+	PsqlConfig PsqlConfig
 }
 
-func createPsqlConfig() (infrastructure.PsqlConfig, error) {
+func createPsqlConfig() (PsqlConfig, error) {
 	port, err := strconv.Atoi(os.Getenv("PSQL_PORT"))
 	if err != nil {
 		log.Errorf("can't load port of psql host")
 		port = 5432 // set psql default port
 	}
-	psqlConfig := infrastructure.PsqlConfig{
+	psqlConfig := PsqlConfig{
 		Host:     os.Getenv("PSQL_HOST"),
 		UserName: os.Getenv("PSQL_USER_NAME"),
 		Password: os.Getenv("PSQL_PASSWORD"),
