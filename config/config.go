@@ -25,7 +25,7 @@ type SlackNotifyConfig struct {
 	Channel    string
 	UserName   string
 	IconEmoji  string
-	webHookURL string
+	WebHookURL string
 }
 
 // Config 設定値をまとめた構造体
@@ -83,7 +83,7 @@ func createSlackNotifyConfig() (*SlackNotifyConfig, error) {
 		Channel:    channel,
 		UserName:   userName,
 		IconEmoji:  iconEmoji,
-		webHookURL: webHookUrl,
+		WebHookURL: webHookUrl,
 	}, nil
 }
 
