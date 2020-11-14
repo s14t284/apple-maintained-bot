@@ -65,9 +65,9 @@ func (mr *MockWatchRepositoryMockRecorder) FindByURL(url interface{}) *gomock.Ca
 }
 
 // IsExist mocks base method
-func (m *MockWatchRepository) IsExist(mac *model.Watch) (bool, uint, time.Time, error) {
+func (m *MockWatchRepository) IsExist(watch *model.Watch) (bool, uint, time.Time, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsExist", mac)
+	ret := m.ctrl.Call(m, "IsExist", watch)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(uint)
 	ret2, _ := ret[2].(time.Time)
@@ -76,9 +76,9 @@ func (m *MockWatchRepository) IsExist(mac *model.Watch) (bool, uint, time.Time, 
 }
 
 // IsExist indicates an expected call of IsExist
-func (mr *MockWatchRepositoryMockRecorder) IsExist(mac interface{}) *gomock.Call {
+func (mr *MockWatchRepositoryMockRecorder) IsExist(watch interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsExist", reflect.TypeOf((*MockWatchRepository)(nil).IsExist), mac)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsExist", reflect.TypeOf((*MockWatchRepository)(nil).IsExist), watch)
 }
 
 // AddWatch mocks base method

@@ -65,9 +65,9 @@ func (mr *MockIPadRepositoryMockRecorder) FindByURL(url interface{}) *gomock.Cal
 }
 
 // IsExist mocks base method
-func (m *MockIPadRepository) IsExist(mac *model.IPad) (bool, uint, time.Time, error) {
+func (m *MockIPadRepository) IsExist(ipad *model.IPad) (bool, uint, time.Time, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsExist", mac)
+	ret := m.ctrl.Call(m, "IsExist", ipad)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(uint)
 	ret2, _ := ret[2].(time.Time)
@@ -76,9 +76,9 @@ func (m *MockIPadRepository) IsExist(mac *model.IPad) (bool, uint, time.Time, er
 }
 
 // IsExist indicates an expected call of IsExist
-func (mr *MockIPadRepositoryMockRecorder) IsExist(mac interface{}) *gomock.Call {
+func (mr *MockIPadRepositoryMockRecorder) IsExist(ipad interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsExist", reflect.TypeOf((*MockIPadRepository)(nil).IsExist), mac)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsExist", reflect.TypeOf((*MockIPadRepository)(nil).IsExist), ipad)
 }
 
 // AddIPad mocks base method
