@@ -35,18 +35,18 @@ func (m *MockScraper) EXPECT() *MockScraperMockRecorder {
 }
 
 // Scrape mocks base method
-func (m *MockScraper) Scrape(url string) (*goquery.Document, error) {
+func (m *MockScraper) Scrape(targetPath string) (*goquery.Document, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Scrape", url)
+	ret := m.ctrl.Call(m, "Scrape", targetPath)
 	ret0, _ := ret[0].(*goquery.Document)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Scrape indicates an expected call of Scrape
-func (mr *MockScraperMockRecorder) Scrape(url interface{}) *gomock.Call {
+func (mr *MockScraperMockRecorder) Scrape(targetPath interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Scrape", reflect.TypeOf((*MockScraper)(nil).Scrape), url)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Scrape", reflect.TypeOf((*MockScraper)(nil).Scrape), targetPath)
 }
 
 // ScrapeMaintainedPage mocks base method

@@ -12,25 +12,30 @@ import (
 	"github.com/s14t284/apple-maitained-bot/domain"
 )
 
-const userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1"
+const (
+	userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1"
+	rootURL   = "https://www.apple.com"
+)
 
 // ScraperImpl スクレイピング の実装
 type ScraperImpl struct {
-	client *http.Client
+	client http.Client
 }
 
 // NewScraperImpl ScraperImplの初期化
-func NewScraperImpl(client *http.Client) (*ScraperImpl, error) {
-	if client == nil {
-		return nil, fmt.Errorf("http client is nil")
-	}
-	return &ScraperImpl{client: client}, nil
+func NewScraperImpl() (*ScraperImpl, error) {
+	return &ScraperImpl{client: http.Client{}}, nil
 }
 
 // Scrape 指定したurlをgoqueryオブジェクトに変換するメソッド
-func (si *ScraperImpl) Scrape(targetURL string) (doc *goquery.Document, err error) {
+func (si *ScraperImpl) Scrape(targetPath string) (doc *goquery.Document, err error) {
 	requestBody := url.Values{}
-	req, err := http.NewRequest("GET", targetURL, strings.NewReader(requestBody.Encode()))
+	p := rootURL + targetPath
+	fmt.Println(p)
+	req, err := http.NewRequest(
+		"GET", p,
+		strings.NewReader(requestBody.Encode()),
+	)
 	if err != nil {
 		log.Errorf(err.Error())
 		return nil, err
@@ -39,8 +44,9 @@ func (si *ScraperImpl) Scrape(targetURL string) (doc *goquery.Document, err erro
 
 	resp, _ := si.client.Do(req)
 	if resp.StatusCode != 200 {
-		log.Errorf("status code error: %d %s", resp.StatusCode, resp.Status)
-		return nil, fmt.Errorf("cannot access error")
+		err = fmt.Errorf("status code error: [status_code][%d] [status][%s]", resp.StatusCode, resp.Status)
+		log.Error(err)
+		return nil, fmt.Errorf("cannot access error [error][%w]", err)
 	}
 	defer func() {
 		closeErr := resp.Body.Close()
