@@ -123,38 +123,50 @@ func (ppi *PageParserImpl) loadMacInformationFromDetailHTML(mac *model.Mac, doc 
 
 // loadMacInformationFromTitle タイトルから情報を取得する
 func (ppi *PageParserImpl) loadMacInformationFromTitle(mac *model.Mac, page domain.Page) error {
-	// ノートパソコン以外は飛ばす
-	// TODO: デスクトップにも対応
-	if strings.Index(page.Title, "MacBook") == -1 {
-		mac.Name = page.Title
-		mac.URL = page.DetailURL
-		return nil
-	}
-	// 不要な部分を削除
 	nameRegExp, err := regexp.Compile(`Retinaディスプレイ.*\s\-`)
 	if err != nil {
 		return err
 	}
 	name := nameRegExp.ReplaceAllLiteralString(strings.Replace(page.Title, " [整備済製品]", "", 1), "")
-	// インチ数
-	strs := strings.Split(name, "インチ")
-	inch, err := strconv.ParseFloat(strs[0], 32)
-	if err != nil {
-		return fmt.Errorf("failed to parse inch [error][%w]", err)
+	if strings.Index(page.Title, "MacBook") > -1 {
+		// インチ数
+		strs := strings.Split(name, "インチ")
+		inch, err := strconv.ParseFloat(strs[0], 32)
+		if err != nil {
+			return fmt.Errorf("failed to parse inch [error][%w]", err)
+		}
+		mac.Inch = float32(inch)
+		name = strs[1]
+		// CPU
+		cpuRegExp, err := regexp.Compile(`\d+\.\dGHz.+i\d`)
+		if err != nil {
+			return err
+		}
+		mac.CPU = cpuRegExp.FindString(name)
+		name = strings.Replace(name, mac.CPU+" ", "", 1)
+		// 色
+		strs = strings.Split(name, "  ")
+		name = strs[0]
+		mac.Color = strs[1]
+
 	}
-	mac.Inch = float32(inch)
-	name = strs[1]
-	// CPU
-	cpuRegExp, err := regexp.Compile(`\d+\.\dGHz.+i\d`)
-	if err != nil {
-		return err
+	if strings.Index(page.Title, "Mac mini") > -1 {
+		// CPU
+		cpuRegExp, err := regexp.Compile(`\d+\.\dGHz.+i\d`)
+		if err != nil {
+			return err
+		}
+		mac.CPU = cpuRegExp.FindString(name)
+		name = strings.Replace(name, mac.CPU+" ", "", 1)
+		// 色
+		strs := strings.Split(name, " - ")
+		name = strs[0]
+		mac.Color = strs[1]
+
+	} else {
+		// TODO: iMacやMacBookAirにも対応させる
+		mac.Name = page.Title
 	}
-	mac.CPU = cpuRegExp.FindString(name)
-	name = strings.Replace(name, mac.CPU+" ", "", 1)
-	// 色
-	strs = strings.Split(name, "  ")
-	name = strs[0]
-	mac.Color = strs[1]
 	// 金額
 	amountRegExp, err := regexp.Compile(`(,|円（税別）|\s)`)
 	if err != nil {
@@ -168,6 +180,7 @@ func (ppi *PageParserImpl) loadMacInformationFromTitle(mac *model.Mac, page doma
 	mac.Name = name
 	// URL
 	mac.URL = page.DetailURL
+	// 不要な部分を削除
 	return nil
 }
 

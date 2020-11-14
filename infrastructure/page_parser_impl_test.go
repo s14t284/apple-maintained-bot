@@ -1,16 +1,18 @@
 package infrastructure
 
 import (
+	"strings"
+	"testing"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/utils"
 	"github.com/stretchr/testify/assert"
-	"strings"
-	"testing"
 )
 
-const detailMacHTML = `
+const (
+	detailMacHTML = `
 <div class="as-productinfosection-panel Overview-panel row">
     <div class="as-productinfosection-sidepanel column large-3 small-12">
         <h3 data-autom="sectionTitle">概要</h3>
@@ -55,8 +57,42 @@ const detailMacHTML = `
     </div>
 </div>
 `
-
-const detailIPadHTML = `
+	detailMacMiniHTML = `
+<div class="as-productinfosection-mainpanel column large-9 small-12">
+                    
+            <div class="para-list">
+            <p>
+                2018年10月発売モデル
+            </p>
+        </div>
+        <div class="para-list">
+            <p>
+                8GB 2,666MHz DDR4 SO-DIMMメモリ
+            </p>
+        </div>
+        <div class="para-list">
+            <p>
+                512GB PCIeベースSSD<sup>1</sup>
+            </p>
+        </div>
+        <div class="para-list">
+            <p>
+                Thunderbolt 3ポート（最大40Gbps）x 4
+            </p>
+        </div>
+        <div class="para-list">
+            <p>
+                Intel UHD Graphics 630
+            </p>
+        </div>
+        <div class="para-list as-pdp-lastparalist">
+            <p>
+                ギガビットEthernetポート
+            </p>
+        </div>
+    </div>
+`
+	detailIPadHTML = `
 <div class="as-productinfosection-panel Overview-panel row">
 
     <div class="as-productinfosection-sidepanel column large-3 small-12">
@@ -126,8 +162,7 @@ const detailIPadHTML = `
     </div>
 </div>
 `
-
-const detailWatchHTML = `
+	detailWatchHTML = `
 <div class="as-productinfosection-panel Overview-panel row">
     <div class="as-productinfosection-sidepanel column large-3 small-12">
         <h3 data-autom="sectionTitle">概要</h3>
@@ -197,10 +232,10 @@ const detailWatchHTML = `
     </div>
 </div>
 `
+)
 
 func TestLoadMacInformationFromTitle(t *testing.T) {
 	assert := assert.New(t)
-	mac := &model.Mac{}
 	{
 		// 16インチMacBook Proの場合
 		page := domain.Page{
@@ -208,6 +243,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 			AmountStr: "30,000円（税別）",
 			DetailURL: "https://apple.com",
 		}
+		mac := &model.Mac{}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
 			t.FailNow()
@@ -229,6 +265,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 			AmountStr: "30,000円（税別）",
 			DetailURL: "https://apple.com",
 		}
+		mac := &model.Mac{}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
 			t.FailNow()
@@ -249,6 +286,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 			AmountStr: "30,000円（税別）",
 			DetailURL: "https://apple.com",
 		}
+		mac := &model.Mac{}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
 			t.FailNow()
@@ -260,6 +298,26 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 		assert.Equal(mac.Color, "スペースグレイ")
 		assert.Equal(mac.Amount, 30000)
 		assert.Equal(mac.Name, "MacBook Pro")
+		assert.Equal(mac.URL, "https://apple.com")
+	}
+	{
+		mac := &model.Mac{}
+		// Mac Miniの場合
+		pageParser, err := initializePageParserImpl()
+		if err != nil {
+			t.FailNow()
+		}
+		page := domain.Page{
+			Title:     "Mac mini 3.0GHz 6コアIntel Core i5 - スペースグレイ [整備済製品]",
+			AmountStr: "30,000円（税別）",
+			DetailURL: "https://apple.com",
+		}
+		pageParser.loadMacInformationFromTitle(mac, page)
+		assert.Equal(mac.Inch, float32(0.0))
+		assert.Equal(mac.CPU, "3.0GHz 6コアIntel Core i5")
+		assert.Equal(mac.Color, "スペースグレイ")
+		assert.Equal(mac.Amount, 30000)
+		assert.Equal(mac.Name, "Mac mini")
 		assert.Equal(mac.URL, "https://apple.com")
 	}
 	// TODO: MacBook Airに関するテストを増やす
@@ -288,9 +346,11 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 
 func TestLoadMacInformationFromDetailHTML(t *testing.T) {
 	assert := assert.New(t)
-	mac := &model.Mac{}
-	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(detailMacHTML))
 	{
+		// 正常系
+		// MacBookProの場合
+		doc, _ := goquery.NewDocumentFromReader(strings.NewReader(detailMacHTML))
+		mac := &model.Mac{}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
 			t.FailNow()
@@ -299,6 +359,20 @@ func TestLoadMacInformationFromDetailHTML(t *testing.T) {
 		assert.NoError(err)
 		assert.Equal(utils.GetReleaseYearAndMonth(2019, 11), mac.ReleaseDate)
 		assert.Equal(true, mac.TouchBar)
+		assert.Equal("512GB", mac.Strage)
+	}
+	{
+		// 正常系
+		// Mac miniの場合
+		doc, _ := goquery.NewDocumentFromReader(strings.NewReader(detailMacMiniHTML))
+		mac := &model.Mac{}
+		pageParser, err := initializePageParserImpl()
+		if err != nil {
+			t.FailNow()
+		}
+		err = pageParser.loadMacInformationFromDetailHTML(mac, doc)
+		assert.NoError(err)
+		assert.Equal(utils.GetReleaseYearAndMonth(2018, 10), mac.ReleaseDate)
 		assert.Equal("512GB", mac.Strage)
 	}
 }
