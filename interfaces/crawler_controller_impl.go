@@ -2,12 +2,15 @@ package interfaces
 
 import (
 	"fmt"
+	"path"
 
 	"github.com/labstack/gommon/log"
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 )
+
+const shopListEndPoint = "/jp/shop/refurbished/"
 
 // CrawlerControllerImpl 整備済み品のクローラー
 type CrawlerControllerImpl struct {
@@ -57,8 +60,9 @@ func NewCrawlerControllerImpl(
 }
 
 // CrawlMacPage macに関する整備済み品ページをクローリング
-func (c *CrawlerControllerImpl) CrawlMacPage(rootURL, endPoint string) error {
-	doc, err := c.scraper.Scrape(rootURL + endPoint + "mac")
+func (c *CrawlerControllerImpl) CrawlMacPage() error {
+	mu := path.Join(shopListEndPoint, "mac")
+	doc, err := c.scraper.Scrape(mu)
 	if err != nil {
 		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
 		return err
@@ -118,8 +122,9 @@ func (c *CrawlerControllerImpl) CrawlMacPage(rootURL, endPoint string) error {
 }
 
 // CrawlIPadPage ipadに関する整備済み品ページをクローリング
-func (c *CrawlerControllerImpl) CrawlIPadPage(rootURL, endPoint string) error {
-	doc, err := c.scraper.Scrape(rootURL + endPoint + "ipad")
+func (c *CrawlerControllerImpl) CrawlIPadPage() error {
+	iu := path.Join(shopListEndPoint, "ipad")
+	doc, err := c.scraper.Scrape(iu)
 	if err != nil {
 		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
 		return err
@@ -178,8 +183,9 @@ func (c *CrawlerControllerImpl) CrawlIPadPage(rootURL, endPoint string) error {
 }
 
 // CrawlWatchPage watchに関する整備済み品ページをクローリング
-func (c *CrawlerControllerImpl) CrawlWatchPage(rootURL, endPoint string) error {
-	doc, err := c.scraper.Scrape(rootURL + endPoint + "watch")
+func (c *CrawlerControllerImpl) CrawlWatchPage() error {
+	wu := path.Join(shopListEndPoint, "watch")
+	doc, err := c.scraper.Scrape(wu)
 	if err != nil {
 		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
 		return err

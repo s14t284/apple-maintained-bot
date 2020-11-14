@@ -1,6 +1,7 @@
 package interfaces
 
 import (
+	"path"
 	"testing"
 	"time"
 
@@ -11,6 +12,8 @@ import (
 	"github.com/s14t284/apple-maitained-bot/mock/repository"
 	"github.com/stretchr/testify/assert"
 )
+
+const endPoint = "/jp/shop/refurbished/"
 
 func TestNewCrawlerControllerImpl(t *testing.T) {
 	assert := assert.New(t)
@@ -82,8 +85,6 @@ func TestCrawlerControllerImpl_CrawlMacPage(t *testing.T) {
 	parser := repository.NewMockPageParser(ctrl)
 	scraper := repository.NewMockScraper(ctrl)
 	notifier := repository.NewMockSlackNotifyRepository(ctrl)
-	rootURL := "https://apple.com"
-	endPoint := "/products/"
 	doc := &goquery.Document{}
 	pages := []domain.Page{
 		{Title: "MacBook PRO 15.4インチ", AmountStr: "30000円", DetailURL: "/detail", Document: doc},
@@ -103,7 +104,7 @@ func TestCrawlerControllerImpl_CrawlMacPage(t *testing.T) {
 			t.FailNow()
 		}
 		gomock.InOrder(
-			scraper.EXPECT().Scrape(rootURL+endPoint+"mac").Return(doc, nil),
+			scraper.EXPECT().Scrape(path.Join(endPoint+"mac")).Return(doc, nil),
 			scraper.EXPECT().ScrapeMaintainedPage(doc).Return(pages, nil),
 			mr.EXPECT().UpdateAllSoldTemporary().Return(nil),
 			parser.EXPECT().ParsePage("mac", pages[0]).Return(macs[0], nil),
@@ -114,7 +115,7 @@ func TestCrawlerControllerImpl_CrawlMacPage(t *testing.T) {
 			mr.EXPECT().AddMac(macs[1]).Return(nil),
 			notifier.EXPECT().HookToSlack(notifierPage, "mac").Return(nil),
 		)
-		err = cci.CrawlMacPage(rootURL, endPoint)
+		err = cci.CrawlMacPage()
 		assert.NoError(err)
 	}
 }
@@ -129,8 +130,6 @@ func TestCrawlerControllerImpl_CrawlIPadPage(t *testing.T) {
 	parser := repository.NewMockPageParser(ctrl)
 	scraper := repository.NewMockScraper(ctrl)
 	notifier := repository.NewMockSlackNotifyRepository(ctrl)
-	rootURL := "https://apple.com"
-	endPoint := "/products/"
 	doc := &goquery.Document{}
 	pages := []domain.Page{
 		{Title: "IPad Pro", AmountStr: "30000円", DetailURL: "/detail", Document: doc},
@@ -150,7 +149,7 @@ func TestCrawlerControllerImpl_CrawlIPadPage(t *testing.T) {
 			t.FailNow()
 		}
 		gomock.InOrder(
-			scraper.EXPECT().Scrape(rootURL+endPoint+"ipad").Return(doc, nil),
+			scraper.EXPECT().Scrape(path.Join(endPoint, "ipad")).Return(doc, nil),
 			scraper.EXPECT().ScrapeMaintainedPage(doc).Return(pages, nil),
 			ir.EXPECT().UpdateAllSoldTemporary().Return(nil),
 			parser.EXPECT().ParsePage("ipad", pages[0]).Return(ipads[0], nil),
@@ -161,7 +160,7 @@ func TestCrawlerControllerImpl_CrawlIPadPage(t *testing.T) {
 			ir.EXPECT().AddIPad(ipads[1]).Return(nil),
 			notifier.EXPECT().HookToSlack(notifierPage, "ipad").Return(nil),
 		)
-		err = cci.CrawlIPadPage(rootURL, endPoint)
+		err = cci.CrawlIPadPage()
 		assert.NoError(err)
 	}
 }
@@ -175,8 +174,6 @@ func TestCrawlerControllerImpl_CrawlWatchPage(t *testing.T) {
 	parser := repository.NewMockPageParser(ctrl)
 	scraper := repository.NewMockScraper(ctrl)
 	notifier := repository.NewMockSlackNotifyRepository(ctrl)
-	rootURL := "https://apple.com"
-	endPoint := "/products/"
 	doc := &goquery.Document{}
 	pages := []domain.Page{
 		{Title: "apple watch 4", AmountStr: "30000円", DetailURL: "/detail", Document: doc},
@@ -196,7 +193,7 @@ func TestCrawlerControllerImpl_CrawlWatchPage(t *testing.T) {
 			t.FailNow()
 		}
 		gomock.InOrder(
-			scraper.EXPECT().Scrape(rootURL+endPoint+"watch").Return(doc, nil),
+			scraper.EXPECT().Scrape(path.Join(endPoint+"watch")).Return(doc, nil),
 			scraper.EXPECT().ScrapeMaintainedPage(doc).Return(pages, nil),
 			wr.EXPECT().UpdateAllSoldTemporary().Return(nil),
 			parser.EXPECT().ParsePage("watch", pages[0]).Return(watches[0], nil),
@@ -207,7 +204,7 @@ func TestCrawlerControllerImpl_CrawlWatchPage(t *testing.T) {
 			wr.EXPECT().AddWatch(watches[1]).Return(nil),
 			notifier.EXPECT().HookToSlack(notifierPage, "apple watch").Return(nil),
 		)
-		err = cci.CrawlWatchPage(rootURL, endPoint)
+		err = cci.CrawlWatchPage()
 		assert.NoError(err)
 	}
 }
