@@ -78,7 +78,7 @@ func (s *SlackNotifyRepositoryImpl) HookToSlack(pages []domain.Page, kind string
 		return err
 	}
 	if resp.StatusCode != 200 {
-		err = fmt.Errorf("status code error: %d %s [error][%w]", resp.StatusCode, resp.Status)
+		err = fmt.Errorf("status code error: [status_code][%d] [status][%s]", resp.StatusCode, resp.Status)
 		log.Error(err)
 		return err
 	}
