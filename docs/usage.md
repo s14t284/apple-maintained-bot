@@ -31,6 +31,9 @@
     PSQL_USER_NAME         : User name of psql
     PSQL_PORT              : Port number of psql
     PSQL_PASSWORD          : Login password for psql
+    SLACK_CHANNEL          : Channel of Slack (default. #random)
+    SLACK_USER_NAME        : Bot User name (default. AppleMaintainedBot)
+    SLACK_ICON             : Bot Icon String (default. :apple:)
     SLACK_WEBHOOK_URL      : Slack Notification URL
     ```
 
