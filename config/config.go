@@ -25,7 +25,7 @@ type SlackNotifyConfig struct {
 	Channel    string
 	UserName   string
 	IconEmoji  string
-	WebHookURL string
+	webHookURL string
 }
 
 // Config 設定値をまとめた構造体
@@ -74,8 +74,8 @@ func createSlackNotifyConfig() (*SlackNotifyConfig, error) {
 		iconEmoji = iconEmoji + ":"
 	}
 
-	webHookUrl := os.Getenv("SLACK_WEBHOOK_URL")
-	if webHookUrl == "" {
+	webHookURL := os.Getenv("SLACK_WEBHOOK_URL")
+	if webHookURL == "" {
 		return nil, fmt.Errorf("failed to load SLACK_WEBHOOK_URL")
 	}
 
@@ -83,7 +83,7 @@ func createSlackNotifyConfig() (*SlackNotifyConfig, error) {
 		Channel:    channel,
 		UserName:   userName,
 		IconEmoji:  iconEmoji,
-		WebHookURL: webHookUrl,
+		webHookURL: webHookURL,
 	}, nil
 }
 
