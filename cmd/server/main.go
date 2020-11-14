@@ -2,8 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/s14t284/apple-maitained-bot/interfaces"
 
 	"github.com/labstack/gommon/log"
 	"github.com/robfig/cron/v3"
@@ -11,30 +14,25 @@ import (
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"github.com/s14t284/apple-maitained-bot/usecase"
-	"github.com/s14t284/apple-maitained-bot/usecase/repository"
-	"github.com/s14t284/apple-maitained-bot/utils/crawler"
 )
 
-const rootURL = "https://www.apple.com"
-const shopListEndPoint = "/jp/shop/refurbished/"
-
-func getCronConfig(mr repository.MacRepository, ir repository.IPadRepository, wr repository.WatchRepository) *cron.Cron {
+func getCronConfig(crawler interfaces.CrawlerController) *cron.Cron {
 	c := cron.New()
 
 	// Macの整備済み品収集
 	c.AddFunc("CRON_TZ=Asia/Tokyo 0 8-22 * * *", func() {
 		log.Info("start crawling maintained products of mac")
-		crawler.CrawlMacPage(rootURL, shopListEndPoint, mr)
+		crawler.CrawlMacPage()
 	})
 	// IPadの整備済み品収集
 	c.AddFunc("CRON_TZ=Asia/Tokyo 0 8-22 * * *", func() {
 		log.Info("start crawling maintained products of ipad")
-		crawler.CrawlIPadPage(rootURL, shopListEndPoint, ir)
+		crawler.CrawlIPadPage()
 	})
 	// apple watchの整備済み品収集
 	c.AddFunc("CRON_TZ=Asia/Tokyo 0 8-22 * * *", func() {
 		log.Info("start crawling maintained products of apple watch")
-		crawler.CrawlWatchPage(rootURL, shopListEndPoint, wr)
+		crawler.CrawlWatchPage()
 	})
 
 	return c
@@ -47,21 +45,49 @@ func main() {
 		log.Errorf("cannot load config: %s", err.Error())
 		panic(err)
 	}
+	// scraper
+	scraper, err := infrastructure.NewScraperImpl()
+	if err != nil {
+		err = fmt.Errorf("failed to initialize scraper [error][%w]", err)
+		log.Error(err)
+		panic(err)
+	}
+	// parser
+	parser, err := infrastructure.NewPageParserImpl()
+	if err != nil {
+		err = fmt.Errorf("failed to initialize parser [error][%w]", err)
+		log.Error(err)
+		panic(err)
+	}
+	// slack notifier
+	notifier, err := infrastructure.NewSlackNotifyRepositoryImpl(config.SlackNotifyConfig)
+	if err != nil {
+		err = fmt.Errorf("failed to initialize slack notifier [error][%w]", err)
+		log.Error(err)
+		panic(err)
+	}
 	// DB接続
 	psqlClient, err := infrastructure.PsqlNewClientImpl(config.PsqlConfig)
 	if err != nil {
-		log.Errorf(err.Error())
+		log.Error(err)
 		panic(err)
 	}
+	macInteractor := usecase.NewMacInteractor(database.MacRepositoryImpl{SQLClient: psqlClient})
+	ipadInteractor := usecase.NewIPadInteractor(database.IPadRepositoryImpl{SQLClient: psqlClient})
+	watchInteractor := usecase.NewWatchInteractor(database.WatchRepositoryImpl{SQLClient: psqlClient})
+	// crawler
+	crawler, err := interfaces.NewCrawlerControllerImpl(macInteractor, ipadInteractor, watchInteractor, parser, scraper, notifier)
+	if err != nil {
+		log.Error(err)
+	}
 
-	mpr := database.MacRepositoryImpl{SQLClient: psqlClient}
-	ipr := database.IPadRepositoryImpl{SQLClient: psqlClient}
-	wpr := database.WatchRepositoryImpl{SQLClient: psqlClient}
-	var macInteractor repository.MacRepository = usecase.NewMacInteractor(mpr)
-	var ipadInteractor repository.IPadRepository = usecase.NewIPadInteractor(ipr)
-	var watchInteractor repository.WatchRepository = usecase.NewWatchInteractor(wpr)
+	// 一度クローリングを実行
+	crawler.CrawlMacPage()
+	crawler.CrawlIPadPage()
+	crawler.CrawlWatchPage()
 
-	c := getCronConfig(macInteractor, ipadInteractor, watchInteractor)
+	// cronを設定
+	c := getCronConfig(crawler)
 	c.Start()
 
 	// 仮のエンドポイント
