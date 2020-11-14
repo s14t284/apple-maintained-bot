@@ -7,8 +7,8 @@ import (
 	"github.com/s14t284/apple-maitained-bot/domain"
 )
 
-// Scraper スクレイピングを行うオブジェクトのinteface
+// Scraper スクレイピングを行うオブジェクトのinterface
 type Scraper interface {
-	Scrape(url string) (*goquery.Document, error)
+	Scrape(targetPath string) (*goquery.Document, error)
 	ScrapeMaintainedPage(doc *goquery.Document) ([]domain.Page, error)
 }
