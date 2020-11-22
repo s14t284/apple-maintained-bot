@@ -10,6 +10,7 @@ import (
 
 // MacRepository 整備済み品macの情報を読み書きするクライアント
 type MacRepository interface {
+	FindMac(*model.Mac) (model.Macs, error)
 	FindMacAll() (model.Macs, error)
 	FindByURL(url string) (*model.Mac, error)
 	IsExist(mac *model.Mac) (bool, uint, time.Time, error)

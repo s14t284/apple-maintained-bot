@@ -10,6 +10,7 @@ import (
 
 // IPadRepository 整備済み品ipadの情報を読み書きするクライアント
 type IPadRepository interface {
+	FindIPad(*model.IPad) (model.IPads, error)
 	FindIPadAll() (model.IPads, error)
 	FindByURL(url string) (*model.IPad, error)
 	IsExist(ipad *model.IPad) (bool, uint, time.Time, error)

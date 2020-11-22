@@ -34,6 +34,21 @@ func (m *MockMacRepository) EXPECT() *MockMacRepositoryMockRecorder {
 	return m.recorder
 }
 
+// FindMac mocks base method
+func (m *MockMacRepository) FindMac(arg0 *model.Mac) (model.Macs, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindMac", arg0)
+	ret0, _ := ret[0].(model.Macs)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindMac indicates an expected call of FindMac
+func (mr *MockMacRepositoryMockRecorder) FindMac(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindMac", reflect.TypeOf((*MockMacRepository)(nil).FindMac), arg0)
+}
+
 // FindMacAll mocks base method
 func (m *MockMacRepository) FindMacAll() (model.Macs, error) {
 	m.ctrl.T.Helper()

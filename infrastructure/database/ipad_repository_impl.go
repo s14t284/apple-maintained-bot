@@ -14,6 +14,16 @@ type IPadRepositoryImpl struct {
 	SQLClient *infrastructure.SQLClient
 }
 
+// FindIPad 整備済み品ipadの情報を検索して返す
+func (ipr IPadRepositoryImpl) FindIPad(ipad *model.IPad) (model.IPads, error) {
+	var ipads model.IPads
+	result := ipr.SQLClient.Client.Where(ipad).Order("id DESC").Find(&ipads)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return ipads, nil
+}
+
 // FindIPadAll 整備済みipadの全ての情報を返す
 func (ipr IPadRepositoryImpl) FindIPadAll() (model.IPads, error) {
 	var ipads model.IPads

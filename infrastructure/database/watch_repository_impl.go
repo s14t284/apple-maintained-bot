@@ -14,6 +14,16 @@ type WatchRepositoryImpl struct {
 	SQLClient *infrastructure.SQLClient
 }
 
+// FindWatch 整備済み品apple watchの情報を検索して返す
+func (wr WatchRepositoryImpl) FindWatch(watch *model.Watch) (model.Watches, error) {
+	var watches model.Watches
+	result := wr.SQLClient.Client.Where(watch).Order("id DESC").Find(&watches)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return watches, nil
+}
+
 // FindWatchAll 整備済みapple watchの全ての情報を返す
 func (wr WatchRepositoryImpl) FindWatchAll() (model.Watches, error) {
 	var watches model.Watches

@@ -10,6 +10,7 @@ import (
 
 // WatchRepository 整備済み品apple watchの情報を読み書きするクライアント
 type WatchRepository interface {
+	FindWatch(*model.Watch) (model.Watches, error)
 	FindWatchAll() (model.Watches, error)
 	FindByURL(url string) (*model.Watch, error)
 	IsExist(watch *model.Watch) (bool, uint, time.Time, error)

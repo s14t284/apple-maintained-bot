@@ -14,6 +14,16 @@ type MacRepositoryImpl struct {
 	SQLClient *infrastructure.SQLClient
 }
 
+// FindMac 整備済み品macの情報を検索して返す
+func (mr MacRepositoryImpl) FindMac(mac *model.Mac) (model.Macs, error) {
+	var macs model.Macs
+	result := mr.SQLClient.Client.Where(mac).Order("id DESC").Find(&macs)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return macs, nil
+}
+
 // FindMacAll 整備済みmacの全ての情報を返す
 func (mr MacRepositoryImpl) FindMacAll() (model.Macs, error) {
 	var macs model.Macs
