@@ -29,7 +29,7 @@ jobs:
         flag-name: Go-1.15
         parallel: true
 
-  finish:
+  calc-coverage:
     needs: test
     runs-on: ubuntu-latest
     steps:
