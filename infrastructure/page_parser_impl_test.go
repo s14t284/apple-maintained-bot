@@ -241,7 +241,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 		page := domain.Page{
 			Title:     "16インチMacBook Pro 2.4GHz 8コアIntel Core i9 Retinaディスプレイモデル - スペースグレイ [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		mac := &model.Mac{}
 		pageParser, err := initializePageParserImpl()
@@ -255,7 +255,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 		assert.Equal(mac.Color, "スペースグレイ")
 		assert.Equal(mac.Amount, 30000)
 		assert.Equal(mac.Name, "MacBook Pro")
-		assert.Equal(mac.URL, "https://apple.com")
+		assert.Equal(mac.URL, "https://www.apple.com")
 	}
 	{
 		// 15.4インチMacBook Proの場合
@@ -263,7 +263,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 		page := domain.Page{
 			Title:     "15.4インチMacBook Pro 2.9GHz 6コアIntel Core i9 Retinaディスプレイモデル - シルバー [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		mac := &model.Mac{}
 		pageParser, err := initializePageParserImpl()
@@ -277,14 +277,14 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 		assert.Equal(mac.Color, "シルバー")
 		assert.Equal(mac.Amount, 30000)
 		assert.Equal(mac.Name, "MacBook Pro")
-		assert.Equal(mac.URL, "https://apple.com")
+		assert.Equal(mac.URL, "https://www.apple.com")
 	}
 	{
 		// 13.3インチMacBook Proの場合
 		page := domain.Page{
 			Title:     "13.3インチMacBook Pro 1.4GHzクアッドコアIntel Core i5 Retinaディスプレイモデル - スペースグレイ [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		mac := &model.Mac{}
 		pageParser, err := initializePageParserImpl()
@@ -298,7 +298,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 		assert.Equal(mac.Color, "スペースグレイ")
 		assert.Equal(mac.Amount, 30000)
 		assert.Equal(mac.Name, "MacBook Pro")
-		assert.Equal(mac.URL, "https://apple.com")
+		assert.Equal(mac.URL, "https://www.apple.com")
 	}
 	{
 		mac := &model.Mac{}
@@ -310,7 +310,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 		page := domain.Page{
 			Title:     "Mac mini 3.0GHz 6コアIntel Core i5 - スペースグレイ [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		pageParser.loadMacInformationFromTitle(mac, page)
 		assert.Equal(mac.Inch, float32(0.0))
@@ -318,7 +318,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 		assert.Equal(mac.Color, "スペースグレイ")
 		assert.Equal(mac.Amount, 30000)
 		assert.Equal(mac.Name, "Mac mini")
-		assert.Equal(mac.URL, "https://apple.com")
+		assert.Equal(mac.URL, "https://www.apple.com")
 	}
 	// TODO: MacBook Airに関するテストを増やす
 	// TODO: MacBook以外のMacに関するテストを増やす
@@ -331,7 +331,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 	// 	page := domain.Page{
 	// 		Title:     "Mac Pro 3.2GHz 16コア Intel Xeon W、Radeon Pro 580X [整備済製品]",
 	// 		AmountStr: "30,000円（税別）",
-	// 		DetailURL: "https://apple.com",
+	// 		DetailURL: "https://www.apple.com",
 	// 	}
 	// 	pageParser.loadMacInformationFromTitle(mac, page)
 	// 	assert.Equal(mac.Inch, float32(0.0))
@@ -339,7 +339,7 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 	// 	assert.Equal(mac.Color, "")
 	// 	assert.Equal(mac.Amount, 30000)
 	// 	assert.Equal(mac.Name, "Mac Pro")
-	// 	assert.Equal(mac.URL, "https://apple.com")
+	// 	assert.Equal(mac.URL, "https://www.apple.com")
 	// }
 
 }
@@ -386,7 +386,7 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		page := domain.Page{
 			Title:     "12.9インチiPad Pro Wi-Fi + Cellular 512GB - スペースグレイ（第2世代） [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
@@ -398,7 +398,7 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		assert.Equal(ipad.Name, "iPad Pro")
 		assert.Equal(ipad.Strage, "512GB")
 		assert.Equal(ipad.Amount, 30000)
-		assert.Equal(ipad.URL, "https://apple.com")
+		assert.Equal(ipad.URL, "https://www.apple.com")
 
 	}
 	{
@@ -406,7 +406,7 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		page := domain.Page{
 			Title:     "iPad Air Wi-Fiモデル 64GB - ゴールド [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
@@ -418,14 +418,14 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		assert.Equal(ipad.Name, "iPad Air")
 		assert.Equal(ipad.Strage, "64GB")
 		assert.Equal(ipad.Amount, 30000)
-		assert.Equal(ipad.URL, "https://apple.com")
+		assert.Equal(ipad.URL, "https://www.apple.com")
 	}
 	{
 		// IPad miniの場合
 		page := domain.Page{
 			Title:     "iPad mini 4 Wi-Fi 128GB - スペースグレイ [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
@@ -437,14 +437,14 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		assert.Equal(ipad.Name, "iPad mini 4")
 		assert.Equal(ipad.Strage, "128GB")
 		assert.Equal(ipad.Amount, 30000)
-		assert.Equal(ipad.URL, "https://apple.com")
+		assert.Equal(ipad.URL, "https://www.apple.com")
 	}
 	{
 		// 通常IPadの場合
 		page := domain.Page{
 			Title:     "iPad Wi-Fi 128GB - シルバー（第7世代） [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
@@ -456,7 +456,7 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		assert.Equal(ipad.Name, "iPad")
 		assert.Equal(ipad.Strage, "128GB")
 		assert.Equal(ipad.Amount, 30000)
-		assert.Equal(ipad.URL, "https://apple.com")
+		assert.Equal(ipad.URL, "https://www.apple.com")
 	}
 }
 
@@ -485,7 +485,7 @@ func TestLoadWatchInformationFromTitle(t *testing.T) {
 		page := domain.Page{
 			Title:     "Apple Watch Series 4（GPS + Cellularモデル）- 44mmシルバーアルミニウムケースとホワイトスポーツバンド [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
@@ -496,7 +496,7 @@ func TestLoadWatchInformationFromTitle(t *testing.T) {
 		assert.Equal(watch.Color, "シルバーアルミニウムケースとホワイトスポーツバンド")
 		assert.Equal(watch.Name, "Apple Watch Series 4")
 		assert.Equal(watch.Amount, 30000)
-		assert.Equal(watch.URL, "https://apple.com")
+		assert.Equal(watch.URL, "https://www.apple.com")
 	}
 	{
 		// Apple Watch Series 4（GPSモデル）の場合
@@ -504,7 +504,7 @@ func TestLoadWatchInformationFromTitle(t *testing.T) {
 		page := domain.Page{
 			Title:     "Apple Watch Series 4（GPSモデル）- 44mmゴールドアルミニウムケースとピンクサンドスポーツバンド [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
@@ -515,14 +515,14 @@ func TestLoadWatchInformationFromTitle(t *testing.T) {
 		assert.Equal(watch.Color, "ゴールドアルミニウムケースとピンクサンドスポーツバンド")
 		assert.Equal(watch.Name, "Apple Watch Series 4")
 		assert.Equal(watch.Amount, 30000)
-		assert.Equal(watch.URL, "https://apple.com")
+		assert.Equal(watch.URL, "https://www.apple.com")
 	}
 	{
 		// Apple Watch Series Nike+ Series 4の場合
 		page := domain.Page{
 			Title:     "Apple Watch Nike+ Series 4（GPS + Cellularモデル）- 40mmスペースグレイアルミニウムケースとアンスラサイト/ブラックNikeスポーツバンド [整備済製品]",
 			AmountStr: "30,000円（税別）",
-			DetailURL: "https://apple.com",
+			DetailURL: "https://www.apple.com",
 		}
 		pageParser, err := initializePageParserImpl()
 		if err != nil {
@@ -533,7 +533,7 @@ func TestLoadWatchInformationFromTitle(t *testing.T) {
 		assert.Equal(watch.Color, "スペースグレイアルミニウムケースとアンスラサイト/ブラックNikeスポーツバンド")
 		assert.Equal(watch.Name, "Apple Watch Nike+ Series 4")
 		assert.Equal(watch.Amount, 30000)
-		assert.Equal(watch.URL, "https://apple.com")
+		assert.Equal(watch.URL, "https://www.apple.com")
 	}
 }
 
