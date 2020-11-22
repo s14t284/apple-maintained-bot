@@ -22,8 +22,8 @@ func NewWatchInteractor(wr repository.WatchRepository) *WatchInteractor {
 }
 
 // FindWatch 引数に指定したapple watchの情報に合致するapple watchの一覧を取得
-func (interactor *WatchInteractor) FindWatch(watch *model.Watch) (model.Watches, error) {
-	watches, err := interactor.wr.FindWatch(watch)
+func (interactor *WatchInteractor) FindWatch(param *model.WatchRequestParam) (model.Watches, error) {
+	watches, err := interactor.wr.FindWatch(param)
 	return watches, err
 }
 

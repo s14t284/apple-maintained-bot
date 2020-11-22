@@ -20,3 +20,16 @@ type Watch struct {
 
 // Watches 複数のapple watchのドメインオブジェクト
 type Watches []Watch
+
+// WatchRequestParam apple watchを検索するときのリクエストパラメータを格納するオブジェクト
+type WatchRequestParam struct {
+	Name       string
+	Color      string
+	IsSold     string
+	MaxInch    float64
+	MinInch    float64
+	MaxStorage int
+	MinStorage int
+	MaxAmount  int
+	MinAmount  int
+}

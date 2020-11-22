@@ -41,8 +41,8 @@ func TestWatchInteractor_FindWatch(t *testing.T) {
 		if ipi == nil {
 			t.FailNow()
 		}
-		mockWpr.EXPECT().FindWatch(&expected[0]).Return(expected, nil)
-		actual, err := ipi.FindWatch(&expected[0])
+		mockWpr.EXPECT().FindWatch(&model.WatchRequestParam{}).Return(expected, nil)
+		actual, err := ipi.FindWatch(&model.WatchRequestParam{})
 		assert.NotNil(actual)
 		assert.NoError(err)
 		assert.Equal(expected, actual)
@@ -53,8 +53,8 @@ func TestWatchInteractor_FindWatch(t *testing.T) {
 		if ipi == nil {
 			t.FailNow()
 		}
-		mockWpr.EXPECT().FindWatch(&expected[0]).Return(nil, fmt.Errorf("error"))
-		actual, err := ipi.FindWatch(&expected[0])
+		mockWpr.EXPECT().FindWatch(&model.WatchRequestParam{}).Return(nil, fmt.Errorf("error"))
+		actual, err := ipi.FindWatch(&model.WatchRequestParam{})
 		assert.Nil(actual)
 		assert.Error(err)
 	}

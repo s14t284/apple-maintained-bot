@@ -15,9 +15,62 @@ type MacRepositoryImpl struct {
 }
 
 // FindMac 整備済み品macの情報を検索して返す
-func (mr MacRepositoryImpl) FindMac(mac *model.Mac) (model.Macs, error) {
+func (mr MacRepositoryImpl) FindMac(param *model.MacRequestParam) (model.Macs, error) {
 	var macs model.Macs
-	result := mr.SQLClient.Client.Where(mac).Order("id DESC").Find(&macs)
+	var def model.MacRequestParam
+	m := make(map[string]interface{})
+	if param.Name != def.Name {
+		m["name LIKE ?"] = param.Name
+	}
+	if param.Color != def.Color {
+		m["color = ?"] = param.Color
+	}
+	if param.MaxInch != def.MaxInch {
+		m["inch < ?"] = param.MaxInch
+	}
+	if param.MinInch != def.MinInch {
+		m["inch > ?"] = param.MinInch
+	}
+	if param.MaxStorage != def.MaxStorage {
+		m["storage < ?"] = param.MaxStorage
+	}
+	if param.MinStorage != def.MinStorage {
+		m["storage > ?"] = param.MinStorage
+	}
+	if param.MaxAmount != def.MaxAmount {
+		m["amount < ?"] = param.MaxAmount
+	}
+	if param.MinAmount != def.MinAmount {
+		m["amount > ?"] = param.MinAmount
+	}
+	if param.MaxMemory != def.MaxMemory {
+		m["memory < ?"] = param.MaxMemory
+	}
+	if param.MinMemory != def.MinMemory {
+		m["memory > ?"] = param.MinMemory
+	}
+	if param.IsSold != def.IsSold {
+		switch param.IsSold {
+		case "true":
+			m["is_sold = ?"] = true
+		case "false":
+			m["is_sold = ?"] = false
+		}
+		m["is_sold = ?"] = param.IsSold
+	}
+	if param.TouchBar != def.TouchBar {
+		switch param.TouchBar {
+		case "true":
+			m["touch_bar = ?"] = true
+		case "false":
+			m["touch_bar = ?"] = false
+		}
+	}
+	q := mr.SQLClient.Client.Where("id > ?", 0)
+	for k, v := range m {
+		q = q.Where(k, v)
+	}
+	result := q.Order("id DESC").Find(&macs)
 	if result.Error != nil {
 		return nil, result.Error
 	}

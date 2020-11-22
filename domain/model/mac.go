@@ -23,3 +23,19 @@ type Mac struct {
 
 // Macs 複数のmacbookのドメインオブジェクト
 type Macs []Mac
+
+// MacRequestParam macを検索するときのリクエストパラメータを格納するオブジェクト
+type MacRequestParam struct {
+	Name       string
+	Color      string
+	TouchBar   string
+	IsSold     string
+	MaxInch    float64
+	MinInch    float64
+	MaxMemory  int
+	MinMemory  int
+	MaxStorage int
+	MinStorage int
+	MaxAmount  int
+	MinAmount  int
+}

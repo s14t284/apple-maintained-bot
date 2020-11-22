@@ -22,8 +22,8 @@ func NewMacInteractor(mr repository.MacRepository) *MacInteractor {
 }
 
 // FindMac 引数に指定したmacの情報に合致するmacの一覧を取得
-func (interactor *MacInteractor) FindMac(mac *model.Mac) (model.Macs, error) {
-	macs, err := interactor.mr.FindMac(mac)
+func (interactor *MacInteractor) FindMac(param *model.MacRequestParam) (model.Macs, error) {
+	macs, err := interactor.mr.FindMac(param)
 	return macs, err
 }
 

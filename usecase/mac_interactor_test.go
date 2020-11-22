@@ -41,8 +41,8 @@ func TestMacInteractor_FindMac(t *testing.T) {
 		if ipi == nil {
 			t.FailNow()
 		}
-		mockMpr.EXPECT().FindMac(&expected[0]).Return(expected, nil)
-		actual, err := ipi.FindMac(&expected[0])
+		mockMpr.EXPECT().FindMac(&model.MacRequestParam{}).Return(expected, nil)
+		actual, err := ipi.FindMac(&model.MacRequestParam{})
 		assert.NotNil(actual)
 		assert.NoError(err)
 		assert.Equal(expected, actual)
@@ -53,8 +53,8 @@ func TestMacInteractor_FindMac(t *testing.T) {
 		if ipi == nil {
 			t.FailNow()
 		}
-		mockMpr.EXPECT().FindMac(&expected[0]).Return(nil, fmt.Errorf("error"))
-		actual, err := ipi.FindMac(&expected[0])
+		mockMpr.EXPECT().FindMac(&model.MacRequestParam{}).Return(nil, fmt.Errorf("error"))
+		actual, err := ipi.FindMac(&model.MacRequestParam{})
 		assert.Nil(actual)
 		assert.Error(err)
 	}

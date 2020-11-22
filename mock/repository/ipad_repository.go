@@ -35,18 +35,18 @@ func (m *MockIPadRepository) EXPECT() *MockIPadRepositoryMockRecorder {
 }
 
 // FindIPad mocks base method
-func (m *MockIPadRepository) FindIPad(arg0 *model.IPad) (model.IPads, error) {
+func (m *MockIPadRepository) FindIPad(param *model.IPadRequestParam) (model.IPads, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "FindIPad", arg0)
+	ret := m.ctrl.Call(m, "FindIPad", param)
 	ret0, _ := ret[0].(model.IPads)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // FindIPad indicates an expected call of FindIPad
-func (mr *MockIPadRepositoryMockRecorder) FindIPad(arg0 interface{}) *gomock.Call {
+func (mr *MockIPadRepositoryMockRecorder) FindIPad(param interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindIPad", reflect.TypeOf((*MockIPadRepository)(nil).FindIPad), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindIPad", reflect.TypeOf((*MockIPadRepository)(nil).FindIPad), param)
 }
 
 // FindIPadAll mocks base method

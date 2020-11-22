@@ -15,9 +15,48 @@ type WatchRepositoryImpl struct {
 }
 
 // FindWatch 整備済み品apple watchの情報を検索して返す
-func (wr WatchRepositoryImpl) FindWatch(watch *model.Watch) (model.Watches, error) {
+func (wr WatchRepositoryImpl) FindWatch(param *model.WatchRequestParam) (model.Watches, error) {
 	var watches model.Watches
-	result := wr.SQLClient.Client.Where(watch).Order("id DESC").Find(&watches)
+	var def model.IPadRequestParam
+	m := make(map[string]interface{})
+	if param.Name != def.Name {
+		m["name LIKE ?"] = param.Name
+	}
+	if param.Color != def.Color {
+		m["color = ?"] = param.Color
+	}
+	if param.MaxInch != def.MaxInch {
+		m["inch < ?"] = param.MaxInch
+	}
+	if param.MinInch != def.MinInch {
+		m["inch > ?"] = param.MinInch
+	}
+	if param.MaxStorage != def.MaxStorage {
+		m["storage < ?"] = param.MaxStorage
+	}
+	if param.MinStorage != def.MinStorage {
+		m["storage > ?"] = param.MinStorage
+	}
+	if param.MaxAmount != def.MaxAmount {
+		m["amount < ?"] = param.MaxAmount
+	}
+	if param.MinAmount != def.MinAmount {
+		m["amount > ?"] = param.MinAmount
+	}
+	if param.IsSold != def.IsSold {
+		switch param.IsSold {
+		case "true":
+			m["is_sold = ?"] = true
+		case "false":
+			m["is_sold = ?"] = false
+		}
+		m["is_sold = ?"] = param.IsSold
+	}
+	q := wr.SQLClient.Client.Where("id > ?", 0)
+	for k, v := range m {
+		q = q.Where(k, v)
+	}
+	result := q.Order("id DESC").Find(&watches)
 	if result.Error != nil {
 		return nil, result.Error
 	}

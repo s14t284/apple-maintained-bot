@@ -82,11 +82,6 @@ func main() {
 		log.Error(err)
 	}
 
-	// 一度クローリングを実行
-	crawler.CrawlMacPage()
-	crawler.CrawlIPadPage()
-	crawler.CrawlWatchPage()
-
 	// cronを設定
 	c := getCronConfig(crawler)
 	c.Start()
@@ -107,9 +102,15 @@ func main() {
 	if port == "" {
 		port = "8080" // set default port
 	}
-	log.Info("Run Server...")
-	err = http.ListenAndServe(":"+port, nil)
-	if err != nil {
-		log.Fatal("Error ListenAndServe: ", err)
-	}
+	go func() {
+		log.Info("Run Server...")
+		err = http.ListenAndServe(":"+port, nil)
+		if err != nil {
+			log.Fatal("Error ListenAndServe: ", err)
+		}
+	}()
+	// 一度クローリングを実行
+	crawler.CrawlMacPage()
+	crawler.CrawlIPadPage()
+	crawler.CrawlWatchPage()
 }

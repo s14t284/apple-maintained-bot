@@ -21,3 +21,16 @@ type IPad struct {
 
 // IPads 複数のipadのドメインオブジェクト
 type IPads []IPad
+
+// IPadRequestParam ipadを検索するときのリクエストパラメータを格納するオブジェクト
+type IPadRequestParam struct {
+	Name       string
+	Color      string
+	IsSold     string
+	MaxInch    float64
+	MinInch    float64
+	MaxStorage int
+	MinStorage int
+	MaxAmount  int
+	MinAmount  int
+}

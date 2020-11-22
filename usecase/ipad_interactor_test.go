@@ -41,8 +41,8 @@ func TestIPadInteractor_FindIPad(t *testing.T) {
 		if ipi == nil {
 			t.FailNow()
 		}
-		mockIpr.EXPECT().FindIPad(&expected[0]).Return(expected, nil)
-		actual, err := ipi.FindIPad(&expected[0])
+		mockIpr.EXPECT().FindIPad(&model.IPadRequestParam{}).Return(expected, nil)
+		actual, err := ipi.FindIPad(&model.IPadRequestParam{})
 		assert.NotNil(actual)
 		assert.NoError(err)
 		assert.Equal(expected, actual)
@@ -53,8 +53,8 @@ func TestIPadInteractor_FindIPad(t *testing.T) {
 		if ipi == nil {
 			t.FailNow()
 		}
-		mockIpr.EXPECT().FindIPad(&expected[0]).Return(nil, fmt.Errorf("error"))
-		actual, err := ipi.FindIPad(&expected[0])
+		mockIpr.EXPECT().FindIPad(&model.IPadRequestParam{}).Return(nil, fmt.Errorf("error"))
+		actual, err := ipi.FindIPad(&model.IPadRequestParam{})
 		assert.Nil(actual)
 		assert.Error(err)
 	}
