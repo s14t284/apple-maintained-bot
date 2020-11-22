@@ -16,26 +16,24 @@ import (
 	"github.com/s14t284/apple-maitained-bot/usecase"
 )
 
-func getCronConfig(crawler interfaces.CrawlerController) *cron.Cron {
+func getCronConfig(crawler interfaces.CrawlerController) (*cron.Cron, error) {
 	c := cron.New()
 
-	// Macの整備済み品収集
-	c.AddFunc("CRON_TZ=Asia/Tokyo 0 8-22 * * *", func() {
-		log.Info("start crawling maintained products of mac")
-		crawler.CrawlMacPage()
-	})
-	// IPadの整備済み品収集
-	c.AddFunc("CRON_TZ=Asia/Tokyo 0 8-22 * * *", func() {
-		log.Info("start crawling maintained products of ipad")
-		crawler.CrawlIPadPage()
-	})
-	// apple watchの整備済み品収集
-	c.AddFunc("CRON_TZ=Asia/Tokyo 0 8-22 * * *", func() {
-		log.Info("start crawling maintained products of apple watch")
-		crawler.CrawlWatchPage()
+	// 整備済み品収集
+	_, err := c.AddFunc("CRON_TZ=Asia/Tokyo 0 8-22 * * *", func() {
+		log.Info("start crawling maintained products")
+		crawl := func(f func() error) {
+			err := f()
+			if err != nil {
+				log.Errorf("crawling error [error][%w]", err)
+			}
+		}
+		go crawl(crawler.CrawlMacPage)
+		go crawl(crawler.CrawlIPadPage)
+		go crawl(crawler.CrawlWatchPage)
 	})
 
-	return c
+	return c, err
 }
 
 func main() {
@@ -87,7 +85,11 @@ func main() {
 	crawler.CrawlWatchPage()
 
 	// cronを設定
-	c := getCronConfig(crawler)
+	c, err := getCronConfig(crawler)
+	if err != nil {
+		log.Fatal(err)
+		panic(err)
+	}
 	c.Start()
 
 	// 仮のエンドポイント
