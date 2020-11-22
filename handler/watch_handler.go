@@ -11,6 +11,7 @@ import (
 	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 )
 
+// GetWatchHandler apple watchのGetリクエストの API Handler
 func GetWatchHandler(wr repository.WatchRepository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
