@@ -180,7 +180,9 @@ func (ppi *PageParserImpl) loadMacInformationFromTitle(mac *model.Mac, page doma
 	mac.Name = name
 	// URL
 	mac.URL = page.DetailURL
-	// 不要な部分を削除
+	if !strings.HasPrefix(mac.URL, rootURL) {
+		mac.URL = rootURL + mac.URL
+	}
 	return nil
 }
 
@@ -254,7 +256,9 @@ func (ppi *PageParserImpl) loadIPadInformationFromTitle(ipad *model.IPad, page d
 	}
 	// URL
 	ipad.URL = page.DetailURL
-
+	if !strings.HasPrefix(ipad.URL, rootURL) {
+		ipad.URL = rootURL + ipad.URL
+	}
 	return nil
 }
 
@@ -322,6 +326,8 @@ func (ppi *PageParserImpl) loadWatchInformationFromTitle(watch *model.Watch, pag
 	}
 	// URL
 	watch.URL = page.DetailURL
-
+	if !strings.HasPrefix(watch.URL, rootURL) {
+		watch.URL = rootURL + watch.URL
+	}
 	return nil
 }
