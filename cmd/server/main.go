@@ -1,10 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/s14t284/apple-maitained-bot/handler"
 
 	"github.com/s14t284/apple-maitained-bot/interfaces"
 
@@ -96,59 +97,11 @@ func main() {
 		w.Write([]byte("{\"message\": \"ok\"}"))
 	})
 
-	http.HandleFunc("/mac", func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != "GET" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		macs, err := macInteractor.FindMacAll()
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		json, err := json.Marshal(macs)
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		w.Write(json)
-	})
+	http.HandleFunc("/mac", handler.GetMacHandler(macInteractor))
 
-	http.HandleFunc("/ipad", func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != "GET" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		ipads, err := ipadInteractor.FindIPadAll()
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		json, err := json.Marshal(ipads)
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		w.Write(json)
-	})
+	http.HandleFunc("/ipad", handler.GetIPadHandler(ipadInteractor))
 
-	http.HandleFunc("/watch", func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != "GET" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		watches, err := watchInteractor.FindWatchAll()
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		json, err := json.Marshal(watches)
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		w.Write(json)
-	})
+	http.HandleFunc("/watch", handler.GetWatchHandler(watchInteractor))
 
 	port := os.Getenv("PORT")
 	if port == "" {
