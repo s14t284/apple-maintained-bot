@@ -31,7 +31,6 @@ func NewScraperImpl() (*ScraperImpl, error) {
 func (si *ScraperImpl) Scrape(targetPath string) (doc *goquery.Document, err error) {
 	requestBody := url.Values{}
 	p := rootURL + targetPath
-	fmt.Println(p)
 	req, err := http.NewRequest(
 		"GET", p,
 		strings.NewReader(requestBody.Encode()),
