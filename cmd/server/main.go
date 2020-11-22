@@ -38,7 +38,7 @@ func getCronConfig(crawler interfaces.CrawlerController) (*cron.Cron, error) {
 
 func main() {
 	// 設定読み込み
-	config, err := config.LoadConfig()
+	conf, err := config.LoadConfig()
 	if err != nil {
 		log.Errorf("cannot load config: %s", err.Error())
 		panic(err)
@@ -58,14 +58,14 @@ func main() {
 		panic(err)
 	}
 	// slack notifier
-	notifier, err := infrastructure.NewSlackNotifyRepositoryImpl(config.SlackNotifyConfig)
+	notifier, err := infrastructure.NewSlackNotifyRepositoryImpl(conf.SlackNotifyConfig)
 	if err != nil {
 		err = fmt.Errorf("failed to initialize slack notifier [error][%w]", err)
 		log.Error(err)
 		panic(err)
 	}
 	// DB接続
-	psqlClient, err := infrastructure.PsqlNewClientImpl(config.PsqlConfig)
+	psqlClient, err := infrastructure.PsqlNewClientImpl(conf.PsqlConfig)
 	if err != nil {
 		log.Error(err)
 		panic(err)
