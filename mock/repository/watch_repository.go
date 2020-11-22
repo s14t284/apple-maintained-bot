@@ -34,6 +34,21 @@ func (m *MockWatchRepository) EXPECT() *MockWatchRepositoryMockRecorder {
 	return m.recorder
 }
 
+// FindWatch mocks base method
+func (m *MockWatchRepository) FindWatch(param *model.WatchRequestParam) (model.Watches, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "FindWatch", param)
+	ret0, _ := ret[0].(model.Watches)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// FindWatch indicates an expected call of FindWatch
+func (mr *MockWatchRepositoryMockRecorder) FindWatch(param interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindWatch", reflect.TypeOf((*MockWatchRepository)(nil).FindWatch), param)
+}
+
 // FindWatchAll mocks base method
 func (m *MockWatchRepository) FindWatchAll() (model.Watches, error) {
 	m.ctrl.T.Helper()

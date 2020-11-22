@@ -21,6 +21,12 @@ func NewIPadInteractor(ipr repository.IPadRepository) *IPadInteractor {
 	return &IPadInteractor{ipr: ipr}
 }
 
+// FindIPad 引数に指定したipadの情報に合致するipadの一覧を取得
+func (interactor *IPadInteractor) FindIPad(param *model.IPadRequestParam) (model.IPads, error) {
+	ipads, err := interactor.ipr.FindIPad(param)
+	return ipads, err
+}
+
 // FindIPadAll ipadの情報を取得
 func (interactor *IPadInteractor) FindIPadAll() (model.IPads, error) {
 	ipads, err := interactor.ipr.FindIPadAll()

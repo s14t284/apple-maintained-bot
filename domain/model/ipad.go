@@ -10,8 +10,7 @@ type IPad struct {
 	CreatedAt   time.Time `json:"created_at"`
 	Name        string    `gorm:"size:255; not null" json:"name"`
 	Inch        float32   `gorm:"not null" json:"inch"`
-	CPU         string    `gorm:"size:50; not null" json:"cpu"`
-	Strage      string    `gorm:"size:20; not null" json:"strage"`
+	Storage     int       `gorm:"not null;" json:"strage"`
 	Camera      string    `gorm:"size:50; not null" json:"camera"`
 	Color       string    `gorm:"size:15; not null" json:"color"`
 	Amount      int       `gorm:"not null" json:"amount"`
@@ -22,3 +21,16 @@ type IPad struct {
 
 // IPads 複数のipadのドメインオブジェクト
 type IPads []IPad
+
+// IPadRequestParam ipadを検索するときのリクエストパラメータを格納するオブジェクト
+type IPadRequestParam struct {
+	Name       string
+	Color      string
+	IsSold     string
+	MaxInch    float64
+	MinInch    float64
+	MaxStorage int
+	MinStorage int
+	MaxAmount  int
+	MinAmount  int
+}

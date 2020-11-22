@@ -28,6 +28,38 @@ func TestNewWatchInteractor(t *testing.T) {
 	}
 }
 
+func TestWatchInteractor_FindWatch(t *testing.T) {
+	assert := assert.New(t)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockWpr := repository.NewMockWatchRepository(ctrl)
+	expected := make(model.Watches, 1)
+	expected[0] = model.Watch{Name: "Apple Watch Series 4"}
+	{
+		// success
+		ipi := NewWatchInteractor(mockWpr)
+		if ipi == nil {
+			t.FailNow()
+		}
+		mockWpr.EXPECT().FindWatch(&model.WatchRequestParam{}).Return(expected, nil)
+		actual, err := ipi.FindWatch(&model.WatchRequestParam{})
+		assert.NotNil(actual)
+		assert.NoError(err)
+		assert.Equal(expected, actual)
+	}
+	{
+		// failed
+		ipi := NewWatchInteractor(mockWpr)
+		if ipi == nil {
+			t.FailNow()
+		}
+		mockWpr.EXPECT().FindWatch(&model.WatchRequestParam{}).Return(nil, fmt.Errorf("error"))
+		actual, err := ipi.FindWatch(&model.WatchRequestParam{})
+		assert.Nil(actual)
+		assert.Error(err)
+	}
+}
+
 func TestWatchInteractor_FindWatchAll(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)

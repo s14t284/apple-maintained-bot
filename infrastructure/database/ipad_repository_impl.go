@@ -14,6 +14,55 @@ type IPadRepositoryImpl struct {
 	SQLClient *infrastructure.SQLClient
 }
 
+// FindIPad 整備済み品ipadの情報を検索して返す
+func (ipr IPadRepositoryImpl) FindIPad(param *model.IPadRequestParam) (model.IPads, error) {
+	var ipads model.IPads
+	var def model.IPadRequestParam
+	m := make(map[string]interface{})
+	if param.Name != def.Name {
+		m["name LIKE ?"] = param.Name
+	}
+	if param.Color != def.Color {
+		m["color = ?"] = param.Color
+	}
+	if param.MaxInch != def.MaxInch {
+		m["inch < ?"] = param.MaxInch
+	}
+	if param.MinInch != def.MinInch {
+		m["inch > ?"] = param.MinInch
+	}
+	if param.MaxStorage != def.MaxStorage {
+		m["storage < ?"] = param.MaxStorage
+	}
+	if param.MinStorage != def.MinStorage {
+		m["storage > ?"] = param.MinStorage
+	}
+	if param.MaxAmount != def.MaxAmount {
+		m["amount < ?"] = param.MaxAmount
+	}
+	if param.MinAmount != def.MinAmount {
+		m["amount > ?"] = param.MinAmount
+	}
+	if param.IsSold != def.IsSold {
+		switch param.IsSold {
+		case "true":
+			m["is_sold = ?"] = true
+		case "false":
+			m["is_sold = ?"] = false
+		}
+		m["is_sold = ?"] = param.IsSold
+	}
+	q := ipr.SQLClient.Client.Where("id > ?", 0)
+	for k, v := range m {
+		q = q.Where(k, v)
+	}
+	result := q.Order("id DESC").Find(&ipads)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return ipads, nil
+}
+
 // FindIPadAll 整備済みipadの全ての情報を返す
 func (ipr IPadRepositoryImpl) FindIPadAll() (model.IPads, error) {
 	var ipads model.IPads
@@ -40,8 +89,7 @@ func (ipr IPadRepositoryImpl) IsExist(ipad *model.IPad) (bool, uint, time.Time, 
 	err := ipr.SQLClient.Client.Where(&model.IPad{
 		Name:        ipad.Name,
 		Inch:        ipad.Inch,
-		CPU:         ipad.CPU,
-		Strage:      ipad.Strage,
+		Storage:     ipad.Storage,
 		Camera:      ipad.Camera,
 		Color:       ipad.Color,
 		Amount:      ipad.Amount,

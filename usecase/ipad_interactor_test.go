@@ -28,6 +28,38 @@ func TestNewIPadInteractor(t *testing.T) {
 	}
 }
 
+func TestIPadInteractor_FindIPad(t *testing.T) {
+	assert := assert.New(t)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockIpr := repository.NewMockIPadRepository(ctrl)
+	expected := make(model.IPads, 1)
+	expected[0] = model.IPad{Name: "IPad Pro"}
+	{
+		// success
+		ipi := NewIPadInteractor(mockIpr)
+		if ipi == nil {
+			t.FailNow()
+		}
+		mockIpr.EXPECT().FindIPad(&model.IPadRequestParam{}).Return(expected, nil)
+		actual, err := ipi.FindIPad(&model.IPadRequestParam{})
+		assert.NotNil(actual)
+		assert.NoError(err)
+		assert.Equal(expected, actual)
+	}
+	{
+		// failed
+		ipi := NewIPadInteractor(mockIpr)
+		if ipi == nil {
+			t.FailNow()
+		}
+		mockIpr.EXPECT().FindIPad(&model.IPadRequestParam{}).Return(nil, fmt.Errorf("error"))
+		actual, err := ipi.FindIPad(&model.IPadRequestParam{})
+		assert.Nil(actual)
+		assert.Error(err)
+	}
+}
+
 func TestIPadInteractor_FindIPadAll(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)

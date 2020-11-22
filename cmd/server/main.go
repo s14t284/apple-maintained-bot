@@ -1,10 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/s14t284/apple-maitained-bot/handler"
 
 	"github.com/s14t284/apple-maitained-bot/interfaces"
 
@@ -79,11 +80,6 @@ func main() {
 		log.Error(err)
 	}
 
-	// 一度クローリングを実行
-	crawler.CrawlMacPage()
-	crawler.CrawlIPadPage()
-	crawler.CrawlWatchPage()
-
 	// cronを設定
 	c, err := getCronConfig(crawler)
 	if err != nil {
@@ -98,67 +94,25 @@ func main() {
 		w.Write([]byte("{\"message\": \"ok\"}"))
 	})
 
-	http.HandleFunc("/mac", func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != "GET" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		macs, err := macInteractor.FindMacAll()
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		json, err := json.Marshal(macs)
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		w.Write(json)
-	})
+	http.HandleFunc("/mac", handler.GetMacHandler(macInteractor))
 
-	http.HandleFunc("/ipad", func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != "GET" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		ipads, err := ipadInteractor.FindIPadAll()
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		json, err := json.Marshal(ipads)
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		w.Write(json)
-	})
+	http.HandleFunc("/ipad", handler.GetIPadHandler(ipadInteractor))
 
-	http.HandleFunc("/watch", func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != "GET" {
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		watches, err := watchInteractor.FindWatchAll()
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		json, err := json.Marshal(watches)
-		if err != nil {
-			log.Errorf(err.Error())
-			w.WriteHeader(http.StatusBadRequest)
-		}
-		w.Write(json)
-	})
+	http.HandleFunc("/watch", handler.GetWatchHandler(watchInteractor))
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080" // set default port
 	}
-	log.Info("Run Server...")
-	err = http.ListenAndServe(":"+port, nil)
-	if err != nil {
-		log.Fatal("Error ListenAndServe: ", err)
-	}
+	go func() {
+		log.Info("Run Server...")
+		err = http.ListenAndServe(":"+port, nil)
+		if err != nil {
+			log.Fatal("Error ListenAndServe: ", err)
+		}
+	}()
+	// 一度クローリングを実行
+	crawler.CrawlMacPage()
+	crawler.CrawlIPadPage()
+	crawler.CrawlWatchPage()
 }

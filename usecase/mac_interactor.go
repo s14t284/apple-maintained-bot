@@ -21,7 +21,13 @@ func NewMacInteractor(mr repository.MacRepository) *MacInteractor {
 	return &MacInteractor{mr: mr}
 }
 
-// FindMacAll macbookの情報を全て取得
+// FindMac 引数に指定したmacの情報に合致するmacの一覧を取得
+func (interactor *MacInteractor) FindMac(param *model.MacRequestParam) (model.Macs, error) {
+	macs, err := interactor.mr.FindMac(param)
+	return macs, err
+}
+
+// FindMacAll macの情報を全て取得
 func (interactor *MacInteractor) FindMacAll() (model.Macs, error) {
 	macs, err := interactor.mr.FindMacAll()
 	return macs, err
@@ -37,7 +43,7 @@ func (interactor *MacInteractor) IsExist(mac *model.Mac) (bool, uint, time.Time,
 	return interactor.mr.IsExist(mac)
 }
 
-// AddMac macbookの情報を追加
+// AddMac macの情報を追加
 func (interactor *MacInteractor) AddMac(mac *model.Mac) (err error) {
 	err = interactor.mr.AddMac(mac)
 	return
@@ -58,7 +64,7 @@ func (interactor *MacInteractor) UpdateAllSoldTemporary() (err error) {
 	return
 }
 
-// RemoveMac macbookの情報を削除
+// RemoveMac macの情報を削除
 func (interactor *MacInteractor) RemoveMac(id int64) (err error) {
 	err = interactor.mr.RemoveMac(id)
 	return

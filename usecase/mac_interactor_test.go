@@ -28,6 +28,38 @@ func TestNewMacInteractor(t *testing.T) {
 	}
 }
 
+func TestMacInteractor_FindMac(t *testing.T) {
+	assert := assert.New(t)
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockMpr := repository.NewMockMacRepository(ctrl)
+	expected := make(model.Macs, 1)
+	expected[0] = model.Mac{Name: "MacBook Pro"}
+	{
+		// success
+		ipi := NewMacInteractor(mockMpr)
+		if ipi == nil {
+			t.FailNow()
+		}
+		mockMpr.EXPECT().FindMac(&model.MacRequestParam{}).Return(expected, nil)
+		actual, err := ipi.FindMac(&model.MacRequestParam{})
+		assert.NotNil(actual)
+		assert.NoError(err)
+		assert.Equal(expected, actual)
+	}
+	{
+		// failed
+		ipi := NewMacInteractor(mockMpr)
+		if ipi == nil {
+			t.FailNow()
+		}
+		mockMpr.EXPECT().FindMac(&model.MacRequestParam{}).Return(nil, fmt.Errorf("error"))
+		actual, err := ipi.FindMac(&model.MacRequestParam{})
+		assert.Nil(actual)
+		assert.Error(err)
+	}
+}
+
 func TestMacInteractor_FindMacAll(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
