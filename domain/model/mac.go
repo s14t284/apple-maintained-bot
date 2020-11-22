@@ -12,7 +12,7 @@ type Mac struct {
 	Inch        float32   `gorm:"not null" json:"inch"`
 	CPU         string    `gorm:"size:50; not null" json:"cpu"`
 	Memory      int       `gorm:"not null" json:"memory"`
-	Strage      string    `gorm:"size:20; not null" json:"strage"`
+	Storage     int       `gorm:"not null;" json:"strage"`
 	TouchBar    bool      `gorm:"not null not null" json:"touchBar"`
 	Color       string    `gorm:"size:15; not null" json:"color"`
 	Amount      int       `gorm:"not null" json:"amount"`

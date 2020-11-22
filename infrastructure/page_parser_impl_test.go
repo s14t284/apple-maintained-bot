@@ -41,7 +41,7 @@ const (
         </div>
         <div class="para-list">
             <p>
-                512GB SSD<sup>1</sup>
+                1TB SSD<sup>1</sup>
             </p>
         </div>
         <div class="para-list">
@@ -359,7 +359,7 @@ func TestLoadMacInformationFromDetailHTML(t *testing.T) {
 		assert.NoError(err)
 		assert.Equal(utils.GetReleaseYearAndMonth(2019, 11), mac.ReleaseDate)
 		assert.Equal(true, mac.TouchBar)
-		assert.Equal("512GB", mac.Strage)
+		assert.Equal(1000, mac.Storage)
 	}
 	{
 		// 正常系
@@ -373,7 +373,7 @@ func TestLoadMacInformationFromDetailHTML(t *testing.T) {
 		err = pageParser.loadMacInformationFromDetailHTML(mac, doc)
 		assert.NoError(err)
 		assert.Equal(utils.GetReleaseYearAndMonth(2018, 10), mac.ReleaseDate)
-		assert.Equal("512GB", mac.Strage)
+		assert.Equal(512, mac.Storage)
 	}
 }
 
@@ -396,7 +396,7 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		assert.NoError(err)
 		assert.Equal(ipad.Color, "スペースグレイ")
 		assert.Equal(ipad.Name, "iPad Pro")
-		assert.Equal(ipad.Strage, "512GB")
+		assert.Equal(ipad.Storage, 512)
 		assert.Equal(ipad.Amount, 30000)
 		assert.Equal(ipad.URL, "https://www.apple.com")
 
@@ -416,7 +416,7 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		assert.NoError(err)
 		assert.Equal(ipad.Color, "ゴールド")
 		assert.Equal(ipad.Name, "iPad Air")
-		assert.Equal(ipad.Strage, "64GB")
+		assert.Equal(ipad.Storage, 64)
 		assert.Equal(ipad.Amount, 30000)
 		assert.Equal(ipad.URL, "https://www.apple.com")
 	}
@@ -435,14 +435,14 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		assert.NoError(err)
 		assert.Equal(ipad.Color, "スペースグレイ")
 		assert.Equal(ipad.Name, "iPad mini 4")
-		assert.Equal(ipad.Strage, "128GB")
+		assert.Equal(ipad.Storage, 128)
 		assert.Equal(ipad.Amount, 30000)
 		assert.Equal(ipad.URL, "https://www.apple.com")
 	}
 	{
 		// 通常IPadの場合
 		page := domain.Page{
-			Title:     "iPad Wi-Fi 128GB - シルバー（第7世代） [整備済製品]",
+			Title:     "iPad Wi-Fi 1TB - シルバー（第7世代） [整備済製品]",
 			AmountStr: "30,000円（税別）",
 			DetailURL: "https://www.apple.com",
 		}
@@ -454,7 +454,7 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 		assert.NoError(err)
 		assert.Equal(ipad.Color, "シルバー")
 		assert.Equal(ipad.Name, "iPad")
-		assert.Equal(ipad.Strage, "128GB")
+		assert.Equal(ipad.Storage, 1000)
 		assert.Equal(ipad.Amount, 30000)
 		assert.Equal(ipad.URL, "https://www.apple.com")
 	}
@@ -549,7 +549,7 @@ func TestLoadWatchInformationFromDetailHTML(t *testing.T) {
 		err = pageParser.loadWatchInformationFromDetailHTML(watch, doc)
 		assert.NoError(err)
 		assert.Equal(utils.GetReleaseYearAndMonth(2018, 9), watch.ReleaseDate)
-		assert.Equal("16GB", watch.Strage)
+		assert.Equal(16, watch.Storage)
 	}
 }
 

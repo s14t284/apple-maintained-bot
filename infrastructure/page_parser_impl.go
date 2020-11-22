@@ -109,7 +109,10 @@ func (ppi *PageParserImpl) loadMacInformationFromDetailHTML(mac *model.Mac, doc 
 			mac.TouchBar = true
 		} else if strings.Index(text, "SSD") > -1 {
 			// ストレージ容量
-			mac.Strage = text[:storageRegExp.FindStringIndex(text)[0]+2]
+			mac.Storage, localErr = parseStorage(text[:storageRegExp.FindStringIndex(text)[0]+2])
+			if localErr != nil {
+				err = fmt.Errorf("failed to parse storage [error][%w]", localErr)
+			}
 		} else if strings.Index(text, "GB") > -1 && mac.Memory == 0 {
 			// メモリ
 			mac.Memory, localErr = strconv.Atoi(text[:strings.Index(text, "GB")])
@@ -244,7 +247,10 @@ func (ppi *PageParserImpl) loadIPadInformationFromTitle(ipad *model.IPad, page d
 		strs = strings.Split(name, " Wi-Fi ")
 	}
 	ipad.Name = strs[0]
-	ipad.Strage = strs[1]
+	ipad.Storage, err = parseStorage(strs[1])
+	if err != nil {
+		return fmt.Errorf("failed to parse storage [error][%w]", err)
+	}
 	// 金額
 	amountRegExp, err := regexp.Compile(`(,|円（税別）|\s)`)
 	if err != nil {
@@ -289,7 +295,10 @@ func (ppi *PageParserImpl) loadWatchInformationFromDetailHTML(watch *model.Watch
 			if localErr != nil {
 				err = localErr
 			}
-			watch.Strage = r.FindString(text)
+			watch.Storage, localErr = parseStorage(r.FindString(text))
+			if localErr != nil {
+				err = fmt.Errorf("failed to parse storage [error][%w]", localErr)
+			}
 		}
 	})
 	return err
@@ -330,4 +339,25 @@ func (ppi *PageParserImpl) loadWatchInformationFromTitle(watch *model.Watch, pag
 		watch.URL = rootURL + watch.URL
 	}
 	return nil
+}
+
+func parseStorage(storageStr string) (int, error) {
+	var str, suffix string
+	var coef int
+	if strings.HasSuffix(storageStr, "GB") {
+		coef = 1
+		suffix = "GB"
+	} else if strings.HasSuffix(storageStr, "TB") {
+		coef = 1000
+		suffix = "TB"
+	} else {
+		return -1, fmt.Errorf("suffix of storage string must have 'GB' or 'TB'")
+	}
+	str = strings.Replace(storageStr, suffix, "", 1)
+
+	val, err := strconv.ParseInt(str, 10, 64)
+	if err != nil {
+		return -1, fmt.Errorf("failed to parse storage stirng to int [error][%w]", err)
+	}
+	return int(val) * coef, nil
 }

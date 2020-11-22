@@ -49,7 +49,7 @@ func (wr WatchRepositoryImpl) IsExist(watch *model.Watch) (bool, uint, time.Time
 	tmp := &model.Watch{}
 	err := wr.SQLClient.Client.Where(&model.Watch{
 		Name:        watch.Name,
-		Strage:      watch.Strage,
+		Storage:     watch.Storage,
 		Color:       watch.Color,
 		IsCellular:  watch.IsCellular,
 		Amount:      watch.Amount,

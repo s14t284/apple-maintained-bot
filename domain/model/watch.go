@@ -9,7 +9,7 @@ type Watch struct {
 	ID          uint      `gorm:"primarykey"`
 	CreatedAt   time.Time `json:"created_at"`
 	Name        string    `gorm:"size:255; not null" json:"name"`
-	Strage      string    `gorm:"size:20; not null" json:"strage"`
+	Storage     int       `gorm:"not null;" json:"strage"`
 	Color       string    `gorm:"size:255; not null" json:"color"`
 	IsCellular  bool      `gorm:"not null" json:"is_cellular"`
 	Amount      int       `gorm:"not null" json:"amount"`

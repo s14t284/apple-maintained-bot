@@ -53,7 +53,7 @@ func (mr MacRepositoryImpl) IsExist(mac *model.Mac) (bool, uint, time.Time, erro
 			Inch:        mac.Inch,
 			CPU:         mac.CPU,
 			Memory:      mac.Memory,
-			Strage:      mac.Strage,
+			Storage:     mac.Storage,
 			TouchBar:    mac.TouchBar,
 			Color:       mac.Color,
 			Amount:      mac.Amount,
