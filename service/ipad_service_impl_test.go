@@ -12,24 +12,24 @@ import (
 	"github.com/s14t284/apple-maitained-bot/mock/database"
 )
 
-func TestNewIPadService(t *testing.T) {
+func TestNewIPadServiceImpl(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockIpr := database.NewMockIPadRepository(ctrl)
 	{
 		// success
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		a.NotNil(ipi)
 	}
 	{
 		// failed because database is nil
-		ipi := NewIPadService(nil)
+		ipi := NewIPadServiceImpl(nil)
 		a.Nil(ipi)
 	}
 }
 
-func TestIPadService_FindIPad(t *testing.T) {
+func TestIPadServiceImpl_FindIPad(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -38,30 +38,30 @@ func TestIPadService_FindIPad(t *testing.T) {
 	expected[0] = model.IPad{Name: "IPad Pro"}
 	{
 		// success
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().FindIPad(&model.IPadRequestParam{}).Return(expected, nil)
-		actual, err := ipi.FindIPad(&model.IPadRequestParam{})
+		actual, err := ipi.Find(&model.IPadRequestParam{})
 		a.NotNil(actual)
 		a.NoError(err)
 		a.Equal(expected, actual)
 	}
 	{
 		// failed
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().FindIPad(&model.IPadRequestParam{}).Return(nil, fmt.Errorf("error"))
-		actual, err := ipi.FindIPad(&model.IPadRequestParam{})
+		actual, err := ipi.Find(&model.IPadRequestParam{})
 		a.Nil(actual)
 		a.Error(err)
 	}
 }
 
-func TestIPadService_FindIPadAll(t *testing.T) {
+func TestIPadServiceImpl_FindIPadAll(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -70,30 +70,30 @@ func TestIPadService_FindIPadAll(t *testing.T) {
 	expected[0] = model.IPad{}
 	{
 		// success
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().FindIPadAll().Return(expected, nil)
-		actual, err := ipi.FindIPadAll()
+		actual, err := ipi.FindAll()
 		a.NotNil(actual)
 		a.NoError(err)
 		a.Equal(expected, actual)
 	}
 	{
 		// failed
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().FindIPadAll().Return(nil, fmt.Errorf("error"))
-		actual, err := ipi.FindIPadAll()
+		actual, err := ipi.FindAll()
 		a.Nil(actual)
 		a.Error(err)
 	}
 }
 
-func TestIPadService_FindByURL(t *testing.T) {
+func TestIPadServiceImpl_FindByURL(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -102,7 +102,7 @@ func TestIPadService_FindByURL(t *testing.T) {
 	url := "https://apple.com"
 	{
 		// success
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
@@ -114,7 +114,7 @@ func TestIPadService_FindByURL(t *testing.T) {
 	}
 	{
 		// failed
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
@@ -125,7 +125,7 @@ func TestIPadService_FindByURL(t *testing.T) {
 	}
 }
 
-func TestIPadService_IsExist(t *testing.T) {
+func TestIPadServiceImpl_IsExist(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -138,7 +138,7 @@ func TestIPadService_IsExist(t *testing.T) {
 	eT := time.Now()
 	{
 		// success
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
@@ -151,7 +151,7 @@ func TestIPadService_IsExist(t *testing.T) {
 	}
 	{
 		// failed
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
@@ -164,7 +164,7 @@ func TestIPadService_IsExist(t *testing.T) {
 	}
 }
 
-func TestIPadService_AddIPad(t *testing.T) {
+func TestIPadServiceImpl_AddIPad(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -172,27 +172,27 @@ func TestIPadService_AddIPad(t *testing.T) {
 	input := &model.IPad{}
 	{
 		// success
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().AddIPad(input).Return(nil)
-		err := ipi.AddIPad(input)
+		err := ipi.Add(input)
 		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().AddIPad(input).Return(fmt.Errorf("error"))
-		err := ipi.AddIPad(input)
+		err := ipi.Add(input)
 		a.Error(err)
 	}
 }
 
-func TestIPadService_UpdateIPad(t *testing.T) {
+func TestIPadServiceImpl_UpdateIPad(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -201,34 +201,34 @@ func TestIPadService_UpdateIPad(t *testing.T) {
 	failedInput := &model.IPad{ID: 0}
 	{
 		// success
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().UpdateIPad(input).Return(nil)
-		err := ipi.UpdateIPad(input)
+		err := ipi.Update(input)
 		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().UpdateIPad(failedInput).Times(0)
-		err := ipi.UpdateIPad(failedInput)
+		err := ipi.Update(failedInput)
 		a.Error(err, fmt.Errorf("cannot update ipad because invalid ipad id: %d", 0))
 	}
 }
 
-func TestIPadService_UpdateAllSoldTemporary(t *testing.T) {
+func TestIPadServiceImpl_UpdateAllSoldTemporary(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockIpr := database.NewMockIPadRepository(ctrl)
 	{
 		// success
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
@@ -238,7 +238,7 @@ func TestIPadService_UpdateAllSoldTemporary(t *testing.T) {
 	}
 	{
 		// failed
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
@@ -248,7 +248,7 @@ func TestIPadService_UpdateAllSoldTemporary(t *testing.T) {
 	}
 }
 
-func TestIPadService_RemoveIPad(t *testing.T) {
+func TestIPadServiceImpl_RemoveIPad(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -256,22 +256,22 @@ func TestIPadService_RemoveIPad(t *testing.T) {
 	id := int64(1)
 	{
 		// success
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().RemoveIPad(id).Return(nil)
-		err := ipi.RemoveIPad(id)
+		err := ipi.Remove(id)
 		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewIPadService(mockIpr)
+		ipi := NewIPadServiceImpl(mockIpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockIpr.EXPECT().RemoveIPad(id).Return(fmt.Errorf("error"))
-		err := ipi.RemoveIPad(id)
+		err := ipi.Remove(id)
 		a.Error(err)
 	}
 }

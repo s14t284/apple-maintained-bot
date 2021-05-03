@@ -11,9 +11,9 @@ import (
 
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/mock/database"
 	"github.com/s14t284/apple-maitained-bot/mock/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/mock/parse"
+	"github.com/s14t284/apple-maitained-bot/mock/service"
 	"github.com/s14t284/apple-maitained-bot/mock/web"
 )
 
@@ -23,57 +23,57 @@ func TestNewCrawlerControllerImpl(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mr := database.NewMockMacRepository(ctrl)
-	ir := database.NewMockIPadRepository(ctrl)
-	wr := database.NewMockWatchRepository(ctrl)
+	ms := service.NewMockMacService(ctrl)
+	is := service.NewMockIPadService(ctrl)
+	ws := service.NewMockWatchService(ctrl)
 	pps := parse.NewMockPageParseService(ctrl)
 	scraper := web.NewMockScraper(ctrl)
 	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	{
 		// 正常系
-		cci, err := NewCrawlerControllerImpl(mr, ir, wr, pps, scraper, notifier)
+		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, notifier)
 		a.NotNil(cci)
 		a.NoError(err)
 	}
 	{
 		// 異常系
 		// mac databaseがnil
-		cci, err := NewCrawlerControllerImpl(nil, ir, wr, pps, scraper, notifier)
+		cci, err := NewCrawlerControllerImpl(nil, is, ws, pps, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// ipad databaseがnil
-		cci, err := NewCrawlerControllerImpl(mr, nil, wr, pps, scraper, notifier)
+		cci, err := NewCrawlerControllerImpl(ms, nil, ws, pps, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// watch databaseがnil
-		cci, err := NewCrawlerControllerImpl(mr, ir, nil, pps, scraper, notifier)
+		cci, err := NewCrawlerControllerImpl(ms, is, nil, pps, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// parserがnil
-		cci, err := NewCrawlerControllerImpl(mr, ir, wr, nil, scraper, notifier)
+		cci, err := NewCrawlerControllerImpl(ms, is, ws, nil, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// scraperがnil
-		cci, err := NewCrawlerControllerImpl(mr, ir, wr, pps, nil, notifier)
+		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, nil, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// slack notifier がnil
-		cci, err := NewCrawlerControllerImpl(mr, ir, wr, pps, scraper, nil)
+		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, nil)
 		a.Nil(cci)
 		a.Error(err)
 	}
@@ -83,40 +83,40 @@ func TestCrawlerControllerImpl_CrawlMacPage(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mr := database.NewMockMacRepository(ctrl)
-	ir := database.NewMockIPadRepository(ctrl)
-	wr := database.NewMockWatchRepository(ctrl)
+	ms := service.NewMockMacService(ctrl)
+	is := service.NewMockIPadService(ctrl)
+	ws := service.NewMockWatchService(ctrl)
 	pps := parse.NewMockPageParseService(ctrl)
 	scraper := web.NewMockScraper(ctrl)
 	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	doc := &goquery.Document{}
 	pages := []domain.Page{
 		{Title: "MacBook PRO 15.4インチ", AmountStr: "30000円", DetailURL: "/detail", Document: doc},
-		{Title: "MacBook Air", AmountStr: "15000円", DetailURL: "/detail", Document: doc},
+		{Title: "MacBook Ais", AmountStr: "15000円", DetailURL: "/detail", Document: doc},
 	}
 	notifierPage := []domain.Page{
-		{Title: "MacBook Air", DetailURL: "/detail"},
+		{Title: "MacBook Ais", DetailURL: "/detail"},
 	}
 	macs := []*model.Mac{
 		{Name: "MacBook PRO 15.4インチ", Amount: 30000},
-		{Name: "MacBook Air", Amount: 15000},
+		{Name: "MacBook Ais", Amount: 15000},
 	}
 	{
 		// 正常系
-		cci, err := NewCrawlerControllerImpl(mr, ir, wr, pps, scraper, notifier)
+		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, notifier)
 		if err != nil {
 			t.FailNow()
 		}
 		gomock.InOrder(
 			scraper.EXPECT().Scrape(path.Join(endPoint+"mac")).Return(doc, nil),
 			scraper.EXPECT().ScrapeMaintainedPage(doc).Return(pages, nil),
-			mr.EXPECT().UpdateAllSoldTemporary().Return(nil),
+			ms.EXPECT().UpdateAllSoldTemporary().Return(nil),
 			pps.EXPECT().ParsePage("mac", pages[0]).Return(macs[0], nil),
-			mr.EXPECT().IsExist(macs[0]).Return(true, uint(0), time.Now(), nil),
-			mr.EXPECT().UpdateMac(macs[0]).Return(nil),
+			ms.EXPECT().IsExist(macs[0]).Return(true, uint(0), time.Now(), nil),
+			ms.EXPECT().Update(macs[0]).Return(nil),
 			pps.EXPECT().ParsePage("mac", pages[1]).Return(macs[1], nil),
-			mr.EXPECT().IsExist(macs[1]).Return(false, uint(1), time.Now(), nil),
-			mr.EXPECT().AddMac(macs[1]).Return(nil),
+			ms.EXPECT().IsExist(macs[1]).Return(false, uint(1), time.Now(), nil),
+			ms.EXPECT().Add(macs[1]).Return(nil),
 			notifier.EXPECT().HookToSlack(notifierPage, "mac").Return(nil),
 		)
 		err = cci.CrawlMacPage()
@@ -128,40 +128,40 @@ func TestCrawlerControllerImpl_CrawlIPadPage(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mr := database.NewMockMacRepository(ctrl)
-	ir := database.NewMockIPadRepository(ctrl)
-	wr := database.NewMockWatchRepository(ctrl)
+	ms := service.NewMockMacService(ctrl)
+	is := service.NewMockIPadService(ctrl)
+	ws := service.NewMockWatchService(ctrl)
 	pps := parse.NewMockPageParseService(ctrl)
 	scraper := web.NewMockScraper(ctrl)
 	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	doc := &goquery.Document{}
 	pages := []domain.Page{
 		{Title: "IPad Pro", AmountStr: "30000円", DetailURL: "/detail", Document: doc},
-		{Title: "IPad Air", AmountStr: "15000円", DetailURL: "/detail", Document: doc},
+		{Title: "IPad Ais", AmountStr: "15000円", DetailURL: "/detail", Document: doc},
 	}
 	notifierPage := []domain.Page{
-		{Title: "IPad Air", DetailURL: "/detail"},
+		{Title: "IPad Ais", DetailURL: "/detail"},
 	}
 	ipads := []*model.IPad{
 		{Name: "IPad PRO", Amount: 30000},
-		{Name: "IPad Air", Amount: 15000},
+		{Name: "IPad Ais", Amount: 15000},
 	}
 	{
 		// 正常系
-		cci, err := NewCrawlerControllerImpl(mr, ir, wr, pps, scraper, notifier)
+		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, notifier)
 		if err != nil {
 			t.FailNow()
 		}
 		gomock.InOrder(
 			scraper.EXPECT().Scrape(path.Join(endPoint, "ipad")).Return(doc, nil),
 			scraper.EXPECT().ScrapeMaintainedPage(doc).Return(pages, nil),
-			ir.EXPECT().UpdateAllSoldTemporary().Return(nil),
+			is.EXPECT().UpdateAllSoldTemporary().Return(nil),
 			pps.EXPECT().ParsePage("ipad", pages[0]).Return(ipads[0], nil),
-			ir.EXPECT().IsExist(ipads[0]).Return(true, uint(0), time.Now(), nil),
-			ir.EXPECT().UpdateIPad(ipads[0]).Return(nil),
+			is.EXPECT().IsExist(ipads[0]).Return(true, uint(0), time.Now(), nil),
+			is.EXPECT().Update(ipads[0]).Return(nil),
 			pps.EXPECT().ParsePage("ipad", pages[1]).Return(ipads[1], nil),
-			ir.EXPECT().IsExist(ipads[1]).Return(false, uint(1), time.Now(), nil),
-			ir.EXPECT().AddIPad(ipads[1]).Return(nil),
+			is.EXPECT().IsExist(ipads[1]).Return(false, uint(1), time.Now(), nil),
+			is.EXPECT().Add(ipads[1]).Return(nil),
 			notifier.EXPECT().HookToSlack(notifierPage, "ipad").Return(nil),
 		)
 		err = cci.CrawlIPadPage()
@@ -172,9 +172,9 @@ func TestCrawlerControllerImpl_CrawlWatchPage(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mr := database.NewMockMacRepository(ctrl)
-	ir := database.NewMockIPadRepository(ctrl)
-	wr := database.NewMockWatchRepository(ctrl)
+	ms := service.NewMockMacService(ctrl)
+	is := service.NewMockIPadService(ctrl)
+	ws := service.NewMockWatchService(ctrl)
 	pps := parse.NewMockPageParseService(ctrl)
 	scraper := web.NewMockScraper(ctrl)
 	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
@@ -192,20 +192,20 @@ func TestCrawlerControllerImpl_CrawlWatchPage(t *testing.T) {
 	}
 	{
 		// 正常系
-		cci, err := NewCrawlerControllerImpl(mr, ir, wr, pps, scraper, notifier)
+		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, notifier)
 		if err != nil {
 			t.FailNow()
 		}
 		gomock.InOrder(
 			scraper.EXPECT().Scrape(path.Join(endPoint+"watch")).Return(doc, nil),
 			scraper.EXPECT().ScrapeMaintainedPage(doc).Return(pages, nil),
-			wr.EXPECT().UpdateAllSoldTemporary().Return(nil),
+			ws.EXPECT().UpdateAllSoldTemporary().Return(nil),
 			pps.EXPECT().ParsePage("watch", pages[0]).Return(watches[0], nil),
-			wr.EXPECT().IsExist(watches[0]).Return(true, uint(0), time.Now(), nil),
-			wr.EXPECT().UpdateWatch(watches[0]).Return(nil),
+			ws.EXPECT().IsExist(watches[0]).Return(true, uint(0), time.Now(), nil),
+			ws.EXPECT().Update(watches[0]).Return(nil),
 			pps.EXPECT().ParsePage("watch", pages[1]).Return(watches[1], nil),
-			wr.EXPECT().IsExist(watches[1]).Return(false, uint(1), time.Now(), nil),
-			wr.EXPECT().AddWatch(watches[1]).Return(nil),
+			ws.EXPECT().IsExist(watches[1]).Return(false, uint(1), time.Now(), nil),
+			ws.EXPECT().Add(watches[1]).Return(nil),
 			notifier.EXPECT().HookToSlack(notifierPage, "apple watch").Return(nil),
 		)
 		err = cci.CrawlWatchPage()

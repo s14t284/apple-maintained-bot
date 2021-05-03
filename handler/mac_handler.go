@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
+	"github.com/s14t284/apple-maitained-bot/service"
 
 	"github.com/labstack/gommon/log"
 )
 
 // GetMacHandler macのGetリクエストの API Handler
-func GetMacHandler(mr database.MacRepository) func(w http.ResponseWriter, r *http.Request) {
+func GetMacHandler(ms service.MacService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		req := model.MacRequestParam{}
@@ -53,7 +53,7 @@ func GetMacHandler(mr database.MacRepository) func(w http.ResponseWriter, r *htt
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		macs, err := mr.FindMac(&req)
+		macs, err := ms.Find(&req)
 		if err != nil {
 			log.Errorf("failed to find mac information from db [error][%w]", err)
 			w.WriteHeader(http.StatusInternalServerError)

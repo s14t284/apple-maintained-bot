@@ -86,11 +86,11 @@ func main() {
 		log.Error(err)
 		panic(err)
 	}
-	macInteractor := service.NewMacService(database.MacRepositoryImpl{SQLClient: psqlClient})
-	ipadInteractor := service.NewIPadService(database.IPadRepositoryImpl{SQLClient: psqlClient})
-	watchInteractor := service.NewWatchService(database.WatchRepositoryImpl{SQLClient: psqlClient})
+	macService := service.NewMacServiceImpl(database.MacRepositoryImpl{SQLClient: psqlClient})
+	ipadService := service.NewIPadServiceImpl(database.IPadRepositoryImpl{SQLClient: psqlClient})
+	watchService := service.NewWatchServiceImpl(database.WatchRepositoryImpl{SQLClient: psqlClient})
 	// crawler
-	crawler, err := usecase.NewCrawlerControllerImpl(macInteractor, ipadInteractor, watchInteractor, pps, scraper, notifier)
+	crawler, err := usecase.NewCrawlerControllerImpl(macService, ipadService, watchService, pps, scraper, notifier)
 	if err != nil {
 		log.Error(err)
 	}
@@ -132,9 +132,9 @@ func main() {
 			log.Error(err)
 		}
 	})
-	http.HandleFunc("/mac", handler.GetMacHandler(macInteractor))
-	http.HandleFunc("/ipad", handler.GetIPadHandler(ipadInteractor))
-	http.HandleFunc("/watch", handler.GetWatchHandler(watchInteractor))
+	http.HandleFunc("/mac", handler.GetMacHandler(macService))
+	http.HandleFunc("/ipad", handler.GetIPadHandler(ipadService))
+	http.HandleFunc("/watch", handler.GetWatchHandler(watchService))
 
 	go func() {
 		sig := <-ch

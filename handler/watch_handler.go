@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
+	"github.com/s14t284/apple-maitained-bot/service"
 
 	"github.com/labstack/gommon/log"
 )
 
 // GetWatchHandler apple watchのGetリクエストの API Handler
-func GetWatchHandler(wr database.WatchRepository) func(w http.ResponseWriter, r *http.Request) {
+func GetWatchHandler(ws service.WatchService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
@@ -49,7 +49,7 @@ func GetWatchHandler(wr database.WatchRepository) func(w http.ResponseWriter, r 
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		watches, err := wr.FindWatch(&req)
+		watches, err := ws.Find(&req)
 		if err != nil {
 			log.Errorf("failed to find apple watch information from db [error][%w]", err)
 			w.WriteHeader(http.StatusInternalServerError)

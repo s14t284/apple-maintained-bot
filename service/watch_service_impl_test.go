@@ -12,24 +12,24 @@ import (
 	"github.com/s14t284/apple-maitained-bot/mock/database"
 )
 
-func TestNewWatchService(t *testing.T) {
+func TestNewWatchServiceImpl(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
 	{
 		// success
-		mpi := NewWatchService(mockWr)
+		mpi := NewWatchServiceImpl(mockWr)
 		a.NotNil(mpi)
 	}
 	{
 		// failed because database is nil
-		mpi := NewWatchService(nil)
+		mpi := NewWatchServiceImpl(nil)
 		a.Nil(mpi)
 	}
 }
 
-func TestWatchService_FindWatch(t *testing.T) {
+func TestWatchServiceImpl_FindWatch(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -38,30 +38,30 @@ func TestWatchService_FindWatch(t *testing.T) {
 	expected[0] = model.Watch{Name: "Apple Watch Series 4"}
 	{
 		// success
-		ipi := NewWatchService(mockWpr)
+		ipi := NewWatchServiceImpl(mockWpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWpr.EXPECT().FindWatch(&model.WatchRequestParam{}).Return(expected, nil)
-		actual, err := ipi.FindWatch(&model.WatchRequestParam{})
+		actual, err := ipi.Find(&model.WatchRequestParam{})
 		a.NotNil(actual)
 		a.NoError(err)
 		a.Equal(expected, actual)
 	}
 	{
 		// failed
-		ipi := NewWatchService(mockWpr)
+		ipi := NewWatchServiceImpl(mockWpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWpr.EXPECT().FindWatch(&model.WatchRequestParam{}).Return(nil, fmt.Errorf("error"))
-		actual, err := ipi.FindWatch(&model.WatchRequestParam{})
+		actual, err := ipi.Find(&model.WatchRequestParam{})
 		a.Nil(actual)
 		a.Error(err)
 	}
 }
 
-func TestWatchService_FindWatchAll(t *testing.T) {
+func TestWatchServiceImpl_FindWatchAll(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -70,29 +70,29 @@ func TestWatchService_FindWatchAll(t *testing.T) {
 	expected[0] = model.Watch{}
 	{
 		// success
-		mpi := NewWatchService(mockWr)
+		mpi := NewWatchServiceImpl(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().FindWatchAll().Return(expected, nil)
-		actual, err := mpi.FindWatchAll()
+		actual, err := mpi.FindAll()
 		a.Equal(expected, actual)
 		a.NoError(err)
 	}
 	{
 		// failed
-		mpi := NewWatchService(mockWr)
+		mpi := NewWatchServiceImpl(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().FindWatchAll().Return(nil, fmt.Errorf("error"))
-		actual, err := mpi.FindWatchAll()
+		actual, err := mpi.FindAll()
 		a.Nil(actual)
 		a.Error(err)
 	}
 }
 
-func TestWatchService_FindByURL(t *testing.T) {
+func TestWatchServiceImpl_FindByURL(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -101,7 +101,7 @@ func TestWatchService_FindByURL(t *testing.T) {
 	url := "https://apple.com"
 	{
 		// success
-		mpi := NewWatchService(mockWr)
+		mpi := NewWatchServiceImpl(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
@@ -112,7 +112,7 @@ func TestWatchService_FindByURL(t *testing.T) {
 	}
 	{
 		// failed
-		mpi := NewWatchService(mockWr)
+		mpi := NewWatchServiceImpl(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
@@ -123,7 +123,7 @@ func TestWatchService_FindByURL(t *testing.T) {
 	}
 }
 
-func TestWatchService_IsExist(t *testing.T) {
+func TestWatchServiceImpl_IsExist(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -136,7 +136,7 @@ func TestWatchService_IsExist(t *testing.T) {
 	eT := time.Now()
 	{
 		// success
-		mpi := NewWatchService(mockWr)
+		mpi := NewWatchServiceImpl(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
@@ -149,7 +149,7 @@ func TestWatchService_IsExist(t *testing.T) {
 	}
 	{
 		// failed
-		mpi := NewWatchService(mockWr)
+		mpi := NewWatchServiceImpl(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
@@ -162,7 +162,7 @@ func TestWatchService_IsExist(t *testing.T) {
 	}
 }
 
-func TestWatchService_AddWatch(t *testing.T) {
+func TestWatchServiceImpl_AddWatch(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -170,27 +170,27 @@ func TestWatchService_AddWatch(t *testing.T) {
 	input := &model.Watch{}
 	{
 		// success
-		ipi := NewWatchService(mockWr)
+		ipi := NewWatchServiceImpl(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().AddWatch(input).Return(nil)
-		err := ipi.AddWatch(input)
+		err := ipi.Add(input)
 		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewWatchService(mockWr)
+		ipi := NewWatchServiceImpl(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().AddWatch(input).Return(fmt.Errorf("error"))
-		err := ipi.AddWatch(input)
+		err := ipi.Add(input)
 		a.Error(err)
 	}
 }
 
-func TestWatchService_UpdateWatch(t *testing.T) {
+func TestWatchServiceImpl_UpdateWatch(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -199,34 +199,34 @@ func TestWatchService_UpdateWatch(t *testing.T) {
 	failedInput := &model.Watch{ID: 0}
 	{
 		// success
-		ipi := NewWatchService(mockWr)
+		ipi := NewWatchServiceImpl(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().UpdateWatch(input).Return(nil)
-		err := ipi.UpdateWatch(input)
+		err := ipi.Update(input)
 		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewWatchService(mockWr)
+		ipi := NewWatchServiceImpl(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().UpdateWatch(failedInput).Times(0)
-		err := ipi.UpdateWatch(failedInput)
+		err := ipi.Update(failedInput)
 		a.EqualError(err, fmt.Sprintf("cannot update watch because invalid watch id: %d", 0))
 	}
 }
 
-func TestWatchService_UpdateAllSoldTemporary(t *testing.T) {
+func TestWatchServiceImpl_UpdateAllSoldTemporary(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
 	{
 		// success
-		ipi := NewWatchService(mockWr)
+		ipi := NewWatchServiceImpl(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
@@ -236,7 +236,7 @@ func TestWatchService_UpdateAllSoldTemporary(t *testing.T) {
 	}
 	{
 		// failed
-		ipi := NewWatchService(mockWr)
+		ipi := NewWatchServiceImpl(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
@@ -246,7 +246,7 @@ func TestWatchService_UpdateAllSoldTemporary(t *testing.T) {
 	}
 }
 
-func TestWatchService_RemoveWatch(t *testing.T) {
+func TestWatchServiceImpl_RemoveWatch(t *testing.T) {
 	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
@@ -254,22 +254,22 @@ func TestWatchService_RemoveWatch(t *testing.T) {
 	id := int64(1)
 	{
 		// success
-		ipi := NewWatchService(mockWr)
+		ipi := NewWatchServiceImpl(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().RemoveWatch(id).Return(nil)
-		err := ipi.RemoveWatch(id)
+		err := ipi.Remove(id)
 		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewWatchService(mockWr)
+		ipi := NewWatchServiceImpl(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().RemoveWatch(id).Return(fmt.Errorf("error"))
-		err := ipi.RemoveWatch(id)
+		err := ipi.Remove(id)
 		a.Error(err)
 	}
 }

@@ -5,13 +5,13 @@ import (
 	"net/http"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
+	"github.com/s14t284/apple-maitained-bot/service"
 
 	"github.com/labstack/gommon/log"
 )
 
 // GetIPadHandler ipadのGetリクエストの API Handler
-func GetIPadHandler(ir database.IPadRepository) func(w http.ResponseWriter, r *http.Request) {
+func GetIPadHandler(is service.IPadService) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
@@ -49,7 +49,7 @@ func GetIPadHandler(ir database.IPadRepository) func(w http.ResponseWriter, r *h
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		ipads, err := ir.FindIPad(&req)
+		ipads, err := is.Find(&req)
 		if err != nil {
 			log.Errorf("failed to find ipad information from db [error][%w]", err)
 			w.WriteHeader(http.StatusInternalServerError)

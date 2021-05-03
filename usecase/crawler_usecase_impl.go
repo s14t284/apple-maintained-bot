@@ -7,8 +7,8 @@ import (
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
+	"github.com/s14t284/apple-maitained-bot/service"
 	"github.com/s14t284/apple-maitained-bot/service/parse"
 
 	"github.com/labstack/gommon/log"
@@ -18,9 +18,9 @@ const shopListEndPoint = "/jp/shop/refurbished/"
 
 // CrawlerUseCaseImpl 整備済み品のクローラー
 type CrawlerUseCaseImpl struct {
-	mr            database.MacRepository
-	ir            database.IPadRepository
-	wr            database.WatchRepository
+	ms            service.MacService
+	is            service.IPadService
+	ws            service.WatchService
 	parser        parse.PageParseService
 	scraper       web.Scraper
 	slackNotifier infrastructure.SlackNotifyRepository
@@ -28,20 +28,20 @@ type CrawlerUseCaseImpl struct {
 
 // NewCrawlerControllerImpl CrawlerControllerImplを初期化
 func NewCrawlerControllerImpl(
-	mr database.MacRepository,
-	ir database.IPadRepository,
-	wr database.WatchRepository,
+	ms service.MacService,
+	is service.IPadService,
+	ws service.WatchService,
 	parser parse.PageParseService,
 	scraper web.Scraper,
 	slackNotifier infrastructure.SlackNotifyRepository,
 ) (*CrawlerUseCaseImpl, error) {
-	if mr == nil {
+	if ms == nil {
 		return nil, fmt.Errorf("mac parse is nil")
 	}
-	if ir == nil {
+	if is == nil {
 		return nil, fmt.Errorf("ipad parse is nil")
 	}
-	if wr == nil {
+	if ws == nil {
 		return nil, fmt.Errorf("watch parse is nilj")
 	}
 	if parser == nil {
@@ -54,9 +54,9 @@ func NewCrawlerControllerImpl(
 		return nil, fmt.Errorf("slack notifier is nil")
 	}
 	return &CrawlerUseCaseImpl{
-		mr:            mr,
-		ir:            ir,
-		wr:            wr,
+		ms:            ms,
+		is:            is,
+		ws:            ws,
 		parser:        parser,
 		scraper:       scraper,
 		slackNotifier: slackNotifier,
@@ -64,22 +64,22 @@ func NewCrawlerControllerImpl(
 }
 
 // CrawlMacPage macに関する整備済み品ページをクローリング
-func (c *CrawlerUseCaseImpl) CrawlMacPage() error {
+func (cuci *CrawlerUseCaseImpl) CrawlMacPage() error {
 	mu := path.Join(shopListEndPoint, "mac")
-	doc, err := c.scraper.Scrape(mu)
+	doc, err := cuci.scraper.Scrape(mu)
 	if err != nil {
 		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
 		return err
 	}
 
-	pages, err := c.scraper.ScrapeMaintainedPage(doc)
+	pages, err := cuci.scraper.ScrapeMaintainedPage(doc)
 	if err != nil {
 		return fmt.Errorf("failed to crawl mac page because failed scraping [error][%w]", err)
 	}
 
 	// 一旦、全て売れていることにする
 	// クローリングの際に売れ残っている判定を実施する
-	err = c.mr.UpdateAllSoldTemporary()
+	err = cuci.ms.UpdateAllSoldTemporary()
 	if err != nil {
 		return fmt.Errorf("failed to update all products to sold tempolary [error][%w]", err)
 	}
@@ -87,13 +87,13 @@ func (c *CrawlerUseCaseImpl) CrawlMacPage() error {
 	var productPage []domain.Page
 	for _, page := range pages {
 		// タイトルなどから情報をパース
-		iF, err := c.parser.ParsePage("mac", page)
+		iF, err := cuci.parser.ParsePage("mac", page)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
 		mac := iF.(*model.Mac)
 		// すでにDBに格納されているか確認
-		isExist, id, createdAt, err := c.mr.IsExist(mac)
+		isExist, id, createdAt, err := cuci.ms.IsExist(mac)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
@@ -104,9 +104,9 @@ func (c *CrawlerUseCaseImpl) CrawlMacPage() error {
 			mac.IsSold = false
 			mac.CreatedAt = createdAt
 			log.Infof("Unsold: %s", mac.URL)
-			err = c.mr.UpdateMac(mac)
+			err = cuci.ms.Update(mac)
 		} else {
-			err = c.mr.AddMac(mac)
+			err = cuci.ms.Add(mac)
 			if err == nil {
 				productPage = append(productPage, domain.Page{
 					Title:     page.Title,
@@ -118,7 +118,7 @@ func (c *CrawlerUseCaseImpl) CrawlMacPage() error {
 			log.Errorf(err.Error())
 		}
 	}
-	err = c.slackNotifier.HookToSlack(productPage, "mac")
+	err = cuci.slackNotifier.HookToSlack(productPage, "mac")
 	if err != nil {
 		log.Errorf(err.Error())
 	}
@@ -126,35 +126,35 @@ func (c *CrawlerUseCaseImpl) CrawlMacPage() error {
 }
 
 // CrawlIPadPage ipadに関する整備済み品ページをクローリング
-func (c *CrawlerUseCaseImpl) CrawlIPadPage() error {
+func (cuci *CrawlerUseCaseImpl) CrawlIPadPage() error {
 	iu := path.Join(shopListEndPoint, "ipad")
-	doc, err := c.scraper.Scrape(iu)
+	doc, err := cuci.scraper.Scrape(iu)
 	if err != nil {
 		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
 		return err
 	}
 
-	pages, err := c.scraper.ScrapeMaintainedPage(doc)
+	pages, err := cuci.scraper.ScrapeMaintainedPage(doc)
 	if err != nil {
 		return fmt.Errorf("failed to crawl ipad page because failed scraping [error][%w]", err)
 	}
 
 	// 一旦、全て売れていることにする
 	// クローリングの際に売れ残っている判定を実施する
-	err = c.ir.UpdateAllSoldTemporary()
+	err = cuci.is.UpdateAllSoldTemporary()
 	if err != nil {
 		return fmt.Errorf("failed to update all products to sold tempolary [error][%w]", err)
 	}
 
 	var productPage []domain.Page
 	for _, page := range pages {
-		iF, err := c.parser.ParsePage("ipad", page)
+		iF, err := cuci.parser.ParsePage("ipad", page)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
 		ipad := iF.(*model.IPad)
 		// すでにDBに格納されているか確認
-		isExist, id, createdAt, err := c.ir.IsExist(ipad)
+		isExist, id, createdAt, err := cuci.is.IsExist(ipad)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
@@ -165,9 +165,9 @@ func (c *CrawlerUseCaseImpl) CrawlIPadPage() error {
 			ipad.IsSold = false
 			ipad.CreatedAt = createdAt
 			log.Infof("Unsold: %s", ipad.URL)
-			err = c.ir.UpdateIPad(ipad)
+			err = cuci.is.Update(ipad)
 		} else {
-			err = c.ir.AddIPad(ipad)
+			err = cuci.is.Add(ipad)
 			if err == nil {
 				productPage = append(productPage, domain.Page{
 					Title:     page.Title,
@@ -179,7 +179,7 @@ func (c *CrawlerUseCaseImpl) CrawlIPadPage() error {
 			log.Errorf(err.Error())
 		}
 	}
-	err = c.slackNotifier.HookToSlack(productPage, "ipad")
+	err = cuci.slackNotifier.HookToSlack(productPage, "ipad")
 	if err != nil {
 		log.Errorf(err.Error())
 	}
@@ -187,35 +187,35 @@ func (c *CrawlerUseCaseImpl) CrawlIPadPage() error {
 }
 
 // CrawlWatchPage watchに関する整備済み品ページをクローリング
-func (c *CrawlerUseCaseImpl) CrawlWatchPage() error {
+func (cuci *CrawlerUseCaseImpl) CrawlWatchPage() error {
 	wu := path.Join(shopListEndPoint, "watch")
-	doc, err := c.scraper.Scrape(wu)
+	doc, err := cuci.scraper.Scrape(wu)
 	if err != nil {
 		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
 		return err
 	}
 
-	pages, err := c.scraper.ScrapeMaintainedPage(doc)
+	pages, err := cuci.scraper.ScrapeMaintainedPage(doc)
 	if err != nil {
 		return fmt.Errorf("failed to crawl ipad page because failed scraping [error][%w]", err)
 	}
 
 	// 一旦、全て売れていることにする
 	// クローリングの際に売れ残っている判定を実施する
-	err = c.wr.UpdateAllSoldTemporary()
+	err = cuci.ws.UpdateAllSoldTemporary()
 	if err != nil {
 		return fmt.Errorf("failed to update all products to sold tempolary [error][%w]", err)
 	}
 
 	var productPage []domain.Page
 	for _, page := range pages {
-		iF, err := c.parser.ParsePage("watch", page)
+		iF, err := cuci.parser.ParsePage("watch", page)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
 		watch := iF.(*model.Watch)
 		// すでにDBに格納されているか確認
-		isExist, id, createdAt, err := c.wr.IsExist(watch)
+		isExist, id, createdAt, err := cuci.ws.IsExist(watch)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
@@ -226,9 +226,9 @@ func (c *CrawlerUseCaseImpl) CrawlWatchPage() error {
 			watch.IsSold = false
 			watch.CreatedAt = createdAt
 			log.Infof("Unsold: %s", watch.URL)
-			err = c.wr.UpdateWatch(watch)
+			err = cuci.ws.Update(watch)
 		} else {
-			err = c.wr.AddWatch(watch)
+			err = cuci.ws.Add(watch)
 			if err == nil {
 				productPage = append(productPage, domain.Page{
 					Title:     page.Title,
@@ -240,7 +240,7 @@ func (c *CrawlerUseCaseImpl) CrawlWatchPage() error {
 			log.Errorf(err.Error())
 		}
 	}
-	err = c.slackNotifier.HookToSlack(productPage, "apple watch")
+	err = cuci.slackNotifier.HookToSlack(productPage, "apple watch")
 	if err != nil {
 		log.Errorf(err.Error())
 	}
