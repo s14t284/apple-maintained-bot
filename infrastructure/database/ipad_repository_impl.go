@@ -5,13 +5,12 @@ import (
 	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"gorm.io/gorm"
 )
 
 // IPadRepositoryImpl ipadに関する情報を操作するための実装
 type IPadRepositoryImpl struct {
-	SQLClient *infrastructure.SQLClient
+	SQLClient *SQLClient
 }
 
 // FindIPad 整備済み品ipadの情報を検索して返す

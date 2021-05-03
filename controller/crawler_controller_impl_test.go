@@ -1,6 +1,7 @@
-package interfaces
+package controller
 
 import (
+	"github.com/s14t284/apple-maitained-bot/mock/infrastructure"
 	"path"
 	"testing"
 	"time"
@@ -9,7 +10,8 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/mock/repository"
+	"github.com/s14t284/apple-maitained-bot/mock/database"
+	"github.com/s14t284/apple-maitained-bot/mock/web"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -19,12 +21,12 @@ func TestNewCrawlerControllerImpl(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mr := repository.NewMockMacRepository(ctrl)
-	ir := repository.NewMockIPadRepository(ctrl)
-	wr := repository.NewMockWatchRepository(ctrl)
-	parser := repository.NewMockPageParser(ctrl)
-	scraper := repository.NewMockScraper(ctrl)
-	notifier := repository.NewMockSlackNotifyRepository(ctrl)
+	mr := database.NewMockMacRepository(ctrl)
+	ir := database.NewMockIPadRepository(ctrl)
+	wr := database.NewMockWatchRepository(ctrl)
+	parser := web.NewMockPageParser(ctrl)
+	scraper := web.NewMockScraper(ctrl)
+	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	{
 		// 正常系
 		cci, err := NewCrawlerControllerImpl(mr, ir, wr, parser, scraper, notifier)
@@ -33,21 +35,21 @@ func TestNewCrawlerControllerImpl(t *testing.T) {
 	}
 	{
 		// 異常系
-		// mac repositoryがnil
+		// mac databaseがnil
 		cci, err := NewCrawlerControllerImpl(nil, ir, wr, parser, scraper, notifier)
 		assert.Nil(cci)
 		assert.Error(err)
 	}
 	{
 		// 異常系
-		// ipad repositoryがnil
+		// ipad databaseがnil
 		cci, err := NewCrawlerControllerImpl(mr, nil, wr, parser, scraper, notifier)
 		assert.Nil(cci)
 		assert.Error(err)
 	}
 	{
 		// 異常系
-		// watch repositoryがnil
+		// watch databaseがnil
 		cci, err := NewCrawlerControllerImpl(mr, ir, nil, parser, scraper, notifier)
 		assert.Nil(cci)
 		assert.Error(err)
@@ -79,12 +81,12 @@ func TestCrawlerControllerImpl_CrawlMacPage(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mr := repository.NewMockMacRepository(ctrl)
-	ir := repository.NewMockIPadRepository(ctrl)
-	wr := repository.NewMockWatchRepository(ctrl)
-	parser := repository.NewMockPageParser(ctrl)
-	scraper := repository.NewMockScraper(ctrl)
-	notifier := repository.NewMockSlackNotifyRepository(ctrl)
+	mr := database.NewMockMacRepository(ctrl)
+	ir := database.NewMockIPadRepository(ctrl)
+	wr := database.NewMockWatchRepository(ctrl)
+	parser := web.NewMockPageParser(ctrl)
+	scraper := web.NewMockScraper(ctrl)
+	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	doc := &goquery.Document{}
 	pages := []domain.Page{
 		{Title: "MacBook PRO 15.4インチ", AmountStr: "30000円", DetailURL: "/detail", Document: doc},
@@ -124,12 +126,12 @@ func TestCrawlerControllerImpl_CrawlIPadPage(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mr := repository.NewMockMacRepository(ctrl)
-	ir := repository.NewMockIPadRepository(ctrl)
-	wr := repository.NewMockWatchRepository(ctrl)
-	parser := repository.NewMockPageParser(ctrl)
-	scraper := repository.NewMockScraper(ctrl)
-	notifier := repository.NewMockSlackNotifyRepository(ctrl)
+	mr := database.NewMockMacRepository(ctrl)
+	ir := database.NewMockIPadRepository(ctrl)
+	wr := database.NewMockWatchRepository(ctrl)
+	parser := web.NewMockPageParser(ctrl)
+	scraper := web.NewMockScraper(ctrl)
+	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	doc := &goquery.Document{}
 	pages := []domain.Page{
 		{Title: "IPad Pro", AmountStr: "30000円", DetailURL: "/detail", Document: doc},
@@ -168,12 +170,12 @@ func TestCrawlerControllerImpl_CrawlWatchPage(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mr := repository.NewMockMacRepository(ctrl)
-	ir := repository.NewMockIPadRepository(ctrl)
-	wr := repository.NewMockWatchRepository(ctrl)
-	parser := repository.NewMockPageParser(ctrl)
-	scraper := repository.NewMockScraper(ctrl)
-	notifier := repository.NewMockSlackNotifyRepository(ctrl)
+	mr := database.NewMockMacRepository(ctrl)
+	ir := database.NewMockIPadRepository(ctrl)
+	wr := database.NewMockWatchRepository(ctrl)
+	parser := web.NewMockPageParser(ctrl)
+	scraper := web.NewMockScraper(ctrl)
+	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	doc := &goquery.Document{}
 	pages := []domain.Page{
 		{Title: "apple watch 4", AmountStr: "30000円", DetailURL: "/detail", Document: doc},

@@ -2,19 +2,19 @@ package usecase
 
 import (
 	"fmt"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 )
 
 // MacInteractor macbookの情報をやりとりするためのgateway
 type MacInteractor struct {
-	mr repository.MacRepository
+	mr database.MacRepository
 }
 
 // NewMacInteractor MacInteractorを生成
-func NewMacInteractor(mr repository.MacRepository) *MacInteractor {
+func NewMacInteractor(mr database.MacRepository) *MacInteractor {
 	if mr == nil {
 		return nil
 	}

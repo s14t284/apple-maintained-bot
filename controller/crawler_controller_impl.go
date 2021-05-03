@@ -1,44 +1,46 @@
-package interfaces
+package controller
 
 import (
 	"fmt"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"path"
 
 	"github.com/labstack/gommon/log"
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/usecase/repository"
+	"github.com/s14t284/apple-maitained-bot/infrastructure"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
 )
 
 const shopListEndPoint = "/jp/shop/refurbished/"
 
 // CrawlerControllerImpl 整備済み品のクローラー
 type CrawlerControllerImpl struct {
-	mr            repository.MacRepository
-	ir            repository.IPadRepository
-	wr            repository.WatchRepository
-	parser        repository.PageParser
-	scraper       repository.Scraper
-	slackNotifier repository.SlackNotifyRepository
+	mr            database.MacRepository
+	ir            database.IPadRepository
+	wr            database.WatchRepository
+	parser        web.PageParser
+	scraper       web.Scraper
+	slackNotifier infrastructure.SlackNotifyRepository
 }
 
 // NewCrawlerControllerImpl CrawlerControllerImplを初期化
 func NewCrawlerControllerImpl(
-	mr repository.MacRepository,
-	ir repository.IPadRepository,
-	wr repository.WatchRepository,
-	parser repository.PageParser,
-	scraper repository.Scraper,
-	slackNotifier repository.SlackNotifyRepository,
+	mr database.MacRepository,
+	ir database.IPadRepository,
+	wr database.WatchRepository,
+	parser web.PageParser,
+	scraper web.Scraper,
+	slackNotifier infrastructure.SlackNotifyRepository,
 ) (*CrawlerControllerImpl, error) {
 	if mr == nil {
-		return nil, fmt.Errorf("mac repository is nil")
+		return nil, fmt.Errorf("mac web is nil")
 	}
 	if ir == nil {
-		return nil, fmt.Errorf("ipad repository is nil")
+		return nil, fmt.Errorf("ipad web is nil")
 	}
 	if wr == nil {
-		return nil, fmt.Errorf("watch repository is nilj")
+		return nil, fmt.Errorf("watch web is nilj")
 	}
 	if parser == nil {
 		return nil, fmt.Errorf("page parser is nil")

@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/mock/repository"
+	"github.com/s14t284/apple-maitained-bot/mock/database"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,14 +15,14 @@ func TestNewWatchInteractor(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockWr := repository.NewMockWatchRepository(ctrl)
+	mockWr := database.NewMockWatchRepository(ctrl)
 	{
 		// success
 		mpi := NewWatchInteractor(mockWr)
 		assert.NotNil(mpi)
 	}
 	{
-		// failed because repository is nil
+		// failed because database is nil
 		mpi := NewWatchInteractor(nil)
 		assert.Nil(mpi)
 	}
@@ -32,7 +32,7 @@ func TestWatchInteractor_FindWatch(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockWpr := repository.NewMockWatchRepository(ctrl)
+	mockWpr := database.NewMockWatchRepository(ctrl)
 	expected := make(model.Watches, 1)
 	expected[0] = model.Watch{Name: "Apple Watch Series 4"}
 	{
@@ -64,7 +64,7 @@ func TestWatchInteractor_FindWatchAll(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockWr := repository.NewMockWatchRepository(ctrl)
+	mockWr := database.NewMockWatchRepository(ctrl)
 	var expected model.Watches = make(model.Watches, 1)
 	expected[0] = model.Watch{}
 	{
@@ -95,7 +95,7 @@ func TestWatchInteractor_FindByURL(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockWr := repository.NewMockWatchRepository(ctrl)
+	mockWr := database.NewMockWatchRepository(ctrl)
 	expected := &model.Watch{}
 	url := "https://apple.com"
 	{
@@ -126,7 +126,7 @@ func TestWatchInteractor_IsExist(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockWr := repository.NewMockWatchRepository(ctrl)
+	mockWr := database.NewMockWatchRepository(ctrl)
 	input := &model.Watch{}
 
 	// mock output
@@ -165,7 +165,7 @@ func TestWatchInteractor_AddWatch(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockWr := repository.NewMockWatchRepository(ctrl)
+	mockWr := database.NewMockWatchRepository(ctrl)
 	input := &model.Watch{}
 	{
 		// success
@@ -193,7 +193,7 @@ func TestWatchInteractor_UpdateWatch(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockWr := repository.NewMockWatchRepository(ctrl)
+	mockWr := database.NewMockWatchRepository(ctrl)
 	input := &model.Watch{ID: 1}
 	failedInput := &model.Watch{ID: 0}
 	{
@@ -222,7 +222,7 @@ func TestWatchInteractor_UpdateAllSoldTemporary(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockWr := repository.NewMockWatchRepository(ctrl)
+	mockWr := database.NewMockWatchRepository(ctrl)
 	{
 		// success
 		ipi := NewWatchInteractor(mockWr)
@@ -249,7 +249,7 @@ func TestWatchInteractor_RemoveWatch(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockWr := repository.NewMockWatchRepository(ctrl)
+	mockWr := database.NewMockWatchRepository(ctrl)
 	id := int64(1)
 	{
 		// success

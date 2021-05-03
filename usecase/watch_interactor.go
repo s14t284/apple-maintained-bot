@@ -2,19 +2,19 @@ package usecase
 
 import (
 	"fmt"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 )
 
 // WatchInteractor apple watchの情報をやりとりするためのgateway
 type WatchInteractor struct {
-	wr repository.WatchRepository
+	wr database.WatchRepository
 }
 
 // NewWatchInteractor WatchInteractorを生成
-func NewWatchInteractor(wr repository.WatchRepository) *WatchInteractor {
+func NewWatchInteractor(wr database.WatchRepository) *WatchInteractor {
 	if wr == nil {
 		return nil
 	}

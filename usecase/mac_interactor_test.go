@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/mock/repository"
+	"github.com/s14t284/apple-maitained-bot/mock/database"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,14 +15,14 @@ func TestNewMacInteractor(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
+	mockMr := database.NewMockMacRepository(ctrl)
 	{
 		// success
 		mpi := NewMacInteractor(mockMr)
 		assert.NotNil(mpi)
 	}
 	{
-		// failed because repository is nil
+		// failed because database is nil
 		mpi := NewMacInteractor(nil)
 		assert.Nil(mpi)
 	}
@@ -32,7 +32,7 @@ func TestMacInteractor_FindMac(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockMpr := repository.NewMockMacRepository(ctrl)
+	mockMpr := database.NewMockMacRepository(ctrl)
 	expected := make(model.Macs, 1)
 	expected[0] = model.Mac{Name: "MacBook Pro"}
 	{
@@ -64,7 +64,7 @@ func TestMacInteractor_FindMacAll(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
+	mockMr := database.NewMockMacRepository(ctrl)
 	var expected model.Macs = make(model.Macs, 1)
 	expected[0] = model.Mac{}
 	{
@@ -95,7 +95,7 @@ func TestMacInteractor_FindByURL(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
+	mockMr := database.NewMockMacRepository(ctrl)
 	expected := &model.Mac{}
 	url := "https://apple.com"
 	{
@@ -126,7 +126,7 @@ func TestMacInteractor_IsExist(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
+	mockMr := database.NewMockMacRepository(ctrl)
 	input := &model.Mac{}
 
 	// mock output
@@ -165,7 +165,7 @@ func TestMacInteractor_AddMac(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
+	mockMr := database.NewMockMacRepository(ctrl)
 	input := &model.Mac{}
 	{
 		// success
@@ -193,7 +193,7 @@ func TestMacInteractor_UpdateMac(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
+	mockMr := database.NewMockMacRepository(ctrl)
 	input := &model.Mac{ID: 1}
 	failedInput := &model.Mac{ID: 0}
 	{
@@ -222,7 +222,7 @@ func TestMacInteractor_UpdateAllSoldTemporary(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
+	mockMr := database.NewMockMacRepository(ctrl)
 	{
 		// success
 		ipi := NewMacInteractor(mockMr)
@@ -249,7 +249,7 @@ func TestMacInteractor_RemoveMac(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
+	mockMr := database.NewMockMacRepository(ctrl)
 	id := int64(1)
 	{
 		// success

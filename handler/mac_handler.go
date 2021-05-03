@@ -2,17 +2,17 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"net/http"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/utils"
 
 	"github.com/labstack/gommon/log"
-	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 )
 
 // GetMacHandler macのGetリクエストの API Handler
-func GetMacHandler(mr repository.MacRepository) func(w http.ResponseWriter, r *http.Request) {
+func GetMacHandler(mr database.MacRepository) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		req := model.MacRequestParam{}

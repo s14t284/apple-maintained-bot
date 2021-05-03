@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
 	"net/http"
 	"os"
 
 	"github.com/s14t284/apple-maitained-bot/handler"
 
-	"github.com/s14t284/apple-maitained-bot/interfaces"
+	"github.com/s14t284/apple-maitained-bot/controller"
 
 	"github.com/labstack/gommon/log"
 	"github.com/robfig/cron/v3"
@@ -17,7 +18,7 @@ import (
 	"github.com/s14t284/apple-maitained-bot/usecase"
 )
 
-func getCronConfig(crawler interfaces.CrawlerController) (*cron.Cron, error) {
+func getCronConfig(crawler controller.CrawlerController) (*cron.Cron, error) {
 	c := cron.New()
 
 	// 整備済み品収集
@@ -45,14 +46,14 @@ func main() {
 		panic(err)
 	}
 	// scraper
-	scraper, err := infrastructure.NewScraperImpl()
+	scraper, err := web.NewScraperImpl()
 	if err != nil {
 		err = fmt.Errorf("failed to initialize scraper [error][%w]", err)
 		log.Error(err)
 		panic(err)
 	}
 	// parser
-	parser, err := infrastructure.NewPageParserImpl()
+	parser, err := web.NewPageParserImpl()
 	if err != nil {
 		err = fmt.Errorf("failed to initialize parser [error][%w]", err)
 		log.Error(err)
@@ -66,7 +67,7 @@ func main() {
 		panic(err)
 	}
 	// DB接続
-	psqlClient, err := infrastructure.PsqlNewClientImpl(conf.PsqlConfig)
+	psqlClient, err := database.PsqlNewClientImpl(conf.PsqlConfig)
 	if err != nil {
 		log.Error(err)
 		panic(err)
@@ -75,7 +76,7 @@ func main() {
 	ipadInteractor := usecase.NewIPadInteractor(database.IPadRepositoryImpl{SQLClient: psqlClient})
 	watchInteractor := usecase.NewWatchInteractor(database.WatchRepositoryImpl{SQLClient: psqlClient})
 	// crawler
-	crawler, err := interfaces.NewCrawlerControllerImpl(macInteractor, ipadInteractor, watchInteractor, parser, scraper, notifier)
+	crawler, err := controller.NewCrawlerControllerImpl(macInteractor, ipadInteractor, watchInteractor, parser, scraper, notifier)
 	if err != nil {
 		log.Error(err)
 	}

@@ -2,19 +2,19 @@ package usecase
 
 import (
 	"fmt"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/usecase/repository"
 )
 
 // IPadInteractor ipadの情報をやりとりするためのgateway
 type IPadInteractor struct {
-	ipr repository.IPadRepository
+	ipr database.IPadRepository
 }
 
 // NewIPadInteractor IPadInteractorを生成
-func NewIPadInteractor(ipr repository.IPadRepository) *IPadInteractor {
+func NewIPadInteractor(ipr database.IPadRepository) *IPadInteractor {
 	if ipr == nil {
 		return nil
 	}

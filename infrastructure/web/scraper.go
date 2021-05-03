@@ -1,6 +1,6 @@
 //go:generate mockgen -source=$GOFILE -package=$GOPACKAGE -destination=../../mock/$GOPACKAGE/$GOFILE
 
-package repository
+package web
 
 import (
 	"github.com/PuerkitoBio/goquery"

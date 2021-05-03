@@ -1,4 +1,4 @@
-package interfaces
+package controller
 
 // CrawlerController クローラーのinterface
 type CrawlerController interface {

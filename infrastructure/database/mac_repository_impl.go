@@ -5,13 +5,12 @@ import (
 	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"gorm.io/gorm"
 )
 
 // MacRepositoryImpl macbookに関する情報を操作するための実装
 type MacRepositoryImpl struct {
-	SQLClient *infrastructure.SQLClient
+	SQLClient *SQLClient
 }
 
 // FindMac 整備済み品macの情報を検索して返す

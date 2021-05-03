@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/mock/repository"
+	"github.com/s14t284/apple-maitained-bot/mock/database"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,14 +15,14 @@ func TestNewIPadInteractor(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockIpr := repository.NewMockIPadRepository(ctrl)
+	mockIpr := database.NewMockIPadRepository(ctrl)
 	{
 		// success
 		ipi := NewIPadInteractor(mockIpr)
 		assert.NotNil(ipi)
 	}
 	{
-		// failed because repository is nil
+		// failed because database is nil
 		ipi := NewIPadInteractor(nil)
 		assert.Nil(ipi)
 	}
@@ -32,7 +32,7 @@ func TestIPadInteractor_FindIPad(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockIpr := repository.NewMockIPadRepository(ctrl)
+	mockIpr := database.NewMockIPadRepository(ctrl)
 	expected := make(model.IPads, 1)
 	expected[0] = model.IPad{Name: "IPad Pro"}
 	{
@@ -64,7 +64,7 @@ func TestIPadInteractor_FindIPadAll(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockIpr := repository.NewMockIPadRepository(ctrl)
+	mockIpr := database.NewMockIPadRepository(ctrl)
 	var expected model.IPads = make(model.IPads, 1)
 	expected[0] = model.IPad{}
 	{
@@ -96,7 +96,7 @@ func TestIPadInteractor_FindByURL(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockIpr := repository.NewMockIPadRepository(ctrl)
+	mockIpr := database.NewMockIPadRepository(ctrl)
 	expected := &model.IPad{}
 	url := "https://apple.com"
 	{
@@ -128,7 +128,7 @@ func TestIPadInteractor_IsExist(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockIpr := repository.NewMockIPadRepository(ctrl)
+	mockIpr := database.NewMockIPadRepository(ctrl)
 	input := &model.IPad{}
 
 	// mock output
@@ -167,7 +167,7 @@ func TestIPadInteractor_AddIPad(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockIpr := repository.NewMockIPadRepository(ctrl)
+	mockIpr := database.NewMockIPadRepository(ctrl)
 	input := &model.IPad{}
 	{
 		// success
@@ -195,7 +195,7 @@ func TestIPadInteractor_UpdateIPad(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockIpr := repository.NewMockIPadRepository(ctrl)
+	mockIpr := database.NewMockIPadRepository(ctrl)
 	input := &model.IPad{ID: 1}
 	failedInput := &model.IPad{ID: 0}
 	{
@@ -224,7 +224,7 @@ func TestIPadInteractor_UpdateAllSoldTemporary(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockIpr := repository.NewMockIPadRepository(ctrl)
+	mockIpr := database.NewMockIPadRepository(ctrl)
 	{
 		// success
 		ipi := NewIPadInteractor(mockIpr)
@@ -251,7 +251,7 @@ func TestIPadInteractor_RemoveIPad(t *testing.T) {
 	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	mockIpr := repository.NewMockIPadRepository(ctrl)
+	mockIpr := database.NewMockIPadRepository(ctrl)
 	id := int64(1)
 	{
 		// success
