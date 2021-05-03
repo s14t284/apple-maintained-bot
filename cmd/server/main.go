@@ -54,7 +54,7 @@ func main() {
 		panic(err)
 	}
 	// scraper
-	scraper, err := web.NewScraperImpl()
+	scraper, err := service.NewScrapeServiceImpl()
 	if err != nil {
 		err = fmt.Errorf("failed to initialize scraper [error][%w]", err)
 		log.Error(err)
@@ -90,7 +90,7 @@ func main() {
 	ipadService := service.NewIPadServiceImpl(database.IPadRepositoryImpl{SQLClient: psqlClient})
 	watchService := service.NewWatchServiceImpl(database.WatchRepositoryImpl{SQLClient: psqlClient})
 	// crawler
-	crawler, err := usecase.NewCrawlerControllerImpl(macService, ipadService, watchService, pps, scraper, notifier)
+	crawler, err := usecase.NewCrawlerUseCaseImpl(macService, ipadService, watchService, pps, scraper, notifier)
 	if err != nil {
 		log.Error(err)
 	}

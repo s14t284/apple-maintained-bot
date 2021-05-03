@@ -14,7 +14,6 @@ import (
 	"github.com/s14t284/apple-maitained-bot/mock/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/mock/parse"
 	"github.com/s14t284/apple-maitained-bot/mock/service"
-	"github.com/s14t284/apple-maitained-bot/mock/web"
 )
 
 const endPoint = "/jp/shop/refurbished/"
@@ -27,53 +26,53 @@ func TestNewCrawlerControllerImpl(t *testing.T) {
 	is := service.NewMockIPadService(ctrl)
 	ws := service.NewMockWatchService(ctrl)
 	pps := parse.NewMockPageParseService(ctrl)
-	scraper := web.NewMockScraper(ctrl)
+	scraper := service.NewMockScrapeService(ctrl)
 	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	{
 		// 正常系
-		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, notifier)
 		a.NotNil(cci)
 		a.NoError(err)
 	}
 	{
 		// 異常系
 		// mac databaseがnil
-		cci, err := NewCrawlerControllerImpl(nil, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerUseCaseImpl(nil, is, ws, pps, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// ipad databaseがnil
-		cci, err := NewCrawlerControllerImpl(ms, nil, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerUseCaseImpl(ms, nil, ws, pps, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// watch databaseがnil
-		cci, err := NewCrawlerControllerImpl(ms, is, nil, pps, scraper, notifier)
+		cci, err := NewCrawlerUseCaseImpl(ms, is, nil, pps, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// parserがnil
-		cci, err := NewCrawlerControllerImpl(ms, is, ws, nil, scraper, notifier)
+		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, nil, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// scraperがnil
-		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, nil, notifier)
+		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, nil, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// slack notifier がnil
-		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, nil)
+		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, nil)
 		a.Nil(cci)
 		a.Error(err)
 	}
@@ -87,7 +86,7 @@ func TestCrawlerControllerImpl_CrawlMacPage(t *testing.T) {
 	is := service.NewMockIPadService(ctrl)
 	ws := service.NewMockWatchService(ctrl)
 	pps := parse.NewMockPageParseService(ctrl)
-	scraper := web.NewMockScraper(ctrl)
+	scraper := service.NewMockScrapeService(ctrl)
 	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	doc := &goquery.Document{}
 	pages := []domain.Page{
@@ -103,7 +102,7 @@ func TestCrawlerControllerImpl_CrawlMacPage(t *testing.T) {
 	}
 	{
 		// 正常系
-		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, notifier)
 		if err != nil {
 			t.FailNow()
 		}
@@ -132,7 +131,7 @@ func TestCrawlerControllerImpl_CrawlIPadPage(t *testing.T) {
 	is := service.NewMockIPadService(ctrl)
 	ws := service.NewMockWatchService(ctrl)
 	pps := parse.NewMockPageParseService(ctrl)
-	scraper := web.NewMockScraper(ctrl)
+	scraper := service.NewMockScrapeService(ctrl)
 	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	doc := &goquery.Document{}
 	pages := []domain.Page{
@@ -148,7 +147,7 @@ func TestCrawlerControllerImpl_CrawlIPadPage(t *testing.T) {
 	}
 	{
 		// 正常系
-		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, notifier)
 		if err != nil {
 			t.FailNow()
 		}
@@ -176,7 +175,7 @@ func TestCrawlerControllerImpl_CrawlWatchPage(t *testing.T) {
 	is := service.NewMockIPadService(ctrl)
 	ws := service.NewMockWatchService(ctrl)
 	pps := parse.NewMockPageParseService(ctrl)
-	scraper := web.NewMockScraper(ctrl)
+	scraper := service.NewMockScrapeService(ctrl)
 	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	doc := &goquery.Document{}
 	pages := []domain.Page{
@@ -192,7 +191,7 @@ func TestCrawlerControllerImpl_CrawlWatchPage(t *testing.T) {
 	}
 	{
 		// 正常系
-		cci, err := NewCrawlerControllerImpl(ms, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, notifier)
 		if err != nil {
 			t.FailNow()
 		}

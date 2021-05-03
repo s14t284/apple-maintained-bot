@@ -7,7 +7,6 @@ import (
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
 	"github.com/s14t284/apple-maitained-bot/service"
 	"github.com/s14t284/apple-maitained-bot/service/parse"
 
@@ -22,17 +21,17 @@ type CrawlerUseCaseImpl struct {
 	is            service.IPadService
 	ws            service.WatchService
 	parser        parse.PageParseService
-	scraper       web.Scraper
+	scraper       service.ScrapeService
 	slackNotifier infrastructure.SlackNotifyRepository
 }
 
-// NewCrawlerControllerImpl CrawlerControllerImplを初期化
-func NewCrawlerControllerImpl(
+// NewCrawlerUseCaseImpl CrawlerControllerImplを初期化
+func NewCrawlerUseCaseImpl(
 	ms service.MacService,
 	is service.IPadService,
 	ws service.WatchService,
 	parser parse.PageParseService,
-	scraper web.Scraper,
+	scraper service.ScrapeService,
 	slackNotifier infrastructure.SlackNotifyRepository,
 ) (*CrawlerUseCaseImpl, error) {
 	if ms == nil {

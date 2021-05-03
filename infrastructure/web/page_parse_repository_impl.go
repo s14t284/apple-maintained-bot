@@ -20,8 +20,9 @@ type PageParseRepositoryImpl struct {
 var _ PageParseRepository = &PageParseRepositoryImpl{}
 
 const (
-	SALES = "月発売"
-	INCH  = "インチ"
+	SALES   = "月発売"
+	INCH    = "インチ"
+	rootURL = "https://www.apple.com"
 )
 
 // NewPageParseRepositoryImpl PageParseRepositoryImplを初期化

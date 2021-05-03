@@ -1,4 +1,4 @@
-package web
+package service
 
 import (
 	"fmt"
@@ -18,18 +18,20 @@ const (
 	rootURL   = "https://www.apple.com"
 )
 
-// ScraperImpl スクレイピング の実装
-type ScraperImpl struct {
+// ScrapeServiceImpl スクレイピング の実装
+type ScrapeServiceImpl struct {
 	client http.Client
 }
 
-// NewScraperImpl ScraperImplの初期化
-func NewScraperImpl() (*ScraperImpl, error) {
-	return &ScraperImpl{client: http.Client{}}, nil
+var _ ScrapeService = &ScrapeServiceImpl{}
+
+// NewScrapeServiceImpl ScraperImplの初期化
+func NewScrapeServiceImpl() (*ScrapeServiceImpl, error) {
+	return &ScrapeServiceImpl{client: http.Client{}}, nil
 }
 
 // Scrape 指定したurlをgoqueryオブジェクトに変換するメソッド
-func (si *ScraperImpl) Scrape(targetPath string) (doc *goquery.Document, err error) {
+func (sri *ScrapeServiceImpl) Scrape(targetPath string) (doc *goquery.Document, err error) {
 	requestBody := url.Values{}
 	p := rootURL + targetPath
 	req, err := http.NewRequest(
@@ -42,7 +44,7 @@ func (si *ScraperImpl) Scrape(targetPath string) (doc *goquery.Document, err err
 	}
 	req.Header.Add("User-Agent", userAgent)
 
-	resp, _ := si.client.Do(req)
+	resp, _ := sri.client.Do(req)
 	if resp.StatusCode != 200 {
 		err = fmt.Errorf("status code error: [status_code][%d] [status][%s]", resp.StatusCode, resp.Status)
 		log.Error(err)
@@ -65,7 +67,7 @@ func (si *ScraperImpl) Scrape(targetPath string) (doc *goquery.Document, err err
 }
 
 // ScrapeMaintainedPage 整備済み品ページから共通の情報を取得
-func (si *ScraperImpl) ScrapeMaintainedPage(doc *goquery.Document) ([]domain.Page, error) {
+func (sri *ScrapeServiceImpl) ScrapeMaintainedPage(doc *goquery.Document) ([]domain.Page, error) {
 	// 一件ずつスクレイピング
 	pages := make([]domain.Page, 0)
 	var err error
@@ -74,7 +76,7 @@ func (si *ScraperImpl) ScrapeMaintainedPage(doc *goquery.Document) ([]domain.Pag
 		title := s.Find("h3 > a").Text()
 		amount := s.Find("div,.as-currentprice,.producttile-currentprice").Text()
 		href, _ := s.Find("a").Attr("href")
-		detailDoc, localErr := si.Scrape(href)
+		detailDoc, localErr := sri.Scrape(href)
 		if localErr != nil {
 			err = fmt.Errorf("failed to scrape detail page [url][%s][error][%w]", href, localErr)
 			log.Errorf(err.Error())
