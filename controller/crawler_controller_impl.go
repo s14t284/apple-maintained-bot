@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"path"
 
-
-	"github.com/labstack/gommon/log"
-
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
+
+	"github.com/labstack/gommon/log"
 )
 
 const shopListEndPoint = "/jp/shop/refurbished/"
