@@ -584,6 +584,6 @@ func TestLoadWatchInformationFromDetailHTML(t *testing.T) {
 	}
 }
 
-func initializePageParserImpl() (*PageParserImpl, error) {
-	return NewPageParserImpl()
+func initializePageParserImpl() (*PageParseRepositoryImpl, error) {
+	return NewPageParseRepositoryImpl()
 }

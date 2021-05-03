@@ -9,6 +9,7 @@ import (
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/labstack/gommon/log"
+
 	"github.com/s14t284/apple-maitained-bot/domain"
 )
 

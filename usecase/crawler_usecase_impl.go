@@ -9,6 +9,7 @@ import (
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
+	parser2 "github.com/s14t284/apple-maitained-bot/service/parser"
 
 	"github.com/labstack/gommon/log"
 )
@@ -20,7 +21,7 @@ type CrawlerUseCaseImpl struct {
 	mr            database.MacRepository
 	ir            database.IPadRepository
 	wr            database.WatchRepository
-	parser        web.PageParser
+	parser        parser2.PageParseService
 	scraper       web.Scraper
 	slackNotifier infrastructure.SlackNotifyRepository
 }
@@ -30,18 +31,18 @@ func NewCrawlerControllerImpl(
 	mr database.MacRepository,
 	ir database.IPadRepository,
 	wr database.WatchRepository,
-	parser web.PageParser,
+	parser parser2.PageParseService,
 	scraper web.Scraper,
 	slackNotifier infrastructure.SlackNotifyRepository,
 ) (*CrawlerUseCaseImpl, error) {
 	if mr == nil {
-		return nil, fmt.Errorf("mac web is nil")
+		return nil, fmt.Errorf("mac parser is nil")
 	}
 	if ir == nil {
-		return nil, fmt.Errorf("ipad web is nil")
+		return nil, fmt.Errorf("ipad parser is nil")
 	}
 	if wr == nil {
-		return nil, fmt.Errorf("watch web is nilj")
+		return nil, fmt.Errorf("watch parser is nilj")
 	}
 	if parser == nil {
 		return nil, fmt.Errorf("page parser is nil")

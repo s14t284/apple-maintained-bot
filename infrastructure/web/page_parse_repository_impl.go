@@ -13,71 +13,59 @@ import (
 	"github.com/s14t284/apple-maitained-bot/utils"
 )
 
+// PageParseRepositoryImpl 商品ページごとのパーサーの詳細
+type PageParseRepositoryImpl struct {
+}
+
+var _ PageParseRepository = &PageParseRepositoryImpl{}
+
 const (
 	SALES = "月発売"
 	INCH  = "インチ"
 )
 
-// PageParserImpl 商品ページのパーサーの実装
-type PageParserImpl struct {
+// NewPageParseRepositoryImpl PageParseRepositoryImplを初期化
+func NewPageParseRepositoryImpl() (*PageParseRepositoryImpl, error) {
+	return &PageParseRepositoryImpl{}, nil
 }
 
-// NewPageParserImpl PageParserImplを初期化
-func NewPageParserImpl() (*PageParserImpl, error) {
-	return &PageParserImpl{}, nil
-}
-
-// ParsePage 商品ページのパース
-func (ppi *PageParserImpl) ParsePage(target string, page domain.Page) (interface{}, error) {
-	switch target {
-	case "mac":
-		return ppi.parseMacPage(page)
-	case "ipad":
-		return ppi.parseIPadPage(page)
-	case "watch":
-		return ppi.parseWatchPage(page)
-	default:
-		return nil, fmt.Errorf("target must be `mac`, `ipad`, or `watch`")
-	}
-}
-
-// parseMacPage macに関するページをパースして、macに関する情報のオブジェクトを返却
+// ParseMacPage macに関するページをパースして、macに関する情報のオブジェクトを返却
 // TODO: macbook以外にも対応
-func (ppi *PageParserImpl) parseMacPage(page domain.Page) (*model.Mac, error) {
+func (ppri *PageParseRepositoryImpl) ParseMacPage(page domain.Page) (*model.Mac, error) {
 	var mac model.Mac
-	err := ppi.loadMacInformationFromTitle(&mac, page)
+	err := ppri.loadMacInformationFromTitle(&mac, page)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse mac page [error][%w]", err)
 	}
-	err = ppi.loadMacInformationFromDetailHTML(&mac, page.Document)
+	err = ppri.loadMacInformationFromDetailHTML(&mac, page.Document)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse mac page [error][%w]", err)
 	}
 	return &mac, nil
 }
 
-// parseMacPage ipadに関するページをパースして、ipadに関する情報のオブジェクトを返却
-func (ppi *PageParserImpl) parseIPadPage(page domain.Page) (*model.IPad, error) {
+// ParseMacPage ipadに関するページをパースして、ipadに関する情報のオブジェクトを返却
+func (ppri *PageParseRepositoryImpl) ParseIPadPage(page domain.Page) (*model.IPad, error) {
 	var ipad model.IPad
-	err := ppi.loadIPadInformationFromTitle(&ipad, page)
+	err := ppri.loadIPadInformationFromTitle(&ipad, page)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse mac page [error][%w]", err)
 	}
-	err = ppi.loadIPadInformationFromDetailHTML(&ipad, page.Document)
+	err = ppri.loadIPadInformationFromDetailHTML(&ipad, page.Document)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse mac page [error][%w]", err)
 	}
 	return &ipad, nil
 }
 
-// parseWatchPage watchに関するページをパースして、watchに関する情報のオブジェクトを返却
-func (ppi *PageParserImpl) parseWatchPage(page domain.Page) (*model.Watch, error) {
+// ParseWatchPage watchに関するページをパースして、watchに関する情報のオブジェクトを返却
+func (ppri *PageParseRepositoryImpl) ParseWatchPage(page domain.Page) (*model.Watch, error) {
 	var watch model.Watch
-	err := ppi.loadWatchInformationFromTitle(&watch, page)
+	err := ppri.loadWatchInformationFromTitle(&watch, page)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse mac page [error][%w]", err)
 	}
-	err = ppi.loadWatchInformationFromDetailHTML(&watch, page.Document)
+	err = ppri.loadWatchInformationFromDetailHTML(&watch, page.Document)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse mac page [error][%w]", err)
 	}
@@ -85,7 +73,7 @@ func (ppi *PageParserImpl) parseWatchPage(page domain.Page) (*model.Watch, error
 }
 
 // loadMacInformationFromDetailHTML 詳細ページのHTMLから情報を取得する
-func (ppi *PageParserImpl) loadMacInformationFromDetailHTML(mac *model.Mac, doc *goquery.Document) error {
+func (ppri *PageParseRepositoryImpl) loadMacInformationFromDetailHTML(mac *model.Mac, doc *goquery.Document) error {
 	detail := doc.Find(".as-productinfosection-mainpanel").First()
 	detailRegExp, err := regexp.Compile(`(\n|\s)`)
 	if err != nil {
@@ -131,7 +119,7 @@ func (ppi *PageParserImpl) loadMacInformationFromDetailHTML(mac *model.Mac, doc 
 }
 
 // loadMacInformationFromTitle タイトルから情報を取得する
-func (ppi *PageParserImpl) loadMacInformationFromTitle(mac *model.Mac, page domain.Page) error {
+func (ppri *PageParseRepositoryImpl) loadMacInformationFromTitle(mac *model.Mac, page domain.Page) error {
 	title := getReformattedTitle(page.Title)
 	mac.Name = title
 
@@ -156,7 +144,7 @@ func (ppi *PageParserImpl) loadMacInformationFromTitle(mac *model.Mac, page doma
 }
 
 // loadIPadInformationFromDetailHTML 詳細ページのHTMLから情報を取得する
-func (ppi *PageParserImpl) loadIPadInformationFromDetailHTML(ipad *model.IPad, doc *goquery.Document) error {
+func (ppri *PageParseRepositoryImpl) loadIPadInformationFromDetailHTML(ipad *model.IPad, doc *goquery.Document) error {
 	detail := doc.Find(".as-productinfosection-mainpanel").First()
 	detailRegExp, err := regexp.Compile(`(\n|\s)`)
 	if err != nil {
@@ -191,7 +179,7 @@ func (ppi *PageParserImpl) loadIPadInformationFromDetailHTML(ipad *model.IPad, d
 }
 
 // loadIPadInformationFromTitle タイトルから情報を取得する
-func (ppi *PageParserImpl) loadIPadInformationFromTitle(ipad *model.IPad, page domain.Page) error {
+func (ppri *PageParseRepositoryImpl) loadIPadInformationFromTitle(ipad *model.IPad, page domain.Page) error {
 	// 不要な部分を削除
 	title := getReformattedTitle(page.Title)
 	ipad.Name = title
@@ -214,7 +202,7 @@ func (ppi *PageParserImpl) loadIPadInformationFromTitle(ipad *model.IPad, page d
 }
 
 // loadWatchInformationFromDetailHTML 詳細ページのHTMLから情報を取得する
-func (ppi *PageParserImpl) loadWatchInformationFromDetailHTML(watch *model.Watch, doc *goquery.Document) error {
+func (ppri *PageParseRepositoryImpl) loadWatchInformationFromDetailHTML(watch *model.Watch, doc *goquery.Document) error {
 	detail := doc.Find(".as-productinfosection-mainpanel").First()
 	detailRegExp, err := regexp.Compile(`(\n|\s)`)
 	if err != nil {
@@ -250,7 +238,7 @@ func (ppi *PageParserImpl) loadWatchInformationFromDetailHTML(watch *model.Watch
 }
 
 // loadWatchInformationFromTitle タイトルから情報を取得する
-func (ppi *PageParserImpl) loadWatchInformationFromTitle(watch *model.Watch, page domain.Page) error {
+func (ppri *PageParseRepositoryImpl) loadWatchInformationFromTitle(watch *model.Watch, page domain.Page) error {
 	// 不要な部分を削除
 	title := getReformattedTitle(page.Title)
 	watch.Name = title

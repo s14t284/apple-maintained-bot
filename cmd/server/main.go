@@ -11,6 +11,7 @@ import (
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
 	"github.com/s14t284/apple-maitained-bot/service"
+	"github.com/s14t284/apple-maitained-bot/service/parser"
 	"github.com/s14t284/apple-maitained-bot/usecase"
 
 	"github.com/labstack/gommon/log"
@@ -51,10 +52,11 @@ func main() {
 		log.Error(err)
 		panic(err)
 	}
-	// parser
-	parser, err := web.NewPageParserImpl()
+	// pps
+	ppr, err := web.NewPageParseRepositoryImpl()
+	pps, err := parser.NewPageParseServiceImpl(ppr)
 	if err != nil {
-		err = fmt.Errorf("failed to initialize parser [error][%w]", err)
+		err = fmt.Errorf("failed to initialize pps [error][%w]", err)
 		log.Error(err)
 		panic(err)
 	}
@@ -75,7 +77,7 @@ func main() {
 	ipadInteractor := service.NewIPadService(database.IPadRepositoryImpl{SQLClient: psqlClient})
 	watchInteractor := service.NewWatchService(database.WatchRepositoryImpl{SQLClient: psqlClient})
 	// crawler
-	crawler, err := usecase.NewCrawlerControllerImpl(macInteractor, ipadInteractor, watchInteractor, parser, scraper, notifier)
+	crawler, err := usecase.NewCrawlerControllerImpl(macInteractor, ipadInteractor, watchInteractor, pps, scraper, notifier)
 	if err != nil {
 		log.Error(err)
 	}
