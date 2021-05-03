@@ -1,6 +1,6 @@
 //go:generate mockgen -source=$GOFILE -package=$GOPACKAGE -destination=../../mock/$GOPACKAGE/$GOFILE
 
-package parser
+package parse
 
 import (
 	"github.com/s14t284/apple-maitained-bot/domain"

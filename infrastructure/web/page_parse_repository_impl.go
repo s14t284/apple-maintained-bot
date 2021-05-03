@@ -5,12 +5,12 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/PuerkitoBio/goquery"
+	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/utils"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 // PageParseRepositoryImpl 商品ページごとのパーサーの詳細
@@ -97,7 +97,7 @@ func (ppri *PageParseRepositoryImpl) loadMacInformationFromDetailHTML(mac *model
 			if err != nil {
 				err = fmt.Errorf("failed to parse month [error][%w]", localErr)
 			}
-			mac.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
+			mac.ReleaseDate = getReleaseYearAndMonth(year, month)
 		} else if strings.Contains(text, "TouchBar") {
 			// タッチバーがあるかないか
 			mac.TouchBar = true
@@ -163,7 +163,7 @@ func (ppri *PageParseRepositoryImpl) loadIPadInformationFromDetailHTML(ipad *mod
 			if localErr != nil {
 				err = fmt.Errorf("failed to parse year [error][%w]", localErr)
 			}
-			ipad.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
+			ipad.ReleaseDate = getReleaseYearAndMonth(year, month)
 		} else if strings.Contains(text, "メガピクセル") {
 			ipad.Camera = text
 		} else if strings.Contains(text, INCH) {
@@ -221,7 +221,7 @@ func (ppri *PageParseRepositoryImpl) loadWatchInformationFromDetailHTML(watch *m
 			if localErr != nil {
 				err = fmt.Errorf("failed to parse year [error][%w]", localErr)
 			}
-			watch.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
+			watch.ReleaseDate = getReleaseYearAndMonth(year, month)
 		} else if strings.Contains(text, "GB") {
 			// ストレージ
 			r, localErr := regexp.Compile(`[0-9]+GB`)
@@ -335,4 +335,10 @@ func getURL(str string) string {
 		return rootURL + str
 	}
 	return str
+}
+
+// getReleaseYearAndMonth 商品が売られ始めた年月を表現するための時間を返却
+func getReleaseYearAndMonth(year int, month int) time.Time {
+	timeZone, _ := time.LoadLocation("Asia/Tokyo")
+	return time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
 }

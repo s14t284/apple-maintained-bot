@@ -3,13 +3,13 @@ package web
 import (
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/utils"
 )
 
 const (
@@ -381,7 +381,7 @@ func TestLoadMacInformationFromDetailHTML(t *testing.T) {
 		}
 		err = pageParser.loadMacInformationFromDetailHTML(mac, doc)
 		a.NoError(err)
-		a.Equal(utils.GetReleaseYearAndMonth(2019, 11), mac.ReleaseDate)
+		a.Equal(getYearAndMonth(2019, 11), mac.ReleaseDate)
 		a.Equal(true, mac.TouchBar)
 		a.Equal(1000, mac.Storage)
 	}
@@ -396,7 +396,7 @@ func TestLoadMacInformationFromDetailHTML(t *testing.T) {
 		}
 		err = pageParser.loadMacInformationFromDetailHTML(mac, doc)
 		a.NoError(err)
-		a.Equal(utils.GetReleaseYearAndMonth(2018, 10), mac.ReleaseDate)
+		a.Equal(getYearAndMonth(2018, 10), mac.ReleaseDate)
 		a.Equal(512, mac.Storage)
 	}
 }
@@ -499,7 +499,7 @@ func TestLoadIPadInformationFromDetailHTML(t *testing.T) {
 		}
 		err = pageParser.loadIPadInformationFromDetailHTML(ipad, doc)
 		a.NoError(err)
-		a.Equal(utils.GetReleaseYearAndMonth(2015, 9), ipad.ReleaseDate)
+		a.Equal(getYearAndMonth(2015, 9), ipad.ReleaseDate)
 		a.Equal("8メガピクセルiSightカメラ", ipad.Camera)
 		a.Equal(float32(7.9), ipad.Inch)
 	}
@@ -579,11 +579,16 @@ func TestLoadWatchInformationFromDetailHTML(t *testing.T) {
 		}
 		err = pageParser.loadWatchInformationFromDetailHTML(watch, doc)
 		a.NoError(err)
-		a.Equal(utils.GetReleaseYearAndMonth(2018, 9), watch.ReleaseDate)
+		a.Equal(getYearAndMonth(2018, 9), watch.ReleaseDate)
 		a.Equal(16, watch.Storage)
 	}
 }
 
 func initializePageParserImpl() (*PageParseRepositoryImpl, error) {
 	return NewPageParseRepositoryImpl()
+}
+
+func getYearAndMonth(year, month int) time.Time {
+	timeZone, _ := time.LoadLocation("Asia/Tokyo")
+	return time.Date(year, time.Month(month), 1, 9, 0, 0, 0, timeZone)
 }

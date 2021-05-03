@@ -3,8 +3,9 @@
 package web
 
 import (
-	"github.com/PuerkitoBio/goquery"
 	"github.com/s14t284/apple-maitained-bot/domain"
+
+	"github.com/PuerkitoBio/goquery"
 )
 
 // Scraper スクレイピングを行うオブジェクトのinterface

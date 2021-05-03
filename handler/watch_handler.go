@@ -6,7 +6,6 @@ import (
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
-	"github.com/s14t284/apple-maitained-bot/utils"
 
 	"github.com/labstack/gommon/log"
 )
@@ -20,29 +19,29 @@ func GetWatchHandler(wr database.WatchRepository) func(w http.ResponseWriter, r 
 		// parse request parameters
 		err := r.ParseForm()
 		if err != nil {
-			log.Errorf("failed to parse resquest parameter [error][%w]", err)
+			log.Errorf("failed to parse request parameter [error][%w]", err)
 			w.WriteHeader(http.StatusBadRequest)
 		}
 		for k, v := range r.Form {
 			switch k {
 			case "name":
-				req.Name = utils.GetWatchName(v[0])
+				req.Name = GetWatchName(v[0])
 			case "color":
-				req.Color = utils.GetColor(v[0])
+				req.Color = GetColor(v[0])
 			case "is_sold":
-				req.IsSold = utils.GetIsSold(v[0])
+				req.IsSold = GetIsSold(v[0])
 			case "max_amount":
-				req.MaxAmount = utils.GetAmount(v[0])
+				req.MaxAmount = GetAmount(v[0])
 			case "min_amount":
-				req.MinAmount = utils.GetAmount(v[0])
+				req.MinAmount = GetAmount(v[0])
 			case "max_inch":
-				req.MaxInch = utils.GetInch(v[0])
+				req.MaxInch = GetInch(v[0])
 			case "min_inch":
-				req.MinInch = utils.GetInch(v[0])
+				req.MinInch = GetInch(v[0])
 			case "max_storage":
-				req.MaxStorage = utils.GetStorage(v[0])
+				req.MaxStorage = GetStorage(v[0])
 			case "min_storage":
-				req.MinStorage = utils.GetStorage(v[0])
+				req.MinStorage = GetStorage(v[0])
 			}
 		}
 
@@ -57,7 +56,7 @@ func GetWatchHandler(wr database.WatchRepository) func(w http.ResponseWriter, r 
 		}
 		obj, err := json.Marshal(watches)
 		if err != nil {
-			log.Errorf("failed to parse apple watch infomation to json [error][%w]", err)
+			log.Errorf("failed to parse apple watch information to json [error][%w]", err)
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 		_, err = w.Write(obj)
