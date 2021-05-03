@@ -4,8 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"gorm.io/gorm"
+
+	"github.com/s14t284/apple-maitained-bot/domain/model"
 )
 
 // IPadRepositoryImpl ipadに関する情報を操作するための実装

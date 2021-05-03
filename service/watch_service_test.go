@@ -1,4 +1,4 @@
-package usecase
+package service
 
 import (
 	"fmt"
@@ -6,30 +6,31 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/mock/database"
-	"github.com/stretchr/testify/assert"
 )
 
-func TestNewWatchInteractor(t *testing.T) {
-	assert := assert.New(t)
+func TestNewWatchService(t *testing.T) {
+	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
 	{
 		// success
-		mpi := NewWatchInteractor(mockWr)
-		assert.NotNil(mpi)
+		mpi := NewWatchService(mockWr)
+		a.NotNil(mpi)
 	}
 	{
 		// failed because database is nil
-		mpi := NewWatchInteractor(nil)
-		assert.Nil(mpi)
+		mpi := NewWatchService(nil)
+		a.Nil(mpi)
 	}
 }
 
-func TestWatchInteractor_FindWatch(t *testing.T) {
-	assert := assert.New(t)
+func TestWatchService_FindWatch(t *testing.T) {
+	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWpr := database.NewMockWatchRepository(ctrl)
@@ -37,31 +38,31 @@ func TestWatchInteractor_FindWatch(t *testing.T) {
 	expected[0] = model.Watch{Name: "Apple Watch Series 4"}
 	{
 		// success
-		ipi := NewWatchInteractor(mockWpr)
+		ipi := NewWatchService(mockWpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWpr.EXPECT().FindWatch(&model.WatchRequestParam{}).Return(expected, nil)
 		actual, err := ipi.FindWatch(&model.WatchRequestParam{})
-		assert.NotNil(actual)
-		assert.NoError(err)
-		assert.Equal(expected, actual)
+		a.NotNil(actual)
+		a.NoError(err)
+		a.Equal(expected, actual)
 	}
 	{
 		// failed
-		ipi := NewWatchInteractor(mockWpr)
+		ipi := NewWatchService(mockWpr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWpr.EXPECT().FindWatch(&model.WatchRequestParam{}).Return(nil, fmt.Errorf("error"))
 		actual, err := ipi.FindWatch(&model.WatchRequestParam{})
-		assert.Nil(actual)
-		assert.Error(err)
+		a.Nil(actual)
+		a.Error(err)
 	}
 }
 
-func TestWatchInteractor_FindWatchAll(t *testing.T) {
-	assert := assert.New(t)
+func TestWatchService_FindWatchAll(t *testing.T) {
+	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
@@ -69,30 +70,30 @@ func TestWatchInteractor_FindWatchAll(t *testing.T) {
 	expected[0] = model.Watch{}
 	{
 		// success
-		mpi := NewWatchInteractor(mockWr)
+		mpi := NewWatchService(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().FindWatchAll().Return(expected, nil)
 		actual, err := mpi.FindWatchAll()
-		assert.Equal(expected, actual)
-		assert.NoError(err)
+		a.Equal(expected, actual)
+		a.NoError(err)
 	}
 	{
 		// failed
-		mpi := NewWatchInteractor(mockWr)
+		mpi := NewWatchService(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().FindWatchAll().Return(nil, fmt.Errorf("error"))
 		actual, err := mpi.FindWatchAll()
-		assert.Nil(actual)
-		assert.Error(err)
+		a.Nil(actual)
+		a.Error(err)
 	}
 }
 
-func TestWatchInteractor_FindByURL(t *testing.T) {
-	assert := assert.New(t)
+func TestWatchService_FindByURL(t *testing.T) {
+	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
@@ -100,30 +101,30 @@ func TestWatchInteractor_FindByURL(t *testing.T) {
 	url := "https://apple.com"
 	{
 		// success
-		mpi := NewWatchInteractor(mockWr)
+		mpi := NewWatchService(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().FindByURL(url).Return(expected, nil)
 		actual, err := mpi.FindByURL(url)
-		assert.Equal(expected, actual)
-		assert.NoError(err)
+		a.Equal(expected, actual)
+		a.NoError(err)
 	}
 	{
 		// failed
-		mpi := NewWatchInteractor(mockWr)
+		mpi := NewWatchService(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().FindByURL(url).Return(nil, fmt.Errorf("error"))
 		actual, err := mpi.FindByURL(url)
-		assert.Nil(actual)
-		assert.Error(err)
+		a.Nil(actual)
+		a.Error(err)
 	}
 }
 
-func TestWatchInteractor_IsExist(t *testing.T) {
-	assert := assert.New(t)
+func TestWatchService_IsExist(t *testing.T) {
+	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
@@ -135,62 +136,62 @@ func TestWatchInteractor_IsExist(t *testing.T) {
 	eT := time.Now()
 	{
 		// success
-		mpi := NewWatchInteractor(mockWr)
+		mpi := NewWatchService(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().IsExist(input).Return(eIsExist, eID, eT, nil)
 		aIsExist, aID, aT, err := mpi.IsExist(input)
-		assert.NoError(err)
-		assert.Equal(eIsExist, aIsExist)
-		assert.Equal(eID, aID)
-		assert.Equal(eT, aT)
+		a.NoError(err)
+		a.Equal(eIsExist, aIsExist)
+		a.Equal(eID, aID)
+		a.Equal(eT, aT)
 	}
 	{
 		// failed
-		mpi := NewWatchInteractor(mockWr)
+		mpi := NewWatchService(mockWr)
 		if mpi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().IsExist(input).Return(false, uint(0), time.Time{}, fmt.Errorf("error"))
 		aIsExist, aID, aT, err := mpi.IsExist(input)
-		assert.Error(err)
-		assert.False(aIsExist)
-		assert.Equal(uint(0), aID)
-		assert.Equal(time.Time{}, aT)
+		a.Error(err)
+		a.False(aIsExist)
+		a.Equal(uint(0), aID)
+		a.Equal(time.Time{}, aT)
 	}
 }
 
-func TestWatchInteractor_AddWatch(t *testing.T) {
-	assert := assert.New(t)
+func TestWatchService_AddWatch(t *testing.T) {
+	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
 	input := &model.Watch{}
 	{
 		// success
-		ipi := NewWatchInteractor(mockWr)
+		ipi := NewWatchService(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().AddWatch(input).Return(nil)
 		err := ipi.AddWatch(input)
-		assert.NoError(err)
+		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewWatchInteractor(mockWr)
+		ipi := NewWatchService(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().AddWatch(input).Return(fmt.Errorf("error"))
 		err := ipi.AddWatch(input)
-		assert.Error(err)
+		a.Error(err)
 	}
 }
 
-func TestWatchInteractor_UpdateWatch(t *testing.T) {
-	assert := assert.New(t)
+func TestWatchService_UpdateWatch(t *testing.T) {
+	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
@@ -198,77 +199,77 @@ func TestWatchInteractor_UpdateWatch(t *testing.T) {
 	failedInput := &model.Watch{ID: 0}
 	{
 		// success
-		ipi := NewWatchInteractor(mockWr)
+		ipi := NewWatchService(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().UpdateWatch(input).Return(nil)
 		err := ipi.UpdateWatch(input)
-		assert.NoError(err)
+		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewWatchInteractor(mockWr)
+		ipi := NewWatchService(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().UpdateWatch(failedInput).Times(0)
 		err := ipi.UpdateWatch(failedInput)
-		assert.EqualError(err, fmt.Sprintf("cannot update watch because invalid watch id: %d", 0))
+		a.EqualError(err, fmt.Sprintf("cannot update watch because invalid watch id: %d", 0))
 	}
 }
 
-func TestWatchInteractor_UpdateAllSoldTemporary(t *testing.T) {
-	assert := assert.New(t)
+func TestWatchService_UpdateAllSoldTemporary(t *testing.T) {
+	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
 	{
 		// success
-		ipi := NewWatchInteractor(mockWr)
+		ipi := NewWatchService(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().UpdateAllSoldTemporary().Return(nil)
 		err := ipi.UpdateAllSoldTemporary()
-		assert.NoError(err)
+		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewWatchInteractor(mockWr)
+		ipi := NewWatchService(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().UpdateAllSoldTemporary().Return(fmt.Errorf("error"))
 		err := ipi.UpdateAllSoldTemporary()
-		assert.Error(err)
+		a.Error(err)
 	}
 }
 
-func TestWatchInteractor_RemoveWatch(t *testing.T) {
-	assert := assert.New(t)
+func TestWatchService_RemoveWatch(t *testing.T) {
+	a := assert.New(t)
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWr := database.NewMockWatchRepository(ctrl)
 	id := int64(1)
 	{
 		// success
-		ipi := NewWatchInteractor(mockWr)
+		ipi := NewWatchService(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().RemoveWatch(id).Return(nil)
 		err := ipi.RemoveWatch(id)
-		assert.NoError(err)
+		a.NoError(err)
 	}
 	{
 		// failed
-		ipi := NewWatchInteractor(mockWr)
+		ipi := NewWatchService(mockWr)
 		if ipi == nil {
 			t.FailNow()
 		}
 		mockWr.EXPECT().RemoveWatch(id).Return(fmt.Errorf("error"))
 		err := ipi.RemoveWatch(id)
-		assert.Error(err)
+		a.Error(err)
 	}
 }

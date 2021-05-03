@@ -1,4 +1,4 @@
-package controller
+package usecase
 
 import (
 	"fmt"
@@ -15,8 +15,8 @@ import (
 
 const shopListEndPoint = "/jp/shop/refurbished/"
 
-// CrawlerControllerImpl 整備済み品のクローラー
-type CrawlerControllerImpl struct {
+// CrawlerUseCaseImpl 整備済み品のクローラー
+type CrawlerUseCaseImpl struct {
 	mr            database.MacRepository
 	ir            database.IPadRepository
 	wr            database.WatchRepository
@@ -33,7 +33,7 @@ func NewCrawlerControllerImpl(
 	parser web.PageParser,
 	scraper web.Scraper,
 	slackNotifier infrastructure.SlackNotifyRepository,
-) (*CrawlerControllerImpl, error) {
+) (*CrawlerUseCaseImpl, error) {
 	if mr == nil {
 		return nil, fmt.Errorf("mac web is nil")
 	}
@@ -52,7 +52,7 @@ func NewCrawlerControllerImpl(
 	if slackNotifier == nil {
 		return nil, fmt.Errorf("slack notifier is nil")
 	}
-	return &CrawlerControllerImpl{
+	return &CrawlerUseCaseImpl{
 		mr:            mr,
 		ir:            ir,
 		wr:            wr,
@@ -63,7 +63,7 @@ func NewCrawlerControllerImpl(
 }
 
 // CrawlMacPage macに関する整備済み品ページをクローリング
-func (c *CrawlerControllerImpl) CrawlMacPage() error {
+func (c *CrawlerUseCaseImpl) CrawlMacPage() error {
 	mu := path.Join(shopListEndPoint, "mac")
 	doc, err := c.scraper.Scrape(mu)
 	if err != nil {
@@ -125,7 +125,7 @@ func (c *CrawlerControllerImpl) CrawlMacPage() error {
 }
 
 // CrawlIPadPage ipadに関する整備済み品ページをクローリング
-func (c *CrawlerControllerImpl) CrawlIPadPage() error {
+func (c *CrawlerUseCaseImpl) CrawlIPadPage() error {
 	iu := path.Join(shopListEndPoint, "ipad")
 	doc, err := c.scraper.Scrape(iu)
 	if err != nil {
@@ -186,7 +186,7 @@ func (c *CrawlerControllerImpl) CrawlIPadPage() error {
 }
 
 // CrawlWatchPage watchに関する整備済み品ページをクローリング
-func (c *CrawlerControllerImpl) CrawlWatchPage() error {
+func (c *CrawlerUseCaseImpl) CrawlWatchPage() error {
 	wu := path.Join(shopListEndPoint, "watch")
 	doc, err := c.scraper.Scrape(wu)
 	if err != nil {

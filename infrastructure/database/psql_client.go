@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"os"
 
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+
 	"github.com/s14t284/apple-maitained-bot/config"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 
 	"github.com/labstack/gommon/log"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 // SQLClient psqlの接続クライアント

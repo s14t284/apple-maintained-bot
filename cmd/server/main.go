@@ -6,18 +6,18 @@ import (
 	"os"
 
 	"github.com/s14t284/apple-maitained-bot/config"
-	"github.com/s14t284/apple-maitained-bot/controller"
 	"github.com/s14t284/apple-maitained-bot/handler"
 	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
+	"github.com/s14t284/apple-maitained-bot/service"
 	"github.com/s14t284/apple-maitained-bot/usecase"
 
 	"github.com/labstack/gommon/log"
 	"github.com/robfig/cron/v3"
 )
 
-func getCronConfig(crawler controller.CrawlerController) (*cron.Cron, error) {
+func getCronConfig(crawler usecase.CrawlerUseCase) (*cron.Cron, error) {
 	c := cron.New()
 
 	// 整備済み品収集
@@ -71,11 +71,11 @@ func main() {
 		log.Error(err)
 		panic(err)
 	}
-	macInteractor := usecase.NewMacInteractor(database.MacRepositoryImpl{SQLClient: psqlClient})
-	ipadInteractor := usecase.NewIPadInteractor(database.IPadRepositoryImpl{SQLClient: psqlClient})
-	watchInteractor := usecase.NewWatchInteractor(database.WatchRepositoryImpl{SQLClient: psqlClient})
+	macInteractor := service.NewMacService(database.MacRepositoryImpl{SQLClient: psqlClient})
+	ipadInteractor := service.NewIPadService(database.IPadRepositoryImpl{SQLClient: psqlClient})
+	watchInteractor := service.NewWatchService(database.WatchRepositoryImpl{SQLClient: psqlClient})
 	// crawler
-	crawler, err := controller.NewCrawlerControllerImpl(macInteractor, ipadInteractor, watchInteractor, parser, scraper, notifier)
+	crawler, err := usecase.NewCrawlerControllerImpl(macInteractor, ipadInteractor, watchInteractor, parser, scraper, notifier)
 	if err != nil {
 		log.Error(err)
 	}
