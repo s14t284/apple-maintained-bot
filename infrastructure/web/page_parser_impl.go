@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/PuerkitoBio/goquery"
+
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/utils"
@@ -131,66 +132,26 @@ func (ppi *PageParserImpl) loadMacInformationFromDetailHTML(mac *model.Mac, doc 
 
 // loadMacInformationFromTitle タイトルから情報を取得する
 func (ppi *PageParserImpl) loadMacInformationFromTitle(mac *model.Mac, page domain.Page) error {
-	nameRegExp, err := regexp.Compile(`Retinaディスプレイ.*\s\-`)
+	title := getReformattedTitle(page.Title)
+	mac.Name = title
+
+	// インチ数
+	mac.Inch = getInch(title)
+	// CPU
+	cpuRegExp, err := regexp.Compile(`\d+\.\dGHz.+i\d`)
 	if err != nil {
 		return err
 	}
-	name := nameRegExp.ReplaceAllLiteralString(strings.Replace(page.Title, " [整備済製品]", "", 1), "")
-	if strings.Contains(page.Title, "MacBook") {
-		// インチ数
-		strs := strings.Split(name, INCH)
-		inch, err := strconv.ParseFloat(strs[0], 32)
-		if err != nil {
-			return fmt.Errorf("failed to parse inch [error][%w]", err)
-		}
-		mac.Inch = float32(inch)
-		name = strs[1]
-		// CPU
-		cpuRegExp, err := regexp.Compile(`\d+\.\dGHz.+i\d`)
-		if err != nil {
-			return err
-		}
-		mac.CPU = cpuRegExp.FindString(name)
-		name = strings.Replace(name, mac.CPU+" ", "", 1)
-		// 色
-		strs = strings.Split(name, "  ")
-		name = strs[0]
-		mac.Color = strs[1]
-
-	}
-	if strings.Contains(page.Title, "Mac mini") {
-		// CPU
-		cpuRegExp, err := regexp.Compile(`\d+\.\dGHz.+i\d`)
-		if err != nil {
-			return err
-		}
-		mac.CPU = cpuRegExp.FindString(name)
-		name = strings.Replace(name, mac.CPU+" ", "", 1)
-		// 色
-		strs := strings.Split(name, " - ")
-		name = strs[0]
-		mac.Color = strs[1]
-
-	} else {
-		// TODO: iMacやMacBookAirにも対応させる
-		mac.Name = page.Title
-	}
+	mac.CPU = cpuRegExp.FindString(title)
+	// 色
+	mac.Color = getColor(title)
 	// 金額
-	amountRegExp, err := regexp.Compile(`(,|円（税別）|\s)`)
+	mac.Amount, err = getAmount(page.AmountStr)
 	if err != nil {
 		return err
 	}
-	mac.Amount, err = strconv.Atoi(amountRegExp.ReplaceAllLiteralString(page.AmountStr, ""))
-	if err != nil {
-		return fmt.Errorf("failed to parse amount [error][%w]", err)
-	}
-	// 名前
-	mac.Name = name
 	// URL
-	mac.URL = page.DetailURL
-	if !strings.HasPrefix(mac.URL, rootURL) {
-		mac.URL = rootURL + mac.URL
-	}
+	mac.URL = getURL(page.DetailURL)
 	return nil
 }
 
@@ -232,44 +193,23 @@ func (ppi *PageParserImpl) loadIPadInformationFromDetailHTML(ipad *model.IPad, d
 // loadIPadInformationFromTitle タイトルから情報を取得する
 func (ppi *PageParserImpl) loadIPadInformationFromTitle(ipad *model.IPad, page domain.Page) error {
 	// 不要な部分を削除
-	nameRegExp, err := regexp.Compile(`\s*(\(|\[|（).+(\])`)
-	if err != nil {
-		return err
-	}
-	name := nameRegExp.ReplaceAllLiteralString(page.Title, "")
-	strs := strings.Split(name, INCH)
-	name = strs[len(strs)-1]
+	title := getReformattedTitle(page.Title)
+	ipad.Name = title
 	// 色
-	strs = strings.Split(name, " - ")
-	name = strs[0]
-	ipad.Color = strs[1]
-	// 名前・ストレージ
-	if strings.Contains(name, "Wi-Fi + Cellular") {
-		strs = strings.Split(name, " Wi-Fi + Cellular ")
-	} else if strings.Contains(name, "Wi-Fiモデル") {
-		strs = strings.Split(name, " Wi-Fiモデル ")
-	} else {
-		strs = strings.Split(name, " Wi-Fi ")
-	}
-	ipad.Name = strs[0]
-	ipad.Storage, err = parseStorage(strs[1])
+	ipad.Color = getColor(title)
+	// ストレージ
+	storage, err := parseStorage(title)
 	if err != nil {
 		return fmt.Errorf("failed to parse storage [error][%w]", err)
 	}
+	ipad.Storage = storage
 	// 金額
-	amountRegExp, err := regexp.Compile(`(,|円（税別）|\s)`)
+	ipad.Amount, err = getAmount(page.AmountStr)
 	if err != nil {
 		return err
 	}
-	ipad.Amount, err = strconv.Atoi(amountRegExp.ReplaceAllLiteralString(page.AmountStr, ""))
-	if err != nil {
-		return fmt.Errorf("failed to parse amount [error][%w]", err)
-	}
 	// URL
-	ipad.URL = page.DetailURL
-	if !strings.HasPrefix(ipad.URL, rootURL) {
-		ipad.URL = rootURL + ipad.URL
-	}
+	ipad.URL = getURL(page.DetailURL)
 	return nil
 }
 
@@ -312,57 +252,99 @@ func (ppi *PageParserImpl) loadWatchInformationFromDetailHTML(watch *model.Watch
 // loadWatchInformationFromTitle タイトルから情報を取得する
 func (ppi *PageParserImpl) loadWatchInformationFromTitle(watch *model.Watch, page domain.Page) error {
 	// 不要な部分を削除
-	nameRegExp, err := regexp.Compile(`\s*(（.+）|\[.+\])`)
-	if err != nil {
-		return err
-	}
-	name := nameRegExp.ReplaceAllLiteralString(page.Title, "")
+	title := getReformattedTitle(page.Title)
+	watch.Name = title
+
 	// Cellularモデルかどうか
 	if strings.Contains(page.Title, "Cellular") {
 		watch.IsCellular = true
 	}
-	// 名前・色
-	colorRegExp, err := regexp.Compile(`\d+mm`)
-	if err != nil {
-		return err
-	}
-	strs := strings.Split(name, "- ")
-	watch.Name = strs[0]
-	watch.Color = colorRegExp.ReplaceAllLiteralString(strs[1], "")
+	// 色
+	watch.Color = getColor(title)
 	// 金額
-	amountRegExp, err := regexp.Compile(`(,|円（税別）|\s)`)
+	amount, err := getAmount(page.AmountStr)
 	if err != nil {
 		return err
 	}
-	watch.Amount, err = strconv.Atoi(amountRegExp.ReplaceAllLiteralString(page.AmountStr, ""))
-	if err != nil {
-		return fmt.Errorf("failed to parse amount [error][%w]", err)
-	}
+	watch.Amount = amount
 	// URL
-	watch.URL = page.DetailURL
-	if !strings.HasPrefix(watch.URL, rootURL) {
-		watch.URL = rootURL + watch.URL
-	}
+	watch.URL = getURL(page.DetailURL)
 	return nil
 }
 
-func parseStorage(storageStr string) (int, error) {
-	var str, suffix string
+func parseStorage(str string) (int, error) {
+	var suffix string
 	var coef int
-	if strings.HasSuffix(storageStr, "GB") {
+	if strings.Contains(str, "GB") {
 		coef = 1
 		suffix = "GB"
-	} else if strings.HasSuffix(storageStr, "TB") {
+	} else if strings.Contains(str, "TB") {
 		coef = 1000
 		suffix = "TB"
 	} else {
 		return -1, fmt.Errorf("suffix of storage string must have 'GB' or 'TB'")
 	}
-	str = strings.Replace(storageStr, suffix, "", 1)
 
-	val, err := strconv.ParseInt(str, 10, 64)
+	re, err := regexp.Compile(`\d+` + suffix)
+	if err != nil {
+		return -1, err
+	}
+	val, err := strconv.Atoi(strings.Replace(re.FindString(str), suffix, "", 1))
 	if err != nil {
 		return -1, fmt.Errorf("failed to parse storage stirng to int [error][%w]", err)
 	}
-	return int(val) * coef, nil
+	return val * coef, nil
+}
+
+func getColor(str string) string {
+	for _, color := range []string{"ゴールド", "シルバー", "スペースグレイ"} {
+		if strings.Contains(str, color) {
+			return color
+		}
+	}
+	return ""
+}
+
+func getInch(str string) float32 {
+	inchRegExp, err := regexp.Compile(`(\d|\.)+インチ`)
+	if err != nil {
+		return 0.0
+	}
+	inchStr := inchRegExp.FindString(str)
+	if inchStr != "" {
+		inch, err := strconv.ParseFloat(strings.Replace(inchStr, "インチ", "", 1), 32)
+		if err != nil {
+			return 0.0
+		}
+		return float32(inch)
+	}
+	return 0.0
+}
+
+func getReformattedTitle(str string) string {
+	return strings.Replace(str, " [整備済製品]", "", 1)
+}
+
+func getAmount(str string) (int, error) {
+	amountRegExp, err := regexp.Compile(`(\d|,|円（税別）|\s)+`)
+	if err != nil {
+		return 0, err
+	}
+	amountSuffixRegExp, err := regexp.Compile(`(,|円（税別）|\s)+`)
+	if err != nil {
+		return 0, err
+	}
+	amountStr := amountRegExp.FindString(str)
+	amount, err := strconv.Atoi(amountSuffixRegExp.ReplaceAllLiteralString(amountStr, ""))
+	if err != nil {
+		return 0, err
+	}
+	return amount, nil
+}
+
+func getURL(str string) string {
+	if !strings.HasPrefix(str, rootURL) {
+		return rootURL + str
+	}
+	return str
 }

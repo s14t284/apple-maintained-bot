@@ -5,10 +5,11 @@ import (
 	"testing"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/utils"
-	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -59,7 +60,7 @@ const (
 `
 	detailMacMiniHTML = `
 <div class="as-productinfosection-mainpanel column large-9 small-12">
-                    
+
             <div class="para-list">
             <p>
                 2018年10月発売モデル
@@ -235,7 +236,7 @@ const (
 )
 
 func TestLoadMacInformationFromTitle(t *testing.T) {
-	assert := assert.New(t)
+	a := assert.New(t)
 	{
 		// 16インチMacBook Proの場合
 		page := domain.Page{
@@ -249,13 +250,14 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadMacInformationFromTitle(mac, page)
-		assert.NoError(err)
-		assert.Equal(mac.Inch, float32(16))
-		assert.Equal(mac.CPU, "2.4GHz 8コアIntel Core i9")
-		assert.Equal(mac.Color, "スペースグレイ")
-		assert.Equal(mac.Amount, 30000)
-		assert.Equal(mac.Name, "MacBook Pro")
-		assert.Equal(mac.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(float32(16), mac.Inch)
+		a.Equal("2.4GHz 8コアIntel Core i9", mac.CPU)
+		a.Equal("スペースグレイ", mac.Color)
+		a.Equal(30000, mac.Amount)
+		a.Equal(expectedName, mac.Name)
+		a.Equal("https://www.apple.com", mac.URL)
 	}
 	{
 		// 15.4インチMacBook Proの場合
@@ -271,13 +273,14 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadMacInformationFromTitle(mac, page)
-		assert.NoError(err)
-		assert.Equal(mac.Inch, float32(15.4))
-		assert.Equal(mac.CPU, "2.9GHz 6コアIntel Core i9")
-		assert.Equal(mac.Color, "シルバー")
-		assert.Equal(mac.Amount, 30000)
-		assert.Equal(mac.Name, "MacBook Pro")
-		assert.Equal(mac.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(mac.Inch, float32(15.4))
+		a.Equal(mac.CPU, "2.9GHz 6コアIntel Core i9")
+		a.Equal(mac.Color, "シルバー")
+		a.Equal(mac.Amount, 30000)
+		a.Equal(expectedName, mac.Name)
+		a.Equal(mac.URL, "https://www.apple.com")
 	}
 	{
 		// 13.3インチMacBook Proの場合
@@ -292,13 +295,14 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadMacInformationFromTitle(mac, page)
-		assert.NoError(err)
-		assert.Equal(mac.Inch, float32(13.3))
-		assert.Equal(mac.CPU, "1.4GHzクアッドコアIntel Core i5")
-		assert.Equal(mac.Color, "スペースグレイ")
-		assert.Equal(mac.Amount, 30000)
-		assert.Equal(mac.Name, "MacBook Pro")
-		assert.Equal(mac.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(mac.Inch, float32(13.3))
+		a.Equal(mac.CPU, "1.4GHzクアッドコアIntel Core i5")
+		a.Equal(mac.Color, "スペースグレイ")
+		a.Equal(mac.Amount, 30000)
+		a.Equal(expectedName, mac.Name)
+		a.Equal(mac.URL, "https://www.apple.com")
 	}
 	{
 		mac := &model.Mac{}
@@ -316,12 +320,29 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 		if err != nil {
 			t.FailNow()
 		}
-		assert.Equal(mac.Inch, float32(0.0))
-		assert.Equal(mac.CPU, "3.0GHz 6コアIntel Core i5")
-		assert.Equal(mac.Color, "スペースグレイ")
-		assert.Equal(mac.Amount, 30000)
-		assert.Equal(mac.Name, "Mac mini")
-		assert.Equal(mac.URL, "https://www.apple.com")
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(mac.Inch, float32(0.0))
+		a.Equal(mac.CPU, "3.0GHz 6コアIntel Core i5")
+		a.Equal(mac.Color, "スペースグレイ")
+		a.Equal(mac.Amount, 30000)
+		a.Equal(expectedName, mac.Name)
+		a.Equal(mac.URL, "https://www.apple.com")
+	}
+	{
+		// 税込表示にも対応
+		mac := &model.Mac{}
+		pageParser, err := initializePageParserImpl()
+		if err != nil {
+			t.FailNow()
+		}
+		page := domain.Page{
+			AmountStr: "30,000円（税込）",
+		}
+		err = pageParser.loadMacInformationFromTitle(mac, page)
+		if err != nil {
+			t.FailNow()
+		}
+		a.Equal(mac.Amount, 30000)
 	}
 	// TODO: MacBook Airに関するテストを増やす
 	// TODO: MacBook以外のMacに関するテストを増やす
@@ -337,18 +358,18 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 	// 		DetailURL: "https://www.apple.com",
 	// 	}
 	// 	pageParser.loadMacInformationFromTitle(mac, page)
-	// 	assert.Equal(mac.Inch, float32(0.0))
-	// 	assert.Equal(mac.CPU, "3.2GHz 16コア Intel Xeon W、Radeon Pro 580X")
-	// 	assert.Equal(mac.Color, "")
-	// 	assert.Equal(mac.Amount, 30000)
-	// 	assert.Equal(mac.Name, "Mac Pro")
-	// 	assert.Equal(mac.URL, "https://www.apple.com")
+	// 	a.Equal(mac.Inch, float32(0.0))
+	// 	a.Equal(mac.CPU, "3.2GHz 16コア Intel Xeon W、Radeon Pro 580X")
+	// 	a.Equal(mac.Color, "")
+	// 	a.Equal(mac.Amount, 30000)
+	// 	a.Equal(mac.Name, "Mac Pro")
+	// 	a.Equal(mac.URL, "https://www.apple.com")
 	// }
 
 }
 
 func TestLoadMacInformationFromDetailHTML(t *testing.T) {
-	assert := assert.New(t)
+	a := assert.New(t)
 	{
 		// 正常系
 		// MacBookProの場合
@@ -359,10 +380,10 @@ func TestLoadMacInformationFromDetailHTML(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadMacInformationFromDetailHTML(mac, doc)
-		assert.NoError(err)
-		assert.Equal(utils.GetReleaseYearAndMonth(2019, 11), mac.ReleaseDate)
-		assert.Equal(true, mac.TouchBar)
-		assert.Equal(1000, mac.Storage)
+		a.NoError(err)
+		a.Equal(utils.GetReleaseYearAndMonth(2019, 11), mac.ReleaseDate)
+		a.Equal(true, mac.TouchBar)
+		a.Equal(1000, mac.Storage)
 	}
 	{
 		// 正常系
@@ -374,14 +395,14 @@ func TestLoadMacInformationFromDetailHTML(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadMacInformationFromDetailHTML(mac, doc)
-		assert.NoError(err)
-		assert.Equal(utils.GetReleaseYearAndMonth(2018, 10), mac.ReleaseDate)
-		assert.Equal(512, mac.Storage)
+		a.NoError(err)
+		a.Equal(utils.GetReleaseYearAndMonth(2018, 10), mac.ReleaseDate)
+		a.Equal(512, mac.Storage)
 	}
 }
 
 func TestLoadIPadInformationFromTitle(t *testing.T) {
-	assert := assert.New(t)
+	a := assert.New(t)
 	ipad := &model.IPad{}
 	{
 		// IPad Proの場合
@@ -396,12 +417,13 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadIPadInformationFromTitle(ipad, page)
-		assert.NoError(err)
-		assert.Equal(ipad.Color, "スペースグレイ")
-		assert.Equal(ipad.Name, "iPad Pro")
-		assert.Equal(ipad.Storage, 512)
-		assert.Equal(ipad.Amount, 30000)
-		assert.Equal(ipad.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(ipad.Color, "スペースグレイ")
+		a.Equal(expectedName, ipad.Name)
+		a.Equal(ipad.Storage, 512)
+		a.Equal(ipad.Amount, 30000)
+		a.Equal(ipad.URL, "https://www.apple.com")
 
 	}
 	{
@@ -416,12 +438,13 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadIPadInformationFromTitle(ipad, page)
-		assert.NoError(err)
-		assert.Equal(ipad.Color, "ゴールド")
-		assert.Equal(ipad.Name, "iPad Air")
-		assert.Equal(ipad.Storage, 64)
-		assert.Equal(ipad.Amount, 30000)
-		assert.Equal(ipad.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(ipad.Color, "ゴールド")
+		a.Equal(expectedName, ipad.Name)
+		a.Equal(ipad.Storage, 64)
+		a.Equal(ipad.Amount, 30000)
+		a.Equal(ipad.URL, "https://www.apple.com")
 	}
 	{
 		// IPad miniの場合
@@ -435,12 +458,13 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadIPadInformationFromTitle(ipad, page)
-		assert.NoError(err)
-		assert.Equal(ipad.Color, "スペースグレイ")
-		assert.Equal(ipad.Name, "iPad mini 4")
-		assert.Equal(ipad.Storage, 128)
-		assert.Equal(ipad.Amount, 30000)
-		assert.Equal(ipad.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(ipad.Color, "スペースグレイ")
+		a.Equal(expectedName, ipad.Name)
+		a.Equal(ipad.Storage, 128)
+		a.Equal(ipad.Amount, 30000)
+		a.Equal(ipad.URL, "https://www.apple.com")
 	}
 	{
 		// 通常IPadの場合
@@ -454,17 +478,18 @@ func TestLoadIPadInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadIPadInformationFromTitle(ipad, page)
-		assert.NoError(err)
-		assert.Equal(ipad.Color, "シルバー")
-		assert.Equal(ipad.Name, "iPad")
-		assert.Equal(ipad.Storage, 1000)
-		assert.Equal(ipad.Amount, 30000)
-		assert.Equal(ipad.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(ipad.Color, "シルバー")
+		a.Equal(expectedName, ipad.Name)
+		a.Equal(ipad.Storage, 1000)
+		a.Equal(ipad.Amount, 30000)
+		a.Equal(ipad.URL, "https://www.apple.com")
 	}
 }
 
 func TestLoadIPadInformationFromDetailHTML(t *testing.T) {
-	assert := assert.New(t)
+	a := assert.New(t)
 	ipad := &model.IPad{}
 	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(detailIPadHTML))
 	{
@@ -473,15 +498,15 @@ func TestLoadIPadInformationFromDetailHTML(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadIPadInformationFromDetailHTML(ipad, doc)
-		assert.NoError(err)
-		assert.Equal(utils.GetReleaseYearAndMonth(2015, 9), ipad.ReleaseDate)
-		assert.Equal("8メガピクセルiSightカメラ", ipad.Camera)
-		assert.Equal(float32(7.9), ipad.Inch)
+		a.NoError(err)
+		a.Equal(utils.GetReleaseYearAndMonth(2015, 9), ipad.ReleaseDate)
+		a.Equal("8メガピクセルiSightカメラ", ipad.Camera)
+		a.Equal(float32(7.9), ipad.Inch)
 	}
 
 }
 func TestLoadWatchInformationFromTitle(t *testing.T) {
-	assert := assert.New(t)
+	a := assert.New(t)
 	watch := &model.Watch{}
 	{
 		// Apple Watch Series 4（GPS + Cellularモデル）の場合
@@ -495,11 +520,12 @@ func TestLoadWatchInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadWatchInformationFromTitle(watch, page)
-		assert.NoError(err)
-		assert.Equal(watch.Color, "シルバーアルミニウムケースとホワイトスポーツバンド")
-		assert.Equal(watch.Name, "Apple Watch Series 4")
-		assert.Equal(watch.Amount, 30000)
-		assert.Equal(watch.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(watch.Color, "シルバー")
+		a.Equal(expectedName, watch.Name)
+		a.Equal(watch.Amount, 30000)
+		a.Equal(watch.URL, "https://www.apple.com")
 	}
 	{
 		// Apple Watch Series 4（GPSモデル）の場合
@@ -514,11 +540,12 @@ func TestLoadWatchInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadWatchInformationFromTitle(watch, page)
-		assert.NoError(err)
-		assert.Equal(watch.Color, "ゴールドアルミニウムケースとピンクサンドスポーツバンド")
-		assert.Equal(watch.Name, "Apple Watch Series 4")
-		assert.Equal(watch.Amount, 30000)
-		assert.Equal(watch.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(watch.Color, "ゴールド")
+		a.Equal(expectedName, watch.Name)
+		a.Equal(watch.Amount, 30000)
+		a.Equal(watch.URL, "https://www.apple.com")
 	}
 	{
 		// Apple Watch Series Nike+ Series 4の場合
@@ -532,16 +559,17 @@ func TestLoadWatchInformationFromTitle(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadWatchInformationFromTitle(watch, page)
-		assert.NoError(err)
-		assert.Equal(watch.Color, "スペースグレイアルミニウムケースとアンスラサイト/ブラックNikeスポーツバンド")
-		assert.Equal(watch.Name, "Apple Watch Nike+ Series 4")
-		assert.Equal(watch.Amount, 30000)
-		assert.Equal(watch.URL, "https://www.apple.com")
+		a.NoError(err)
+		expectedName := strings.Replace(page.Title, " [整備済製品]", "", 1)
+		a.Equal(watch.Color, "スペースグレイ")
+		a.Equal(expectedName, watch.Name)
+		a.Equal(watch.Amount, 30000)
+		a.Equal(watch.URL, "https://www.apple.com")
 	}
 }
 
 func TestLoadWatchInformationFromDetailHTML(t *testing.T) {
-	assert := assert.New(t)
+	a := assert.New(t)
 	watch := &model.Watch{}
 	doc, _ := goquery.NewDocumentFromReader(strings.NewReader(detailWatchHTML))
 	{
@@ -550,9 +578,9 @@ func TestLoadWatchInformationFromDetailHTML(t *testing.T) {
 			t.FailNow()
 		}
 		err = pageParser.loadWatchInformationFromDetailHTML(watch, doc)
-		assert.NoError(err)
-		assert.Equal(utils.GetReleaseYearAndMonth(2018, 9), watch.ReleaseDate)
-		assert.Equal(16, watch.Storage)
+		a.NoError(err)
+		a.Equal(utils.GetReleaseYearAndMonth(2018, 9), watch.ReleaseDate)
+		a.Equal(16, watch.Storage)
 	}
 }
 
