@@ -23,6 +23,11 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
 
+    - name: goimports
+      run: |
+        GO111MODULE=off GOBIN=$(pwd)/bin go get golang.org/x/tools/cmd/goimports
+        find . -print | grep --regex '.*\.go$' | xargs bin/goimports -d -e -local "github.com/s14t284/apple-maintain-bot"
+
     - name: test
       run: go test -coverprofile=profile.csv ./...
 

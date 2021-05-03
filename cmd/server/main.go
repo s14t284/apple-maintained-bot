@@ -2,20 +2,19 @@ package main
 
 import (
 	"fmt"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
 	"net/http"
 	"os"
 
-	"github.com/s14t284/apple-maitained-bot/handler"
-
+	"github.com/s14t284/apple-maitained-bot/config"
 	"github.com/s14t284/apple-maitained-bot/controller"
+	"github.com/s14t284/apple-maitained-bot/handler"
+	"github.com/s14t284/apple-maitained-bot/infrastructure"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/web"
+	"github.com/s14t284/apple-maitained-bot/usecase"
 
 	"github.com/labstack/gommon/log"
 	"github.com/robfig/cron/v3"
-	"github.com/s14t284/apple-maitained-bot/config"
-	"github.com/s14t284/apple-maitained-bot/infrastructure"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
-	"github.com/s14t284/apple-maitained-bot/usecase"
 )
 
 func getCronConfig(crawler controller.CrawlerController) (*cron.Cron, error) {

@@ -2,10 +2,10 @@ package usecase
 
 import (
 	"fmt"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"time"
 
 	"github.com/s14t284/apple-maitained-bot/domain/model"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 )
 
 // IPadInteractor ipadの情報をやりとりするためのgateway

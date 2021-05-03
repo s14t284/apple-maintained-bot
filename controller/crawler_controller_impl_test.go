@@ -1,18 +1,19 @@
 package controller
 
 import (
-	"github.com/s14t284/apple-maitained-bot/mock/infrastructure"
 	"path"
 	"testing"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
+
 	"github.com/s14t284/apple-maitained-bot/domain"
 	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"github.com/s14t284/apple-maitained-bot/mock/database"
+	"github.com/s14t284/apple-maitained-bot/mock/infrastructure"
 	"github.com/s14t284/apple-maitained-bot/mock/web"
-	"github.com/stretchr/testify/assert"
 )
 
 const endPoint = "/jp/shop/refurbished/"

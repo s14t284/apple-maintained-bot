@@ -2,12 +2,11 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
 	"net/http"
 
-	"github.com/s14t284/apple-maitained-bot/utils"
-
 	"github.com/s14t284/apple-maitained-bot/domain/model"
+	"github.com/s14t284/apple-maitained-bot/infrastructure/database"
+	"github.com/s14t284/apple-maitained-bot/utils"
 
 	"github.com/labstack/gommon/log"
 )
