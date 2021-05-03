@@ -91,7 +91,10 @@ func main() {
 	// 仮のエンドポイント
 	// TODO: 修正する
 	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		w.Write([]byte("{\"message\": \"ok\"}"))
+		_, err := w.Write([]byte("{\"message\": \"ok\"}"))
+		if err != nil {
+			log.Error(err)
+		}
 	})
 
 	http.HandleFunc("/mac", handler.GetMacHandler(macInteractor))
@@ -112,7 +115,16 @@ func main() {
 		}
 	}()
 	// 一度クローリングを実行
-	crawler.CrawlMacPage()
-	crawler.CrawlIPadPage()
-	crawler.CrawlWatchPage()
+	err = crawler.CrawlMacPage()
+	if err != nil {
+		log.Error("crawling macbook page error: " + err.Error())
+	}
+	err = crawler.CrawlIPadPage()
+	if err != nil {
+		log.Error("crawling ipda page error: " + err.Error())
+	}
+	err = crawler.CrawlWatchPage()
+	if err != nil {
+		log.Error("crawling apple watch page error: " + err.Error())
+	}
 }

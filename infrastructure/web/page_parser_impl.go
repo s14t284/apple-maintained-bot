@@ -12,6 +12,11 @@ import (
 	"github.com/s14t284/apple-maitained-bot/utils"
 )
 
+const (
+	SALES = "月発売"
+	INCH  = "インチ"
+)
+
 // PageParserImpl 商品ページのパーサーの実装
 type PageParserImpl struct {
 }
@@ -93,7 +98,7 @@ func (ppi *PageParserImpl) loadMacInformationFromDetailHTML(mac *model.Mac, doc 
 	var localErr error
 	detail.Find("div .para-list > p").Each(func(_ int, s *goquery.Selection) {
 		text := detailRegExp.ReplaceAllLiteralString(s.Text(), "")
-		if strings.Index(text, "月発売") > -1 {
+		if strings.Contains(text, SALES) {
 			// 発売年月
 			year, localErr := strconv.Atoi(text[:4])
 			if localErr != nil {
@@ -104,16 +109,16 @@ func (ppi *PageParserImpl) loadMacInformationFromDetailHTML(mac *model.Mac, doc 
 				err = fmt.Errorf("failed to parse month [error][%w]", localErr)
 			}
 			mac.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
-		} else if strings.Index(text, "TouchBar") > -1 {
+		} else if strings.Contains(text, "TouchBar") {
 			// タッチバーがあるかないか
 			mac.TouchBar = true
-		} else if strings.Index(text, "SSD") > -1 {
+		} else if strings.Contains(text, "SSD") {
 			// ストレージ容量
 			mac.Storage, localErr = parseStorage(text[:storageRegExp.FindStringIndex(text)[0]+2])
 			if localErr != nil {
 				err = fmt.Errorf("failed to parse storage [error][%w]", localErr)
 			}
-		} else if strings.Index(text, "GB") > -1 && mac.Memory == 0 {
+		} else if strings.Contains(text, "GB") && mac.Memory == 0 {
 			// メモリ
 			mac.Memory, localErr = strconv.Atoi(text[:strings.Index(text, "GB")])
 			if localErr != nil {
@@ -131,9 +136,9 @@ func (ppi *PageParserImpl) loadMacInformationFromTitle(mac *model.Mac, page doma
 		return err
 	}
 	name := nameRegExp.ReplaceAllLiteralString(strings.Replace(page.Title, " [整備済製品]", "", 1), "")
-	if strings.Index(page.Title, "MacBook") > -1 {
+	if strings.Contains(page.Title, "MacBook") {
 		// インチ数
-		strs := strings.Split(name, "インチ")
+		strs := strings.Split(name, INCH)
 		inch, err := strconv.ParseFloat(strs[0], 32)
 		if err != nil {
 			return fmt.Errorf("failed to parse inch [error][%w]", err)
@@ -153,7 +158,7 @@ func (ppi *PageParserImpl) loadMacInformationFromTitle(mac *model.Mac, page doma
 		mac.Color = strs[1]
 
 	}
-	if strings.Index(page.Title, "Mac mini") > -1 {
+	if strings.Contains(page.Title, "Mac mini") {
 		// CPU
 		cpuRegExp, err := regexp.Compile(`\d+\.\dGHz.+i\d`)
 		if err != nil {
@@ -199,7 +204,7 @@ func (ppi *PageParserImpl) loadIPadInformationFromDetailHTML(ipad *model.IPad, d
 
 	detail.Find("div .para-list > p").Each(func(_ int, s *goquery.Selection) {
 		text := detailRegExp.ReplaceAllLiteralString(s.Text(), "")
-		if strings.Index(text, "月発売") > -1 {
+		if strings.Contains(text, SALES) {
 			// 発売年月
 			year, localErr := strconv.Atoi(text[:4])
 			if localErr != nil {
@@ -210,10 +215,10 @@ func (ppi *PageParserImpl) loadIPadInformationFromDetailHTML(ipad *model.IPad, d
 				err = fmt.Errorf("failed to parse year [error][%w]", localErr)
 			}
 			ipad.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
-		} else if strings.Index(text, "メガピクセル") > -1 {
+		} else if strings.Contains(text, "メガピクセル") {
 			ipad.Camera = text
-		} else if strings.Index(text, "インチ") > -1 {
-			strs := strings.Split(text, "インチ")
+		} else if strings.Contains(text, INCH) {
+			strs := strings.Split(text, INCH)
 			inch, localErr := strconv.ParseFloat(strs[0], 32)
 			if localErr != nil {
 				err = fmt.Errorf("failed to parse year [error][%w]", localErr)
@@ -232,16 +237,16 @@ func (ppi *PageParserImpl) loadIPadInformationFromTitle(ipad *model.IPad, page d
 		return err
 	}
 	name := nameRegExp.ReplaceAllLiteralString(page.Title, "")
-	strs := strings.Split(name, "インチ")
+	strs := strings.Split(name, INCH)
 	name = strs[len(strs)-1]
 	// 色
 	strs = strings.Split(name, " - ")
 	name = strs[0]
 	ipad.Color = strs[1]
 	// 名前・ストレージ
-	if strings.Index(name, "Wi-Fi + Cellular") > -1 {
+	if strings.Contains(name, "Wi-Fi + Cellular") {
 		strs = strings.Split(name, " Wi-Fi + Cellular ")
-	} else if strings.Index(name, "Wi-Fiモデル") > -1 {
+	} else if strings.Contains(name, "Wi-Fiモデル") {
 		strs = strings.Split(name, " Wi-Fiモデル ")
 	} else {
 		strs = strings.Split(name, " Wi-Fi ")
@@ -278,7 +283,7 @@ func (ppi *PageParserImpl) loadWatchInformationFromDetailHTML(watch *model.Watch
 
 	detail.Find("div .para-list > p").Each(func(_ int, s *goquery.Selection) {
 		text := detailRegExp.ReplaceAllLiteralString(s.Text(), "")
-		if strings.Index(text, "月発売") > -1 {
+		if strings.Contains(text, SALES) {
 			// 発売年月
 			year, localErr := strconv.Atoi(text[:4])
 			if localErr != nil {
@@ -289,7 +294,7 @@ func (ppi *PageParserImpl) loadWatchInformationFromDetailHTML(watch *model.Watch
 				err = fmt.Errorf("failed to parse year [error][%w]", localErr)
 			}
 			watch.ReleaseDate = utils.GetReleaseYearAndMonth(year, month)
-		} else if strings.Index(text, "GB") > -1 {
+		} else if strings.Contains(text, "GB") {
 			// ストレージ
 			r, localErr := regexp.Compile(`[0-9]+GB`)
 			if localErr != nil {
@@ -313,7 +318,7 @@ func (ppi *PageParserImpl) loadWatchInformationFromTitle(watch *model.Watch, pag
 	}
 	name := nameRegExp.ReplaceAllLiteralString(page.Title, "")
 	// Cellularモデルかどうか
-	if strings.Index(page.Title, "Cellular") > -1 {
+	if strings.Contains(page.Title, "Cellular") {
 		watch.IsCellular = true
 	}
 	// 名前・色

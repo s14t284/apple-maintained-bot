@@ -1,13 +1,14 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/s14t284/apple-maitained-bot/config"
+	"github.com/s14t284/apple-maitained-bot/domain/model"
 
 	"github.com/labstack/gommon/log"
-	"github.com/s14t284/apple-maitained-bot/domain/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -22,17 +23,34 @@ func createDataSourceName(config config.PsqlConfig) string {
 		config.UserName, config.Password, config.Host, config.Port, config.Database)
 }
 
-func initializeTable(migrator gorm.Migrator, tableName string, tableInterface interface{}) {
+func initializeTable(migrator gorm.Migrator, tableInterface interface{}) error {
 	if !migrator.HasTable(tableInterface) {
-		migrator.CreateTable(tableInterface)
+		err := migrator.CreateTable(tableInterface)
+		return err
 	}
+	return nil
 }
 
-func initializeTables(dbClient *gorm.DB) {
+func initializeTables(dbClient *gorm.DB) error {
+	errStr := ""
 	migrator := dbClient.Migrator()
-	initializeTable(migrator, "mac", &model.Mac{})
-	initializeTable(migrator, "ipad", &model.IPad{})
-	initializeTable(migrator, "watch", &model.Watch{})
+	err := initializeTable(migrator, &model.Mac{})
+	if err != nil {
+		errStr += "initialize mac table error: " + err.Error() + "\n"
+	}
+	err = initializeTable(migrator, &model.IPad{})
+	if err != nil {
+		errStr += "initialize ipad table error: " + err.Error() + "\n"
+	}
+	err = initializeTable(migrator, &model.Watch{})
+	if err != nil {
+		errStr += "initialize watch table error: " + err.Error() + "\n"
+	}
+
+	if errStr != "" {
+		return errors.New(errStr)
+	}
+	return nil
 }
 
 // PsqlNewClientImpl psqlに接続したgormクライアントを返却
@@ -49,6 +67,9 @@ func PsqlNewClientImpl(c config.PsqlConfig) (*SQLClient, error) {
 		return nil, err
 	}
 
-	initializeTables(dbClient)
+	err = initializeTables(dbClient)
+	if err != nil {
+		return nil, err
+	}
 	return &SQLClient{Client: dbClient}, nil
 }

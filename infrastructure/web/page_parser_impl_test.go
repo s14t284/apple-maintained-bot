@@ -312,7 +312,10 @@ func TestLoadMacInformationFromTitle(t *testing.T) {
 			AmountStr: "30,000円（税別）",
 			DetailURL: "https://www.apple.com",
 		}
-		pageParser.loadMacInformationFromTitle(mac, page)
+		err = pageParser.loadMacInformationFromTitle(mac, page)
+		if err != nil {
+			t.FailNow()
+		}
 		assert.Equal(mac.Inch, float32(0.0))
 		assert.Equal(mac.CPU, "3.0GHz 6コアIntel Core i5")
 		assert.Equal(mac.Color, "スペースグレイ")
