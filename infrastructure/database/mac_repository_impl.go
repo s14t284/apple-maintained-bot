@@ -14,6 +14,8 @@ type MacRepositoryImpl struct {
 	SQLClient *SQLClient
 }
 
+var _ MacRepository = &MacRepositoryImpl{}
+
 // FindMac 整備済み品macの情報を検索して返す
 func (mr MacRepositoryImpl) FindMac(param *model.MacRequestParam) (model.Macs, error) {
 	var macs model.Macs

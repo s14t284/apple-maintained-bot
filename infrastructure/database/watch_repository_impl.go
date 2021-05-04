@@ -14,6 +14,8 @@ type WatchRepositoryImpl struct {
 	SQLClient *SQLClient
 }
 
+var _ WatchRepository = &WatchRepositoryImpl{}
+
 // FindWatch 整備済み品apple watchの情報を検索して返す
 func (wr WatchRepositoryImpl) FindWatch(param *model.WatchRequestParam) (model.Watches, error) {
 	var watches model.Watches

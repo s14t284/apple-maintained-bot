@@ -14,6 +14,8 @@ type IPadRepositoryImpl struct {
 	SQLClient *SQLClient
 }
 
+var _ IPadRepository = &IPadRepositoryImpl{}
+
 // FindIPad 整備済み品ipadの情報を検索して返す
 func (ipr IPadRepositoryImpl) FindIPad(param *model.IPadRequestParam) (model.IPads, error) {
 	var ipads model.IPads
