@@ -90,7 +90,7 @@ func main() {
 	ipadService := service.NewIPadServiceImpl(database.IPadRepositoryImpl{SQLClient: psqlClient})
 	watchService := service.NewWatchServiceImpl(database.WatchRepositoryImpl{SQLClient: psqlClient})
 	// crawler
-	crawler, err := usecase.NewCrawlerUseCaseImpl(macService, ipadService, watchService, pps, scraper, notifier)
+	crawler, err := usecase.NewCrawlerInteractor(macService, ipadService, watchService, pps, scraper, notifier)
 	if err != nil {
 		log.Error(err)
 	}

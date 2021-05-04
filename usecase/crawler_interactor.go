@@ -15,8 +15,8 @@ import (
 
 const shopListEndPoint = "/jp/shop/refurbished/"
 
-// CrawlerUseCaseImpl 整備済み品のクローラー
-type CrawlerUseCaseImpl struct {
+// CrawlerInteractor 整備済み品のクローラー
+type CrawlerInteractor struct {
 	ms            service.MacService
 	is            service.IPadService
 	ws            service.WatchService
@@ -25,15 +25,17 @@ type CrawlerUseCaseImpl struct {
 	slackNotifier infrastructure.SlackNotifyRepository
 }
 
-// NewCrawlerUseCaseImpl CrawlerControllerImplを初期化
-func NewCrawlerUseCaseImpl(
+var _ CrawlerUseCase = &CrawlerInteractor{}
+
+// NewCrawlerInteractor CrawlerControllerImplを初期化
+func NewCrawlerInteractor(
 	ms service.MacService,
 	is service.IPadService,
 	ws service.WatchService,
 	parser parse.PageParseService,
 	scraper service.ScrapeService,
 	slackNotifier infrastructure.SlackNotifyRepository,
-) (*CrawlerUseCaseImpl, error) {
+) (*CrawlerInteractor, error) {
 	if ms == nil {
 		return nil, fmt.Errorf("mac parse is nil")
 	}
@@ -52,7 +54,7 @@ func NewCrawlerUseCaseImpl(
 	if slackNotifier == nil {
 		return nil, fmt.Errorf("slack notifier is nil")
 	}
-	return &CrawlerUseCaseImpl{
+	return &CrawlerInteractor{
 		ms:            ms,
 		is:            is,
 		ws:            ws,
@@ -63,22 +65,22 @@ func NewCrawlerUseCaseImpl(
 }
 
 // CrawlMacPage macに関する整備済み品ページをクローリング
-func (cuci *CrawlerUseCaseImpl) CrawlMacPage() error {
+func (ci *CrawlerInteractor) CrawlMacPage() error {
 	mu := path.Join(shopListEndPoint, "mac")
-	doc, err := cuci.scraper.Scrape(mu)
+	doc, err := ci.scraper.Scrape(mu)
 	if err != nil {
 		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
 		return err
 	}
 
-	pages, err := cuci.scraper.ScrapeMaintainedPage(doc)
+	pages, err := ci.scraper.ScrapeMaintainedPage(doc)
 	if err != nil {
 		return fmt.Errorf("failed to crawl mac page because failed scraping [error][%w]", err)
 	}
 
 	// 一旦、全て売れていることにする
 	// クローリングの際に売れ残っている判定を実施する
-	err = cuci.ms.UpdateAllSoldTemporary()
+	err = ci.ms.UpdateAllSoldTemporary()
 	if err != nil {
 		return fmt.Errorf("failed to update all products to sold tempolary [error][%w]", err)
 	}
@@ -86,13 +88,13 @@ func (cuci *CrawlerUseCaseImpl) CrawlMacPage() error {
 	var productPage []domain.Page
 	for _, page := range pages {
 		// タイトルなどから情報をパース
-		iF, err := cuci.parser.ParsePage("mac", page)
+		iF, err := ci.parser.ParsePage("mac", page)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
 		mac := iF.(*model.Mac)
 		// すでにDBに格納されているか確認
-		isExist, id, createdAt, err := cuci.ms.IsExist(mac)
+		isExist, id, createdAt, err := ci.ms.IsExist(mac)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
@@ -103,9 +105,9 @@ func (cuci *CrawlerUseCaseImpl) CrawlMacPage() error {
 			mac.IsSold = false
 			mac.CreatedAt = createdAt
 			log.Infof("Unsold: %s", mac.URL)
-			err = cuci.ms.Update(mac)
+			err = ci.ms.Update(mac)
 		} else {
-			err = cuci.ms.Add(mac)
+			err = ci.ms.Add(mac)
 			if err == nil {
 				productPage = append(productPage, domain.Page{
 					Title:     page.Title,
@@ -117,7 +119,7 @@ func (cuci *CrawlerUseCaseImpl) CrawlMacPage() error {
 			log.Errorf(err.Error())
 		}
 	}
-	err = cuci.slackNotifier.HookToSlack(productPage, "mac")
+	err = ci.slackNotifier.HookToSlack(productPage, "mac")
 	if err != nil {
 		log.Errorf(err.Error())
 	}
@@ -125,35 +127,35 @@ func (cuci *CrawlerUseCaseImpl) CrawlMacPage() error {
 }
 
 // CrawlIPadPage ipadに関する整備済み品ページをクローリング
-func (cuci *CrawlerUseCaseImpl) CrawlIPadPage() error {
+func (ci *CrawlerInteractor) CrawlIPadPage() error {
 	iu := path.Join(shopListEndPoint, "ipad")
-	doc, err := cuci.scraper.Scrape(iu)
+	doc, err := ci.scraper.Scrape(iu)
 	if err != nil {
 		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
 		return err
 	}
 
-	pages, err := cuci.scraper.ScrapeMaintainedPage(doc)
+	pages, err := ci.scraper.ScrapeMaintainedPage(doc)
 	if err != nil {
 		return fmt.Errorf("failed to crawl ipad page because failed scraping [error][%w]", err)
 	}
 
 	// 一旦、全て売れていることにする
 	// クローリングの際に売れ残っている判定を実施する
-	err = cuci.is.UpdateAllSoldTemporary()
+	err = ci.is.UpdateAllSoldTemporary()
 	if err != nil {
 		return fmt.Errorf("failed to update all products to sold tempolary [error][%w]", err)
 	}
 
 	var productPage []domain.Page
 	for _, page := range pages {
-		iF, err := cuci.parser.ParsePage("ipad", page)
+		iF, err := ci.parser.ParsePage("ipad", page)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
 		ipad := iF.(*model.IPad)
 		// すでにDBに格納されているか確認
-		isExist, id, createdAt, err := cuci.is.IsExist(ipad)
+		isExist, id, createdAt, err := ci.is.IsExist(ipad)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
@@ -164,9 +166,9 @@ func (cuci *CrawlerUseCaseImpl) CrawlIPadPage() error {
 			ipad.IsSold = false
 			ipad.CreatedAt = createdAt
 			log.Infof("Unsold: %s", ipad.URL)
-			err = cuci.is.Update(ipad)
+			err = ci.is.Update(ipad)
 		} else {
-			err = cuci.is.Add(ipad)
+			err = ci.is.Add(ipad)
 			if err == nil {
 				productPage = append(productPage, domain.Page{
 					Title:     page.Title,
@@ -178,7 +180,7 @@ func (cuci *CrawlerUseCaseImpl) CrawlIPadPage() error {
 			log.Errorf(err.Error())
 		}
 	}
-	err = cuci.slackNotifier.HookToSlack(productPage, "ipad")
+	err = ci.slackNotifier.HookToSlack(productPage, "ipad")
 	if err != nil {
 		log.Errorf(err.Error())
 	}
@@ -186,35 +188,35 @@ func (cuci *CrawlerUseCaseImpl) CrawlIPadPage() error {
 }
 
 // CrawlWatchPage watchに関する整備済み品ページをクローリング
-func (cuci *CrawlerUseCaseImpl) CrawlWatchPage() error {
+func (ci *CrawlerInteractor) CrawlWatchPage() error {
 	wu := path.Join(shopListEndPoint, "watch")
-	doc, err := cuci.scraper.Scrape(wu)
+	doc, err := ci.scraper.Scrape(wu)
 	if err != nil {
 		log.Warnf("cannot crawl whole page. Maybe apple store is maintenance now.")
 		return err
 	}
 
-	pages, err := cuci.scraper.ScrapeMaintainedPage(doc)
+	pages, err := ci.scraper.ScrapeMaintainedPage(doc)
 	if err != nil {
 		return fmt.Errorf("failed to crawl ipad page because failed scraping [error][%w]", err)
 	}
 
 	// 一旦、全て売れていることにする
 	// クローリングの際に売れ残っている判定を実施する
-	err = cuci.ws.UpdateAllSoldTemporary()
+	err = ci.ws.UpdateAllSoldTemporary()
 	if err != nil {
 		return fmt.Errorf("failed to update all products to sold tempolary [error][%w]", err)
 	}
 
 	var productPage []domain.Page
 	for _, page := range pages {
-		iF, err := cuci.parser.ParsePage("watch", page)
+		iF, err := ci.parser.ParsePage("watch", page)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
 		watch := iF.(*model.Watch)
 		// すでにDBに格納されているか確認
-		isExist, id, createdAt, err := cuci.ws.IsExist(watch)
+		isExist, id, createdAt, err := ci.ws.IsExist(watch)
 		if err != nil {
 			log.Errorf(err.Error())
 		}
@@ -225,9 +227,9 @@ func (cuci *CrawlerUseCaseImpl) CrawlWatchPage() error {
 			watch.IsSold = false
 			watch.CreatedAt = createdAt
 			log.Infof("Unsold: %s", watch.URL)
-			err = cuci.ws.Update(watch)
+			err = ci.ws.Update(watch)
 		} else {
-			err = cuci.ws.Add(watch)
+			err = ci.ws.Add(watch)
 			if err == nil {
 				productPage = append(productPage, domain.Page{
 					Title:     page.Title,
@@ -239,7 +241,7 @@ func (cuci *CrawlerUseCaseImpl) CrawlWatchPage() error {
 			log.Errorf(err.Error())
 		}
 	}
-	err = cuci.slackNotifier.HookToSlack(productPage, "apple watch")
+	err = ci.slackNotifier.HookToSlack(productPage, "apple watch")
 	if err != nil {
 		log.Errorf(err.Error())
 	}

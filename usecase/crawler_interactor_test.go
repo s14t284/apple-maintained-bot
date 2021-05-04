@@ -30,49 +30,49 @@ func TestNewCrawlerControllerImpl(t *testing.T) {
 	notifier := infrastructure.NewMockSlackNotifyRepository(ctrl)
 	{
 		// 正常系
-		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerInteractor(ms, is, ws, pps, scraper, notifier)
 		a.NotNil(cci)
 		a.NoError(err)
 	}
 	{
 		// 異常系
 		// mac databaseがnil
-		cci, err := NewCrawlerUseCaseImpl(nil, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerInteractor(nil, is, ws, pps, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// ipad databaseがnil
-		cci, err := NewCrawlerUseCaseImpl(ms, nil, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerInteractor(ms, nil, ws, pps, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// watch databaseがnil
-		cci, err := NewCrawlerUseCaseImpl(ms, is, nil, pps, scraper, notifier)
+		cci, err := NewCrawlerInteractor(ms, is, nil, pps, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// parserがnil
-		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, nil, scraper, notifier)
+		cci, err := NewCrawlerInteractor(ms, is, ws, nil, scraper, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// scraperがnil
-		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, nil, notifier)
+		cci, err := NewCrawlerInteractor(ms, is, ws, pps, nil, notifier)
 		a.Nil(cci)
 		a.Error(err)
 	}
 	{
 		// 異常系
 		// slack notifier がnil
-		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, nil)
+		cci, err := NewCrawlerInteractor(ms, is, ws, pps, scraper, nil)
 		a.Nil(cci)
 		a.Error(err)
 	}
@@ -102,7 +102,7 @@ func TestCrawlerControllerImpl_CrawlMacPage(t *testing.T) {
 	}
 	{
 		// 正常系
-		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerInteractor(ms, is, ws, pps, scraper, notifier)
 		if err != nil {
 			t.FailNow()
 		}
@@ -147,7 +147,7 @@ func TestCrawlerControllerImpl_CrawlIPadPage(t *testing.T) {
 	}
 	{
 		// 正常系
-		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerInteractor(ms, is, ws, pps, scraper, notifier)
 		if err != nil {
 			t.FailNow()
 		}
@@ -191,7 +191,7 @@ func TestCrawlerControllerImpl_CrawlWatchPage(t *testing.T) {
 	}
 	{
 		// 正常系
-		cci, err := NewCrawlerUseCaseImpl(ms, is, ws, pps, scraper, notifier)
+		cci, err := NewCrawlerInteractor(ms, is, ws, pps, scraper, notifier)
 		if err != nil {
 			t.FailNow()
 		}
