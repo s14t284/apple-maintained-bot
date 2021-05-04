@@ -13,7 +13,7 @@ type Mac struct {
 	CPU         string    `gorm:"size:50; not null" json:"cpu"`
 	Memory      int       `gorm:"not null" json:"memory"`
 	Storage     int       `gorm:"not null;" json:"strage"`
-	TouchBar    bool      `gorm:"not null not null" json:"touchBar"`
+	TouchBar    bool      `gorm:"not null not null" json:"touch_bar"`
 	Color       string    `gorm:"size:15; not null" json:"color"`
 	Amount      int       `gorm:"not null" json:"amount"`
 	ReleaseDate time.Time `gorm:"not null" json:"release_date"`

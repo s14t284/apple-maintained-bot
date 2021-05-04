@@ -2,273 +2,88 @@ package usecase
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
-	"time"
 
 	"github.com/golang/mock/gomock"
+
 	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/mock/repository"
-	"github.com/stretchr/testify/assert"
+	ms "github.com/s14t284/apple-maitained-bot/mock/service"
+	"github.com/s14t284/apple-maitained-bot/service"
 )
 
+func TestMacInteractor_GetMacs(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	mockMs := ms.NewMockMacService(ctrl)
+	mrp1 := model.MacRequestParam{}
+	mrp2 := model.MacRequestParam{Color: "グリーン"}
+	mrp3 := model.MacRequestParam{Name: "surface"}
+	rt1 := model.Macs{model.Mac{}}
+	rt2 := model.Macs{}
+	mockMs.EXPECT().Find(&mrp1).Return(rt1, nil).Times(1)
+	mockMs.EXPECT().Find(&mrp2).Return(rt2, nil).Times(1)
+	mockMs.EXPECT().Find(&mrp3).Return(nil, fmt.Errorf("dummy")).Times(1)
+
+	type fields struct {
+		ms service.MacService
+	}
+	type args struct {
+		mrp model.MacRequestParam
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    model.Macs
+		wantErr bool
+	}{
+		{"正常系", fields{mockMs}, args{mrp1}, rt1, false},
+		{"正常系_結果が空", fields{mockMs}, args{mrp2}, rt2, false},
+		{"異常系_検索できなかった", fields{mockMs}, args{mrp3}, nil, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mi := &MacInteractor{
+				ms: tt.fields.ms,
+			}
+			got, err := mi.GetMacs(tt.args.mrp)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetMacs() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("GetMacs() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestNewMacInteractor(t *testing.T) {
-	assert := assert.New(t)
 	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
-	{
-		// success
-		mpi := NewMacInteractor(mockMr)
-		assert.NotNil(mpi)
-	}
-	{
-		// failed because repository is nil
-		mpi := NewMacInteractor(nil)
-		assert.Nil(mpi)
-	}
-}
+	mockMs := ms.NewMockMacService(ctrl)
 
-func TestMacInteractor_FindMac(t *testing.T) {
-	assert := assert.New(t)
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	mockMpr := repository.NewMockMacRepository(ctrl)
-	expected := make(model.Macs, 1)
-	expected[0] = model.Mac{Name: "MacBook Pro"}
-	{
-		// success
-		ipi := NewMacInteractor(mockMpr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMpr.EXPECT().FindMac(&model.MacRequestParam{}).Return(expected, nil)
-		actual, err := ipi.FindMac(&model.MacRequestParam{})
-		assert.NotNil(actual)
-		assert.NoError(err)
-		assert.Equal(expected, actual)
+	type args struct {
+		ms service.MacService
 	}
-	{
-		// failed
-		ipi := NewMacInteractor(mockMpr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMpr.EXPECT().FindMac(&model.MacRequestParam{}).Return(nil, fmt.Errorf("error"))
-		actual, err := ipi.FindMac(&model.MacRequestParam{})
-		assert.Nil(actual)
-		assert.Error(err)
+	tests := []struct {
+		name    string
+		args    args
+		want    *MacInteractor
+		wantErr bool
+	}{
+		{"正常系", args{mockMs}, &MacInteractor{mockMs}, false},
+		{"異常系_MacServiceがnil", args{mockMs}, &MacInteractor{mockMs}, false},
 	}
-}
-
-func TestMacInteractor_FindMacAll(t *testing.T) {
-	assert := assert.New(t)
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
-	var expected model.Macs = make(model.Macs, 1)
-	expected[0] = model.Mac{}
-	{
-		// success
-		mpi := NewMacInteractor(mockMr)
-		if mpi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().FindMacAll().Return(expected, nil)
-		actual, err := mpi.FindMacAll()
-		assert.Equal(expected, actual)
-		assert.NoError(err)
-	}
-	{
-		// failed
-		mpi := NewMacInteractor(mockMr)
-		if mpi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().FindMacAll().Return(nil, fmt.Errorf("error"))
-		actual, err := mpi.FindMacAll()
-		assert.Nil(actual)
-		assert.Error(err)
-	}
-}
-
-func TestMacInteractor_FindByURL(t *testing.T) {
-	assert := assert.New(t)
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
-	expected := &model.Mac{}
-	url := "https://apple.com"
-	{
-		// success
-		mpi := NewMacInteractor(mockMr)
-		if mpi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().FindByURL(url).Return(expected, nil)
-		actual, err := mpi.FindByURL(url)
-		assert.Equal(expected, actual)
-		assert.NoError(err)
-	}
-	{
-		// failed
-		mpi := NewMacInteractor(mockMr)
-		if mpi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().FindByURL(url).Return(nil, fmt.Errorf("error"))
-		actual, err := mpi.FindByURL(url)
-		assert.Nil(actual)
-		assert.Error(err)
-	}
-}
-
-func TestMacInteractor_IsExist(t *testing.T) {
-	assert := assert.New(t)
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
-	input := &model.Mac{}
-
-	// mock output
-	eIsExist := true
-	eID := uint(1)
-	eT := time.Now()
-	{
-		// success
-		mpi := NewMacInteractor(mockMr)
-		if mpi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().IsExist(input).Return(eIsExist, eID, eT, nil)
-		aIsExist, aID, aT, err := mpi.IsExist(input)
-		assert.NoError(err)
-		assert.Equal(eIsExist, aIsExist)
-		assert.Equal(eID, aID)
-		assert.Equal(eT, aT)
-	}
-	{
-		// failed
-		mpi := NewMacInteractor(mockMr)
-		if mpi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().IsExist(input).Return(false, uint(0), time.Time{}, fmt.Errorf("error"))
-		aIsExist, aID, aT, err := mpi.IsExist(input)
-		assert.Error(err)
-		assert.False(aIsExist)
-		assert.Equal(uint(0), aID)
-		assert.Equal(time.Time{}, aT)
-	}
-}
-
-func TestMacInteractor_AddMac(t *testing.T) {
-	assert := assert.New(t)
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
-	input := &model.Mac{}
-	{
-		// success
-		ipi := NewMacInteractor(mockMr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().AddMac(input).Return(nil)
-		err := ipi.AddMac(input)
-		assert.NoError(err)
-	}
-	{
-		// failed
-		ipi := NewMacInteractor(mockMr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().AddMac(input).Return(fmt.Errorf("error"))
-		err := ipi.AddMac(input)
-		assert.Error(err)
-	}
-}
-
-func TestMacInteractor_UpdateMac(t *testing.T) {
-	assert := assert.New(t)
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
-	input := &model.Mac{ID: 1}
-	failedInput := &model.Mac{ID: 0}
-	{
-		// success
-		ipi := NewMacInteractor(mockMr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().UpdateMac(input).Return(nil)
-		err := ipi.UpdateMac(input)
-		assert.NoError(err)
-	}
-	{
-		// failed
-		ipi := NewMacInteractor(mockMr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().UpdateMac(failedInput).Times(0)
-		err := ipi.UpdateMac(failedInput)
-		assert.Error(err, fmt.Errorf("cannot update mac because invalid mac id: %d", 0))
-	}
-}
-
-func TestMacInteractor_UpdateAllSoldTemporary(t *testing.T) {
-	assert := assert.New(t)
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
-	{
-		// success
-		ipi := NewMacInteractor(mockMr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().UpdateAllSoldTemporary().Return(nil)
-		err := ipi.UpdateAllSoldTemporary()
-		assert.NoError(err)
-	}
-	{
-		// failed
-		ipi := NewMacInteractor(mockMr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().UpdateAllSoldTemporary().Return(fmt.Errorf("error"))
-		err := ipi.UpdateAllSoldTemporary()
-		assert.Error(err)
-	}
-}
-
-func TestMacInteractor_RemoveMac(t *testing.T) {
-	assert := assert.New(t)
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	mockMr := repository.NewMockMacRepository(ctrl)
-	id := int64(1)
-	{
-		// success
-		ipi := NewMacInteractor(mockMr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().RemoveMac(id).Return(nil)
-		err := ipi.RemoveMac(id)
-		assert.NoError(err)
-	}
-	{
-		// failed
-		ipi := NewMacInteractor(mockMr)
-		if ipi == nil {
-			t.FailNow()
-		}
-		mockMr.EXPECT().RemoveMac(id).Return(fmt.Errorf("error"))
-		err := ipi.RemoveMac(id)
-		assert.Error(err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := NewMacInteractor(tt.args.ms)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("NewMacInteractor() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewMacInteractor() got = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }

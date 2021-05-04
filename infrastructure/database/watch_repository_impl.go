@@ -4,15 +4,17 @@ import (
 	"errors"
 	"time"
 
-	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"gorm.io/gorm"
+
+	"github.com/s14t284/apple-maitained-bot/domain/model"
 )
 
 // WatchRepositoryImpl apple watchに関する情報を操作するための実装
 type WatchRepositoryImpl struct {
-	SQLClient *infrastructure.SQLClient
+	SQLClient *SQLClient
 }
+
+var _ WatchRepository = &WatchRepositoryImpl{}
 
 // FindWatch 整備済み品apple watchの情報を検索して返す
 func (wr WatchRepositoryImpl) FindWatch(param *model.WatchRequestParam) (model.Watches, error) {

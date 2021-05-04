@@ -4,15 +4,17 @@ import (
 	"errors"
 	"time"
 
-	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"gorm.io/gorm"
+
+	"github.com/s14t284/apple-maitained-bot/domain/model"
 )
 
 // MacRepositoryImpl macbookに関する情報を操作するための実装
 type MacRepositoryImpl struct {
-	SQLClient *infrastructure.SQLClient
+	SQLClient *SQLClient
 }
+
+var _ MacRepository = &MacRepositoryImpl{}
 
 // FindMac 整備済み品macの情報を検索して返す
 func (mr MacRepositoryImpl) FindMac(param *model.MacRequestParam) (model.Macs, error) {

@@ -4,15 +4,17 @@ import (
 	"errors"
 	"time"
 
-	"github.com/s14t284/apple-maitained-bot/domain/model"
-	"github.com/s14t284/apple-maitained-bot/infrastructure"
 	"gorm.io/gorm"
+
+	"github.com/s14t284/apple-maitained-bot/domain/model"
 )
 
 // IPadRepositoryImpl ipadに関する情報を操作するための実装
 type IPadRepositoryImpl struct {
-	SQLClient *infrastructure.SQLClient
+	SQLClient *SQLClient
 }
+
+var _ IPadRepository = &IPadRepositoryImpl{}
 
 // FindIPad 整備済み品ipadの情報を検索して返す
 func (ipr IPadRepositoryImpl) FindIPad(param *model.IPadRequestParam) (model.IPads, error) {
