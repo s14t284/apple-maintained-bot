@@ -209,6 +209,7 @@ func (gc *GetController) GetWatchHandler(w http.ResponseWriter, r *http.Request)
 
 // HealthCheck ヘルスチェック用
 func (gc *GetController) HealthCheck(w http.ResponseWriter, req *http.Request) {
+	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte("{\"message\": \"ok\"}"))
 	if err != nil {
 		log.Error(err)
