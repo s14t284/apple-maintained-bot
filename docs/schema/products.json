@@ -1,0 +1,106 @@
+{
+  "TableDescription": {
+    "TableName": "Products",
+    "AttributeDefinitions": [
+      {
+        "AttributeName": "Id",
+        "AttributeType": "N"
+      },
+      {
+        "AttributeName": "CreatedAt",
+        "AttributeType": "N"
+      },
+      {
+        "AttributeName": "ProductType",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "Name",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "Inch",
+        "AttributeType": "N"
+      },
+      {
+        "AttributeName": "Cpu",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "Memory",
+        "AttributeType": "N"
+      },
+      {
+        "AttributeName": "Storage",
+        "AttributeType": "N"
+      },
+      {
+        "AttributeName": "TouchBar",
+        "AttributeType": "BOOL"
+      },
+      {
+        "AttributeName": "Color",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "ReleaseDate",
+        "AttributeType": "N"
+      },
+      {
+        "AttributeName": "IsSold",
+        "AttributeType": "BOOL"
+      },
+      {
+        "AttributeName": "Url",
+        "AttributeType": "S"
+      }
+    ],
+    "KeySchema": [
+      {
+        "AttributeName": "Id",
+        "KeyType": "HASH"
+      },
+      {
+        "AttributeName": "CreatedAt"
+      },
+      {
+        "AttributeName": "ProductType",
+        "KeyType": "HASH"
+      },
+      {
+        "AttributeName": "Name"
+      },
+      {
+        "AttributeName": "Inch"
+      },
+      {
+        "AttributeName": "Cpu"
+      },
+      {
+        "AttributeName": "Memory"
+      },
+      {
+        "AttributeName": "Storage"
+      },
+      {
+        "AttributeName": "TouchBar"
+      },
+      {
+        "AttributeName": "Color"
+      },
+      {
+        "AttributeName": "ReleaseDate"
+      },
+      {
+        "AttributeName": "IsSold"
+      },
+      {
+        "AttributeName": "Url"
+      }
+    ],
+    "ProvisionedThroughput": {
+      "ReadCapacityUnits": 1,
+      "WriteCapacityUnits": 1
+    }
+  }
+}
