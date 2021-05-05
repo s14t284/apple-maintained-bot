@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+    app:
+        # command: go run ./cmd/server/main.go
+        command: go run ./cmd/dynamo.go
+        build:
+            context: "."
+            dockerfile: "./docker/app/Dockerfile.dev"
+        volumes:
+            - ./:/go/src/app
+        depends_on:
+            - db
+        environment:
+            - AWS_ACCESS_KEY_ID=dummy
+            - AWS_SECRET_ACCESS_KEY=dummy
+            - AWS_REGION=local
+            - DYNAMO_ENDPOINT=http://db:8000/
+        ports:
+            - "8080:8080"
+
+    db:
+        command: -jar DynamoDBLocal.jar -dbPath ./data
+        build:
+            context: "."
+            dockerfile: "./docker/db/Dockerfile.dev"
+        volumes:
+            -   ./docker/db/data:/home/dynamodblocal/data
+        ports:
+            - "8000:8000"

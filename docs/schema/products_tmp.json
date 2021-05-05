@@ -1,0 +1,120 @@
+{
+  "TableName": "Products",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "Id",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "CreatedAt",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "ProductType",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "Name",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "Inch",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "Cpu",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "Memory",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "Storage",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "TouchBar",
+      "AttributeType": "BOOL"
+    },
+    {
+      "AttributeName": "Color",
+      "AttributeType": "S"
+    },
+    {
+      "AttributeName": "Amount",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "ReleaseDate",
+      "AttributeType": "N"
+    },
+    {
+      "AttributeName": "IsSold",
+      "AttributeType": "BOOL"
+    },
+    {
+      "AttributeName": "Url",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+      "AttributeName": "Id",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "CreatedAt",
+      "KeyType": "RANGE"
+    },
+    {
+      "AttributeName": "ProductType",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "Name",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "Inch",
+      "KeyType": "RANGE"
+    },
+    {
+      "AttributeName": "Cpu",
+      "KeyType": "RANGE"
+    },
+    {
+      "AttributeName": "Memory",
+      "KeyType": "RANGE"
+    },
+    {
+      "AttributeName": "Storage",
+      "KeyType": "RANGE"
+    },
+    {
+      "AttributeName": "TouchBar",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "Color",
+      "KeyType": "HASH"
+    },
+    {
+      "AttributeName": "Amount",
+      "KeyType": "RANGE"
+    },
+    {
+      "AttributeName": "ReleaseDate",
+      "KeyType": "RANGE"
+    },
+    {
+      "AttributeName": "IsSold",
+      "KeyType": "HASH"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 1,
+    "WriteCapacityUnits": 1
+  },
+  "BillingMode": "PROVISIONED"
+}

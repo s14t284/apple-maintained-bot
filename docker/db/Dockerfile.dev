@@ -1,0 +1,7 @@
+FROM amazon/dynamodb-local:1.16.0
+
+WORKDIR /home/dynamodblocal
+
+RUN mkdir data && chown -R 1000 data
+
+EXPOSE 8000
